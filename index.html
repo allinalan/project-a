@@ -495,13 +495,16 @@
         </div>
 
         <div class="fs"><div class="fsl">Out-of-Pocket Expenses</div>
+          <div id="p-expense-breakdown">
           <div class="fg">
+            <div class="fgrp"><label class="flbl">Booth / Space Cost ($)</label><input type="number" class="fin" id="p-cost-total" placeholder="e.g. 1000" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Hotel / Lodging ($)</label><input type="number" class="fin" id="p-hotel" placeholder="0" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Gas / Mileage ($)</label><input type="number" class="fin" id="p-gas" placeholder="0" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Food ($)</label><input type="number" class="fin" id="p-food" placeholder="0" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Tolls / Parking ($)</label><input type="number" class="fin" id="p-tolls" placeholder="0" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Other ($)</label><input type="number" class="fin" id="p-other" placeholder="0" oninput="calcProfit()"></div>
             <div class="fgrp"><label class="flbl">Total Expenses ($)</label><input type="text" class="fin" id="p-total-exp" disabled placeholder="Auto"></div>
+          </div>
           </div>
         </div>
 
@@ -1572,17 +1575,22 @@ function clearDateRange(){
 }
 
 // ==================== PROFITABILITY ====================
+function toggleExpenseBreakdown(){
+  // no longer needed, kept as no-op for safety
+}
+
 function calcProfit(){
   const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
   const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
   const comm=Math.round(cpo*rate);
   document.getElementById('p-comm').value=comm>0?fm(comm):'';
+  const booth=parseFloat(document.getElementById('p-cost-total').value)||0;
   const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
   const gas=parseFloat(document.getElementById('p-gas').value)||0;
   const food=parseFloat(document.getElementById('p-food').value)||0;
   const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
   const other=parseFloat(document.getElementById('p-other').value)||0;
-  const totalExp=hotel+gas+food+tolls+other;
+  const totalExp=booth+hotel+gas+food+tolls+other;
   document.getElementById('p-total-exp').value=totalExp>0?fm(totalExp):'';
   const net=comm-totalExp;
   if(cpo>0){
@@ -1602,12 +1610,13 @@ function addEvent(){
   const ord=parseInt(document.getElementById('p-ord').value)||0;
   const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
   const comm=Math.round(cpo*rate);
+  const costTotal=parseFloat(document.getElementById('p-cost-total').value)||0;
   const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
   const gas=parseFloat(document.getElementById('p-gas').value)||0;
   const food=parseFloat(document.getElementById('p-food').value)||0;
   const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
   const other=parseFloat(document.getElementById('p-other').value)||0;
-  const totalExp=hotel+gas+food+tolls+other;
+  const totalExp=costTotal+hotel+gas+food+tolls+other;
   const net=comm-totalExp;
   const dtStart = document.getElementById('p-dt-start').value;
   const dtEnd = document.getElementById('p-dt-end').value;
@@ -1615,7 +1624,7 @@ function addEvent(){
   const loc=document.getElementById('p-loc').value;
   const camp=document.getElementById('p-camp').value;
   S.events.push({name,loc,camp,cpo,shifts,ord,comm,hotel,gas,food,tolls,other,totalExp,net,dt:dtStart,dtDisplay});
-  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-hotel','p-gas','p-food','p-tolls','p-other'].forEach(id=>{document.getElementById(id).value='';});
+  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('p-comm').value='';document.getElementById('p-total-exp').value='';document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';
   showToast('t3');refreshProfit();
 }
@@ -1796,7 +1805,7 @@ function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYea
 
 // ==================== GOOGLE SHEETS SYNC ====================
 // Paste your Apps Script Web App URL here after setup:
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyvVykwAOZjuuIP9vjtFakuFSZCgpWX3mrr5hqCCnDOTofRJboJKU8OB0oKkLO7w6twqw/exec';
+const SHEETS_URL = '';
 
 function syncStatus(msg, color='var(--text2)'){
   const el = document.getElementById('sync-status');
