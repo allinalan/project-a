@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project A — Rep HUB</title>
+<style>
+  :root {
+    --bg:#f0f4f9;--surface:#fff;--surface2:#f5f8fc;--surface3:#e8eef6;
+    --border:#dce6f0;--border2:#c5d5e8;
+    --blue:#1a5faa;--blue2:#2272d4;--blue-light:#e8f0fb;--blue-mid:#d0e4f7;
+    --green:#1a7a4a;--green-light:#e6f5ed;
+    --red:#c0392b;--red-light:#fcecea;
+    --gold:#c47d0e;--gold-light:#fef6e4;
+    --amber:#e67e22;--amber-light:#fef3e2;
+    --gray-light:#f8f9fa;
+    --accent:#b8ff2e;--accent-dark:#8ac700;--accent-dim:rgba(184,255,46,0.12);--accent-border:rgba(184,255,46,0.35);
+    --text:#1a2332;--text2:#5a6b7e;--text3:#b0bec8;
+    --font:Arial,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;}
+  nav{background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(26,95,170,.2);}
+  .logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#7ec8f5;}
+  .tabs{display:flex;gap:3px;}
+  .tab{padding:5px 13px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.7);font-family:var(--font);transition:all .15s;}
+  .tab:hover{background:rgba(255,255,255,.12);color:#fff;}
+  .tab.active{background:rgba(255,255,255,.15);color:#fff;border-bottom:2px solid var(--accent);}
+  .nav-r{display:flex;align-items:center;gap:8px;}
+  .streak-badge{background:rgba(184,255,46,.15);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--accent-border);letter-spacing:.3px;}
+  .av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+  .page{display:none;padding:20px;max-width:1100px;margin:0 auto;}
+  .page.active{display:block;animation:fi .2s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .eyebrow{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:3px;}
+  .ptitle{font-size:21px;font-weight:700;color:var(--text);margin-bottom:18px;}.ptitle span{color:var(--blue);}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;}
+  .g2{display:grid;grid-template-columns:1.5fr 1fr;gap:13px;margin-bottom:13px;}
+  .g2e{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px;}
+  .mc{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px 12px;border-top:3px solid var(--blue);}
+  .mc.pos{border-top-color:var(--green);}.mc.neg{border-top-color:var(--red);}.mc.neu{border-top-color:var(--blue);}.mc.gold{border-top-color:var(--gold);}
+  .mlbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;font-weight:600;}
+  .mval{font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1;}
+  .msub{font-size:12px;}.tg{color:var(--green);}.tr{color:var(--red);}.tm{color:var(--text2);}.tb{color:var(--blue);}.tgold{color:var(--gold);}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:16px 18px;}
+  .phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+  .ptit2{font-size:13px;font-weight:700;color:var(--text);}
+  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:11px;}
+  .bb{background:var(--blue-light);color:var(--blue);}.bg{background:var(--green-light);color:var(--green);}
+  .br{background:var(--red-light);color:var(--red);}.bgo{background:var(--gold-light);color:var(--gold);}
+  .bgy{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+  .bacc{background:var(--accent-dim);color:var(--accent-dark);border:1px solid var(--accent-border);font-weight:700;}
+  .mc.accent{border-top-color:var(--accent);}
+  .prow{margin-bottom:11px;}.prow:last-child{margin-bottom:0;}
+  .pmeta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+  .plbl{font-size:12px;color:var(--text2);font-weight:600;}.pnum{font-size:12px;color:var(--text);font-weight:600;}
+  .ptrack{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
+  .pfill{height:6px;border-radius:4px;transition:width .8s cubic-bezier(.16,1,.3,1);}
+  .fb{background:var(--accent);}.fb2{background:var(--blue2);}.fgr{background:var(--green);}.fgo{background:var(--gold);}
+  .fa{background:var(--accent);}
+  .sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .si{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:11px 13px;}
+  .sil{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+  .siv{font-size:17px;font-weight:700;color:var(--blue);}
+  .siv.accent{color:var(--accent-dark);}
+  .ta{color:var(--accent-dark);font-weight:700;}
+  .qi{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .qi:last-child{border-bottom:none;}
+  .qck{width:17px;height:17px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s;background:var(--surface);}
+  .qck.done{background:var(--accent);border-color:var(--accent-dark);}
+  .qck.done::after{content:'✓';font-size:9px;color:#111;font-weight:700;}
+  .qtxt{font-size:13px;flex:1;}.qtxt.done{color:var(--text3);text-decoration:line-through;}
+  .fs{margin-bottom:18px;}
+  .fsl{font-size:11px;color:var(--accent-dark);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:11px;padding-bottom:7px;border-bottom:2px solid var(--accent-dim);}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
+  .fg4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:11px;}
+  .fgrp{display:flex;flex-direction:column;gap:4px;}
+  .flbl{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .fin{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s;width:100%;}
+  .fin:focus{border-color:var(--blue);background:var(--blue-light);}
+  .fin::placeholder{color:var(--text3);}
+  .fin:disabled{background:var(--surface2);color:var(--text2);cursor:not-allowed;}
+  select.fin option{background:#fff;}
+  .anote{font-size:11px;color:var(--text3);margin-top:2px;}
+  .notebox{background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 5px 5px 0;padding:9px 12px;font-size:12px;color:var(--gold);font-weight:600;margin-bottom:11px;}
+  .bp{background:var(--accent);color:#111;font-family:var(--font);font-size:13px;font-weight:700;padding:10px 24px;border:none;border-radius:7px;cursor:pointer;transition:all .15s;letter-spacing:.2px;}
+  .bp:hover{background:var(--accent-dark);transform:translateY(-1px);}
+  .bs{background:var(--surface);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;padding:9px 16px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;transition:all .15s;}
+  .bs:hover{border-color:var(--blue);color:var(--blue);}
+  .bedit{background:none;border:1px solid var(--border2);color:var(--text2);font-family:var(--font);font-size:11px;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+  .bedit:hover{border-color:var(--blue);color:var(--blue);}
+  .bdel{background:none;border:1px solid transparent;color:var(--text3);font-family:var(--font);font-size:11px;padding:3px 7px;border-radius:4px;cursor:pointer;transition:all .15s;}
+  .bdel:hover{border-color:var(--red-light);color:var(--red);}
+  .edbanner{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:7px;padding:9px 13px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--blue);font-weight:600;}
+  .edbanner button{background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;}
+  .edbanner button:hover{color:var(--red);}
+  .div{height:1px;background:var(--border);margin:14px 0;}
+  .ins{display:flex;gap:9px;padding:9px 11px;border-radius:7px;margin-bottom:7px;border:1px solid;}
+  .ins:last-child{margin-bottom:0;}
+  .ins.warn{background:var(--red-light);border-color:#f5c6c2;}
+  .ins.ok{background:var(--green-light);border-color:#b8dfc9;}
+  .ins.info{background:var(--blue-light);border-color:var(--blue-mid);}
+  .ins-ic{font-size:13px;flex-shrink:0;margin-top:1px;font-weight:700;}
+  .ins-tit{font-size:12px;font-weight:700;margin-bottom:2px;}
+  .ins-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+  .cr{display:grid;grid-template-columns:1.8fr 1fr 1fr 80px;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
+  .cr-ext{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr 1fr 70px;gap:6px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
+  .cr-ext:last-child{border-bottom:none;}
+  .cr.hdr{font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .cr:last-child{border-bottom:none;}
+  .hr{display:grid;grid-template-columns:60px 1fr 65px 65px 75px 60px;gap:7px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
+  .hr.hdr{font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .hr:last-child{border-bottom:none;}
+  .erow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);align-items:center;}
+  .erow:last-child{border-bottom:none;}
+  .scallout{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:7px;padding:11px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;}
+  .sc-itm{text-align:center;}
+  .sc-lbl{font-size:11px;color:var(--blue);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+  .sc-val{font-size:16px;font-weight:700;color:var(--blue);}
+  .tstat{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border);}
+  .tstat:last-child{border-bottom:none;}
+  .ts-lbl{font-size:12px;color:var(--text2);font-weight:600;}
+  .ts-val{font-size:13px;font-weight:700;}
+
+  /* ===== GAME BAR ===== */
+  .game-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden;}
+  .game-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--accent));}
+  .rank-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .rank-badge{display:flex;align-items:center;gap:8px;}
+  .rank-icon{font-size:22px;line-height:1;}
+  .rank-name{font-size:16px;font-weight:700;color:var(--text);}
+  .rank-sub{font-size:11px;color:var(--text2);font-weight:600;margin-top:1px;}
+  .rank-right{text-align:right;}
+  .rank-cpo{font-size:20px;font-weight:700;color:var(--accent-dark);}
+  .rank-next{font-size:11px;color:var(--text2);font-weight:600;margin-top:2px;}
+  .xp-track{background:var(--surface3);border-radius:20px;height:18px;overflow:hidden;position:relative;margin-bottom:8px;}
+  .xp-fill{height:18px;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--accent));transition:width 1s cubic-bezier(.16,1,.3,1);position:relative;}
+  .xp-fill::after{content:'';position:absolute;top:3px;left:8px;right:8px;height:5px;background:rgba(255,255,255,.25);border-radius:10px;}
+  .xp-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#111;z-index:1;}
+  .badges-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .ach-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid;}
+  .ach-badge.earned{background:var(--accent-dim);color:var(--accent-dark);border-color:var(--accent-border);}
+  .ach-badge.locked{background:var(--surface2);color:var(--text3);border-color:var(--border);}
+  .mc.hero{padding:22px 22px 18px;border:2px solid var(--border2);border-top:5px solid var(--blue);border-radius:9px;}
+  .mc.hero .mlbl{font-size:12px;letter-spacing:1px;margin-bottom:10px;}
+  .mc.hero .mval{font-size:38px;letter-spacing:-2px;margin-bottom:6px;}
+  .mc.hero .msub{font-size:13px;font-weight:600;}
+  .year-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .year-table th{background:var(--blue);color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:2px solid var(--accent);}
+  .year-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .year-table tr:hover td{background:var(--surface2);}
+  .year-table tr.worked td{background:#fff;}
+  .year-table tr.vacation td{background:#fffbf0;}
+  .year-table tr.vacation td:first-child{border-left:3px solid var(--gold);}
+  .year-table tr.no-data td{color:var(--text3);}
+  .week-note-input{background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:3px 4px;font-family:var(--font);font-size:12px;color:var(--text);width:100%;outline:none;min-width:140px;}
+  .week-note-input:focus{border-bottom-color:var(--blue);background:var(--blue-light);}
+  .week-note-input::placeholder{color:var(--text3);}
+  .cpo-cell{font-weight:700;color:var(--blue);}
+  .cpo-cell.empty{color:var(--text3);font-weight:400;}
+  .month-header td{background:var(--surface3)!important;font-weight:700;font-size:12px;color:var(--blue);padding:6px 10px;}
+  .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+  .dot-worked{background:var(--green);}
+  .dot-vacation{background:var(--gold);}
+  .dot-empty{background:var(--text3);}
+  .year-filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+  .filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);transition:all .15s;}
+  .filter-btn.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700;}
+  .year-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+
+  /* ===== PROFITABILITY ===== */
+  .prof-event{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--blue);}
+  .prof-event.hit{border-left-color:var(--accent);}
+  .prof-event.miss{border-left-color:var(--red);}
+  .prof-event-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .prof-event-name{font-size:14px;font-weight:700;}
+  .prof-event-meta{font-size:11px;color:var(--text2);margin-top:2px;}
+  .prof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+  .prof-stat{background:var(--surface2);border-radius:6px;padding:8px 10px;}
+  .prof-stat-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+  .prof-stat-val{font-size:15px;font-weight:700;}
+  .profit-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+  .pill-hit{background:var(--accent-dim);color:var(--accent-dark);border:1px solid var(--accent-border);}
+  .pill-miss{background:var(--red-light);color:var(--red);}
+  .pill-close{background:var(--amber-light);color:var(--amber);}
+  .settings-row{display:flex;align-items:center;gap:12px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:8px;padding:12px 16px;margin-bottom:16px;}
+  .settings-row label{font-size:12px;color:var(--blue);font-weight:600;}
+  .settings-fin{background:var(--surface);border:1.5px solid var(--blue-mid);border-radius:6px;padding:6px 10px;font-family:var(--font);font-size:13px;font-weight:700;color:var(--blue);outline:none;width:90px;text-align:center;}
+  .settings-fin:focus{border-color:var(--blue);}
+  .mb{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:200;align-items:center;justify-content:center;}
+  .mb.open{display:flex;}
+  .mo{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:20px;width:400px;box-shadow:0 8px 30px rgba(26,95,170,.12);}
+  .motit{font-size:14px;font-weight:700;margin-bottom:13px;color:var(--blue);}
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:7px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.blue{background:var(--blue);}
+  @media(max-width:700px){.g3,.g4{grid-template-columns:1fr 1fr;}.g2,.g2e{grid-template-columns:1fr;}.fg,.fg3,.fg4{grid-template-columns:1fr;}nav{padding:0 10px;}.page{padding:12px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Project <span>A.</span></div>
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('home',this)">Home</button>
+    <button class="tab" onclick="showPage('campaign',this)">Campaign</button>
+    <button class="tab" onclick="showPage('ratios',this)">Scorecard</button>
+    <button class="tab" onclick="showPage('yearview',this)">Year View</button>
+    <button class="tab" onclick="showPage('profit',this)">Event Profitability</button>
+    <button class="tab" onclick="showPage('enter',this)">Enter Stats</button>
+  </div>
+  <div class="nav-r">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="sync-status" style="font-size:11px;font-weight:600;color:var(--text2);">Not synced</span>
+      <button onclick="loadFromSheets()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↓ Load</button>
+      <button onclick="saveToSheets()" style="background:var(--blue);border:none;color:#fff;font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↑ Save</button>
+    </div>
+    <div class="streak-badge" id="streakEl">Day 0 streak</div>
+    <div class="av" id="avEl">AH</div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="eyebrow">Weekly Overview</div>
+  <div class="ptitle">Good morning, <span id="repNameEl">Rep</span>.</div>
+
+  <!-- GAME BAR -->
+  <div class="game-bar">
+    <div class="rank-row">
+      <div class="rank-badge">
+        <div class="rank-icon" id="rank-icon">🔰</div>
+        <div>
+          <div class="rank-name" id="rank-name">Rookie</div>
+          <div class="rank-sub" id="rank-sub">Starting your All In journey</div>
+        </div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-cpo" id="rank-cpo">$0</div>
+        <div class="rank-next" id="rank-next">$50,000 to next rank</div>
+      </div>
+    </div>
+    <div class="xp-track">
+      <div class="xp-fill" id="xp-fill" style="width:0%"></div>
+      <div class="xp-pct" id="xp-pct">0%</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);font-weight:600;">
+      <span id="rank-floor-label">$0</span>
+      <span id="rank-ceil-label">$50,000</span>
+    </div>
+  </div>
+  <div class="g4">
+    <div class="mc accent"><div class="mlbl">Total CPO (YTD)</div><div class="mval" id="h-cpo">$0</div><div class="msub tm" id="h-cpo-s">0% of $500,000 goal</div></div>
+    <div class="mc neu"><div class="mlbl">Orders (YTD)</div><div class="mval" id="h-ord">0</div><div class="msub tm" id="h-ord-s">0% of 759 goal</div></div>
+    <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s">Goal: $659</div></div>
+    <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm">~30% of total CPO</div></div>
+  </div>
+  <div class="g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Yearly Progress</div><div class="badge bb">2026</div></div>
+      <div class="prow"><div class="pmeta"><span class="plbl">Sales</span><span class="pnum" id="pr-s-l">$0 / $500,000</span></div><div class="ptrack"><div class="pfill fb" id="pr-s" style="width:0%"></div></div></div>
+      <div class="prow"><div class="pmeta"><span class="plbl">Orders</span><span class="pnum" id="pr-o-l">0 / 759</span></div><div class="ptrack"><div class="pfill fb2" id="pr-o" style="width:0%"></div></div></div>
+      <div class="prow"><div class="pmeta"><span class="plbl">SC Completed</span><span class="pnum" id="pr-sc-l">0 / 237</span></div><div class="ptrack"><div class="pfill fgr" id="pr-sc" style="width:0%"></div></div></div>
+      <div class="div"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div class="mlbl">Year complete</div><div style="font-size:19px;font-weight:700;color:var(--accent-dark);" id="h-pct">0%</div></div>
+        <div style="text-align:right;"><div class="mlbl">Projected</div><div style="font-size:19px;font-weight:700;color:var(--gold);" id="h-proj">$—</div></div>
+      </div>
+    </div>
+    <!-- RIGHT COL: DAILY ONE THING + WEEKLY STANDARDS -->
+    <div style="display:flex;flex-direction:column;gap:13px;">
+
+      <!-- DAILY ONE THING -->
+      <div class="panel">
+        <div class="phead">
+          <div>
+            <div class="ptit2">Daily One Thing</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">One focus. Every day.</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div style="background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent-dark);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="daily-streak-badge">0 day streak</div>
+            <button class="badge bgy" style="cursor:pointer;border:none;font-family:var(--font);" onclick="openDailyEdit()">edit</button>
+          </div>
+        </div>
+        <div id="daily-one-display"></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--text2);">Completed today?</span>
+          <button class="bp" id="daily-check-btn" onclick="completeDailyOne()" style="padding:6px 16px;font-size:12px;">Mark Done</button>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--text2);font-weight:600;">Longest streak</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text);" id="daily-longest">0 days</span>
+        </div>
+      </div>
+
+      <!-- WEEKLY STANDARDS -->
+      <div class="panel">
+        <div class="phead">
+          <div>
+            <div class="ptit2">Weekly Standards</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">Hit all of them. Every week.</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="weekly-streak-badge">0 week streak</div>
+            <button class="badge bgy" style="cursor:pointer;border:none;font-family:var(--font);" onclick="openStandardsEdit()">edit</button>
+          </div>
+        </div>
+        <div id="weekly-standards-list"></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);" id="weekly-claim-wrap"></div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--text2);font-weight:600;">Longest streak</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text);" id="weekly-longest">0 weeks</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="g2e">
+    <!-- CPO BREAKDOWN CHART -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">CPO Breakdown (YTD)</div><div class="badge bb">By Category</div></div>
+      <div id="chart-empty" style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;display:none;">Enter stats to see your CPO breakdown.</div>
+      <div id="chart-wrap" style="display:flex;align-items:center;gap:20px;">
+        <canvas id="donut-chart" width="140" height="140" style="flex-shrink:0;"></canvas>
+        <div id="chart-legend" style="display:flex;flex-direction:column;gap:7px;flex:1;"></div>
+      </div>
+    </div>
+
+    <!-- LAST WEEK -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Last Week</div><div class="badge bb" id="lw-label">No data yet</div></div>
+      <div class="sg" id="lw-grid">
+        <div class="si"><div class="sil">CPO</div><div class="siv">—</div></div>
+        <div class="si"><div class="sil">Orders</div><div class="siv">—</div></div>
+        <div class="si"><div class="sil">SC Booked</div><div class="siv">—</div></div>
+        <div class="si"><div class="sil">SC Completed</div><div class="siv">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENTER STATS -->
+<div class="page" id="page-enter">
+  <div class="eyebrow">Weekly Input</div>
+  <div class="ptitle">Enter Your <span>Stats.</span></div>
+  <div class="g2">
+    <div class="panel">
+      <div class="edbanner" id="edbanner" style="display:none;">Editing Week <span id="ed-wk-lbl">—</span><button onclick="cancelEdit()">Cancel ✕</button></div>
+
+      <!-- PHASE 1: BEFORE THE WEEK -->
+      <div style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 1</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue);">Before the Week Starts</div>
+        </div>
+        <div class="fg">
+          <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16"></div>
+          <div class="fgrp"><label class="flbl">Week Start Date</label><input type="date" class="fin" id="i-dt"></div>
+          <div class="fgrp"><label class="flbl">Campaign</label>
+            <select class="fin" id="i-camp">
+              <option value="CI">Campaign I (Jan–Apr)</option>
+              <option value="CII">Campaign II (May–Aug)</option>
+              <option value="CIII">Campaign III (Sep–Dec)</option>
+            </select>
+          </div>
+          <div class="fgrp"><label class="flbl">My CPO Target ($)</label><input type="number" class="fin" id="i-target" placeholder="e.g. 12000" oninput="updTgt()"></div>
+          <div class="fgrp"><label class="flbl">Days Off Planned</label><input type="number" class="fin" id="i-daysoff" placeholder="0" min="0" max="7"></div>
+        </div>
+        <div class="fgrp" style="margin-top:10px;"><label class="flbl">Week Context / Notes</label><input type="text" class="fin" id="i-tnote" placeholder="e.g. SC push week, out of town event, slow week..."></div>
+      </div>
+
+      <!-- PHASE 2: AFTER THE WEEK -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div style="background:var(--accent-dark);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 2</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">After the Week Ends — Log Your Results</div>
+        </div>
+
+        <div class="fs"><div class="fsl">Overall Sales</div>
+          <div class="fg3">
+            <div class="fgrp"><label class="flbl">Total CPO ($)</label><input type="number" class="fin" id="i-cpo" placeholder="0" oninput="calcAll()"></div>
+            <div class="fgrp"><label class="flbl">Total Orders (#)</label><input type="number" class="fin" id="i-ord" placeholder="0" oninput="calcAll()"></div>
+            <div class="fgrp"><label class="flbl">Avg Order ($)</label><input type="text" class="fin" id="i-avg" disabled placeholder="Auto"><span class="anote">auto = CPO ÷ Orders</span></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Traditional Events</div>
+          <div class="fg3">
+            <div class="fgrp"><label class="flbl">Event CPO ($)</label><input type="number" class="fin" id="i-ev" placeholder="0" oninput="calcShifts()"></div>
+            <div class="fgrp"><label class="flbl">Event Orders (#)</label><input type="number" class="fin" id="i-ev-ord" placeholder="0" oninput="calcShifts()"></div>
+            <div class="fgrp"><label class="flbl">Shifts Worked (#)</label><input type="number" class="fin" id="i-ev-sh" placeholder="0" oninput="calcShifts()"></div>
+          </div>
+          <div class="scallout">
+            <div class="sc-itm"><div class="sc-lbl">Shift Avg ($)</div><div class="sc-val" id="sc-sa">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Orders / Shift</div><div class="sc-val" id="sc-os">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Avg Order ($)</div><div class="sc-val" id="sc-ao">—</div></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Service Calls</div>
+          <div class="fg4">
+            <div class="fgrp"><label class="flbl">SC CPO ($)</label><input type="number" class="fin" id="i-scp" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">SC Orders (#)</label><input type="number" class="fin" id="i-sco" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">Booked (#)</label><input type="number" class="fin" id="i-scb" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">Completed (#)</label><input type="number" class="fin" id="i-scc" placeholder="0"></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Service Events</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">SE CPO ($)</label><input type="number" class="fin" id="i-se" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">SE Orders (#)</label><input type="number" class="fin" id="i-se-ord" placeholder="0"></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Marketing / Phone / Text</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Marketing CPO ($)</label><input type="number" class="fin" id="i-mkt" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">Marketing Orders (#)</label><input type="number" class="fin" id="i-mkt-ord" placeholder="0"></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Biz Gift / Realtor</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Biz Gift CPO ($)</label><input type="number" class="fin" id="i-biz" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">Biz Gift Orders (#)</label><input type="number" class="fin" id="i-biz-ord" placeholder="0"></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Federal / Base Work</div>
+          <div class="fg3">
+            <div class="fgrp"><label class="flbl">Federal CPO ($)</label><input type="number" class="fin" id="i-fed" placeholder="0" oninput="calcFederal()"></div>
+            <div class="fgrp"><label class="flbl">Federal Orders (#)</label><input type="number" class="fin" id="i-fed-ord" placeholder="0" oninput="calcFederal()"></div>
+            <div class="fgrp"><label class="flbl">Shifts Worked (#)</label><input type="number" class="fin" id="i-fed-sh" placeholder="0" oninput="calcFederal()"></div>
+          </div>
+          <div class="scallout" id="fed-callout">
+            <div class="sc-itm"><div class="sc-lbl">Shift Avg ($)</div><div class="sc-val" id="fed-sa">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Orders / Shift</div><div class="sc-val" id="fed-os">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Avg Order ($)</div><div class="sc-val" id="fed-ao">—</div></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Demos (In-Home &amp; Virtual)</div>
+          <div class="fg4">
+            <div class="fgrp"><label class="flbl">Demo CPO ($)</label><input type="number" class="fin" id="i-demo" placeholder="0" oninput="calcDemos()"></div>
+            <div class="fgrp"><label class="flbl">Demo Orders (#)</label><input type="number" class="fin" id="i-demo-ord" placeholder="0" oninput="calcDemos()"></div>
+            <div class="fgrp"><label class="flbl">Demos Booked (#)</label><input type="number" class="fin" id="i-demo-booked" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">Demos Completed (#)</label><input type="number" class="fin" id="i-demo-comp" placeholder="0" oninput="calcDemos()"></div>
+          </div>
+          <div class="scallout" style="background:var(--green-light);border-color:#b8dfc9;">
+            <div class="sc-itm"><div class="sc-lbl" style="color:var(--green);">Avg Order ($)</div><div class="sc-val" style="color:var(--green);" id="demo-ao">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl" style="color:var(--green);">Closing Ratio</div><div class="sc-val" style="color:var(--green);" id="demo-cr">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl" style="color:var(--green);">Completion</div><div class="sc-val" style="color:var(--green);" id="demo-comp-r">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:9px;">
+        <button class="bp" id="save-btn" onclick="submitStats()">Save Week →</button>
+        <button class="bs" onclick="clearForm()">Clear</button>
+      </div>
+
+      <!-- STEP 3: EVENT PROFITABILITY -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 3</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">Log Event Profitability <span style="font-size:12px;color:var(--text2);font-weight:400;">(optional — only if you worked an event)</span></div>
+        </div>
+
+        <div class="fs"><div class="fsl">Event Info</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Event Name</label><input type="text" class="fin" id="p-name" placeholder="e.g. Costco Chandler"></div>
+            <div class="fgrp"><label class="flbl">Location / City</label><input type="text" class="fin" id="p-loc" placeholder="e.g. Chandler, AZ"></div>
+            <div class="fgrp"><label class="flbl">Start Date</label><input type="date" class="fin" id="p-dt-start"></div>
+            <div class="fgrp"><label class="flbl">End Date</label><input type="date" class="fin" id="p-dt-end"></div>
+            <div class="fgrp"><label class="flbl">Campaign</label>
+              <select class="fin" id="p-camp">
+                <option value="CI">Campaign I</option>
+                <option value="CII">Campaign II</option>
+                <option value="CIII">Campaign III</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Sales Numbers</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Event CPO ($)</label><input type="number" class="fin" id="p-cpo" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Shifts Worked (#)</label><input type="number" class="fin" id="p-shifts" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Commission Earned ($)</label><input type="text" class="fin" id="p-comm" disabled placeholder="Auto"></div>
+            <div class="fgrp"><label class="flbl">Event Orders (#)</label><input type="number" class="fin" id="p-ord" placeholder="0"></div>
+          </div>
+        </div>
+
+        <div class="fs"><div class="fsl">Out-of-Pocket Expenses</div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Hotel / Lodging ($)</label><input type="number" class="fin" id="p-hotel" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Gas / Mileage ($)</label><input type="number" class="fin" id="p-gas" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Food ($)</label><input type="number" class="fin" id="p-food" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Tolls / Parking ($)</label><input type="number" class="fin" id="p-tolls" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Other ($)</label><input type="number" class="fin" id="p-other" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Total Expenses ($)</label><input type="text" class="fin" id="p-total-exp" disabled placeholder="Auto"></div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;font-weight:700;">Net Profit</span>
+            <span style="font-size:18px;font-weight:700;" id="p-net-preview">—</span>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="p-net-note">Enter CPO and expenses to calculate.</div>
+        </div>
+
+        <button class="bp" style="background:var(--blue);" onclick="addEvent()">Add Event to Profitability →</button>
+      </div>
+
+    </div>
+    <div style="display:flex;flex-direction:column;gap:13px;">
+      <div class="panel">
+        <div class="phead"><div class="ptit2">This Week vs Target</div><div class="badge bgy" id="tp-badge">No target set</div></div>
+        <div id="tp-display"><div style="font-size:12px;color:var(--text3);text-align:center;padding:18px 0;">Set a CPO target to track progress.</div></div>
+      </div>
+      <div class="panel">
+        <div class="phead"><div class="ptit2">Saved Weeks</div><div class="badge bb" id="e-count">0 weeks</div></div>
+        <div id="e-list"><div style="font-size:12px;color:var(--text3);text-align:center;padding:18px 0;">No entries yet</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN -->
+<div class="page" id="page-campaign">
+  <div class="eyebrow">Revenue Breakdown</div>
+  <div class="ptitle">Campaign <span>Overview.</span></div>
+  <div class="g3">
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign I</div><div class="badge bb">Jan–Apr</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ci-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $110,000</div><div class="ptrack" style="height:7px;"><div class="pfill fb" id="ci-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ci-p" class="tb">0%</span><span id="ci-g" class="tm">Gap: $110,000</span></div></div>
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign II</div><div class="badge bgy">May–Aug</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="cii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $230,000</div><div class="ptrack" style="height:7px;"><div class="pfill fb2" id="cii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="cii-p" class="tb">0%</span><span id="cii-g" class="tm">Gap: $230,000</span></div></div>
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy">Sep–Dec</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ciii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $160,000</div><div class="ptrack" style="height:7px;"><div class="pfill fgr" id="ciii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div></div>
+  </div>
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">Revenue by CPO (YTD)</div><div class="badge bb">vs 2026 Goal</div></div>
+    <div class="cr-ext hdr" style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">
+      <div>Category</div><div>CI</div><div>CII</div><div>CIII</div><div>Total</div><div>Goal</div><div>Done</div>
+    </div>
+    <div id="cat-rows"></div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit2">Year over Year</div><div class="badge bgy">2025 vs 2026</div></div>
+    <div class="cr hdr"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div>
+    <div id="yoy-rows"></div>
+  </div>
+</div>
+
+<!-- RATIOS -->
+<div class="page" id="page-ratios">
+  <div class="eyebrow">Performance Scorecard</div>
+  <div class="ptitle">Your <span>Scorecard.</span></div>
+
+  <!-- HERO METRIC CARDS -->
+  <div class="g4">
+    <div class="mc hero accent" id="rc-sales">
+      <div class="mlbl">Total Sales (YTD)</div>
+      <div class="mval" id="rv-sales">$0</div>
+      <div class="msub tm" id="rd-sales">of $500,000 goal</div>
+    </div>
+    <div class="mc hero neu" id="rc-avg">
+      <div class="mlbl">Total Avg Order</div>
+      <div class="mval" id="rv-avg">—</div>
+      <div class="msub tm" id="rd-avg">Goal: $659</div>
+    </div>
+    <div class="mc hero neu" id="rc-health">
+      <div class="mlbl">Overall Health Score</div>
+      <div class="mval" id="rv-health">—</div>
+      <div class="msub tm" id="rd-health">Avg of all category scores</div>
+    </div>
+    <div class="mc hero neu" id="rc-close">
+      <div class="mlbl">Closing Ratio</div>
+      <div class="mval" id="rv-close">—</div>
+      <div class="msub tm" id="rd-close">Goal: 88%</div>
+    </div>
+  </div>
+
+  <!-- THE COACH (full width) -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">The Coach</div><div class="badge bb">Insights</div></div>
+    <div id="coach"><div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;">Enter stats to unlock coaching insights.</div></div>
+  </div>
+
+  <!-- EVENT PERFORMANCE (below Coach) -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">Event Performance (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="ev-score-badge">Score: —</div><div class="badge bb">All Weeks</div></div></div>
+    <div class="g4" style="margin-bottom:0;">
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;"><div class="mlbl">Total Shifts</div><div style="font-size:19px;font-weight:700;color:var(--text);" id="ev-sh-tot">—</div></div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;"><div class="mlbl">Shift Average</div><div style="font-size:19px;font-weight:700;color:var(--text);" id="ev-sh-avg">—</div></div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;"><div class="mlbl">Orders / Shift</div><div style="font-size:19px;font-weight:700;color:var(--text);" id="ev-os">—</div></div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;"><div class="mlbl">Event Avg Order</div><div style="font-size:19px;font-weight:700;color:var(--text);" id="ev-ao">—</div></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY STATS -->
+  <div class="g2e" style="margin-top:4px;">
+
+    <!-- Service Calls -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Service Call Stats (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="sc-score-badge">Score: —</div><div class="badge bb">In-Home</div></div></div>
+      <div class="g4" style="margin-bottom:12px;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">SC CPO</div><div style="font-size:17px;font-weight:700;" id="sc-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">SC Orders</div><div style="font-size:17px;font-weight:700;" id="sc-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg SC Order</div><div style="font-size:17px;font-weight:700;" id="sc-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Appts Booked</div><div style="font-size:17px;font-weight:700;" id="sc-stat-booked">—</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;">
+          <div class="mlbl">Completed</div><div style="font-size:17px;font-weight:700;" id="sc-stat-comp">—</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;">
+          <div class="mlbl">Closing Ratio</div>
+          <div style="font-size:17px;font-weight:700;" id="sc-stat-cr">—</div>
+          <div style="font-size:11px;color:var(--text2);">Goal: 88%</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;">
+          <div class="mlbl">Completion Ratio</div>
+          <div style="font-size:17px;font-weight:700;" id="sc-stat-compr">—</div>
+          <div style="font-size:11px;color:var(--text2);">Goal: 92%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Events -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Service Event Stats (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="se-score-badge">Score: —</div><div class="badge bb">SE</div></div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">SE CPO</div><div style="font-size:17px;font-weight:700;" id="se-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">SE Orders</div><div style="font-size:17px;font-weight:700;" id="se-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg SE Order</div><div style="font-size:17px;font-weight:700;" id="se-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">CPO / Event</div><div style="font-size:17px;font-weight:700;" id="se-stat-cpe">—</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="g2e">
+
+    <!-- Marketing / Phone / Text -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Marketing / Phone / Text (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="mkt-score-badge">Score: —</div><div class="badge bb">Mkt</div></div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total CPO</div><div style="font-size:17px;font-weight:700;" id="mkt-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total Orders</div><div style="font-size:17px;font-weight:700;" id="mkt-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="mkt-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">% of Total CPO</div><div style="font-size:17px;font-weight:700;" id="mkt-stat-pct">—</div></div>
+      </div>
+    </div>
+
+    <!-- Biz Gift / Realtor -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Biz Gift / Realtor (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="biz-score-badge">Score: —</div><div class="badge bb">BG</div></div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total CPO</div><div style="font-size:17px;font-weight:700;" id="biz-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total Orders</div><div style="font-size:17px;font-weight:700;" id="biz-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="biz-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">% of Total CPO</div><div style="font-size:17px;font-weight:700;" id="biz-stat-pct">—</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="g2e">
+
+    <!-- Federal / Base Work -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Federal / Base Work (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="fed-score-badge">Score: —</div><div class="badge bb">FED</div></div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Fed CPO</div><div style="font-size:17px;font-weight:700;" id="fed-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Fed Orders</div><div style="font-size:17px;font-weight:700;" id="fed-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total Shifts</div><div style="font-size:17px;font-weight:700;" id="fed-stat-sh">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Shift Average</div><div style="font-size:17px;font-weight:700;" id="fed-stat-savg">—</div></div>
+      </div>
+    </div>
+
+    <!-- Demos -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Demos (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="demo-score-badge">Score: —</div><div class="badge bb">Demo</div></div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Demo CPO</div><div style="font-size:17px;font-weight:700;" id="demo-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Demo Orders</div><div style="font-size:17px;font-weight:700;" id="demo-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="demo-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Closing Ratio</div><div style="font-size:17px;font-weight:700;" id="demo-stat-cr">—<br><span style="font-size:11px;color:var(--text2);">Goal: 88%</span></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- YEAR VIEW -->
+<div class="page" id="page-yearview">
+  <div class="eyebrow">2026 Bird's Eye View</div>
+  <div class="ptitle">Year <span>Overview.</span></div>
+  <div class="year-summary" id="ys-cards"></div>
+  <div class="year-filters">
+    <span style="font-size:12px;font-weight:600;color:var(--text2);">Show:</span>
+    <button class="filter-btn active" onclick="filterYear('all',this)">All Weeks</button>
+    <button class="filter-btn" onclick="filterYear('worked',this)">Worked</button>
+    <button class="filter-btn" onclick="filterYear('vacation',this)">Vacation / Off</button>
+    <button class="filter-btn" onclick="filterYear('empty',this)">No Data</button>
+    <span style="font-size:11px;color:var(--text2);margin-left:auto;">Click any Notes cell to add a note</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <table class="year-table" id="year-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Dates</th>
+          <th style="width:80px;">Week</th>
+          <th style="width:100px;">Total CPO</th>
+          <th style="width:90px;">Event CPO</th>
+          <th style="width:90px;">SC CPO</th>
+          <th style="width:90px;">SE CPO</th>
+          <th style="width:70px;">Orders</th>
+          <th style="width:60px;">Shifts</th>
+          <th style="width:65px;">Days Off</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="year-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PROFITABILITY -->
+<div class="page" id="page-profit">
+  <div class="eyebrow">Event Profitability</div>
+  <div class="ptitle">True <span>Profit.</span></div>
+
+  <div class="settings-row">
+    <label>Commission Rate:</label>
+    <input type="number" class="settings-fin" id="comm-rate" value="45" min="1" max="100" oninput="recalcAllEvents()"> %
+    <span style="font-size:12px;color:var(--blue);margin-left:4px;">(adjust when mentor arrangement ends)</span>
+    <div style="width:1px;height:24px;background:var(--blue-mid);margin:0 12px;"></div>
+    <label>Min Profit Threshold:</label>
+    <span style="font-size:13px;color:var(--text2);">$</span>
+    <input type="number" class="settings-fin" id="prof-threshold" value="1000" min="0">
+    <span style="font-size:12px;color:var(--blue);margin-left:4px;">per event</span>
+    <button class="bs" style="margin-left:auto;" onclick="recalcAllEvents()">Update</button>
+  </div>
+
+  <div class="g4" id="prof-summary"></div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+      <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
+      <button class="filter-btn active" id="sort-btn-net-desc" onclick="sortEvents('net','desc',this)">Most Profitable</button>
+      <button class="filter-btn" id="sort-btn-net-asc" onclick="sortEvents('net','asc',this)">Least Profitable</button>
+      <button class="filter-btn" id="sort-btn-cpo-desc" onclick="sortEvents('cpo','desc',this)">Highest CPO</button>
+      <button class="filter-btn" id="sort-btn-cpo-asc" onclick="sortEvents('cpo','asc',this)">Lowest CPO</button>
+      <button class="filter-btn" id="sort-btn-dt-desc" onclick="sortEvents('dt','desc',this)">Most Recent</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Date Range:</span>
+      <input type="date" class="fin" id="prof-date-from" style="width:140px;padding:6px 10px;" onchange="refreshProfit()">
+      <span style="font-size:12px;color:var(--text2);font-weight:600;">to</span>
+      <input type="date" class="fin" id="prof-date-to" style="width:140px;padding:6px 10px;" onchange="refreshProfit()">
+      <button class="bs" style="padding:6px 12px;font-size:12px;" onclick="clearDateRange()">Clear</button>
+      <span style="font-size:11px;color:var(--text2);" id="prof-range-count"></span>
+    </div>
+    <div id="prof-events-list"><div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No events logged yet. Add events in the Enter Stats tab under Step 3.</div></div>
+  </div>
+</div>
+
+<!-- DAILY ONE THING EDIT MODAL -->
+<div class="mb" id="dailyModal">
+  <div class="mo">
+    <div class="motit">Edit Daily One Thing</div>
+    <div style="margin-bottom:14px;">
+      <label class="flbl" style="display:block;margin-bottom:6px;">What is your ONE daily non-negotiable?</label>
+      <input type="text" class="fin" id="daily-edit-input" placeholder="e.g. Make 10 calls before noon">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="bs" onclick="closeDailyEdit()">Cancel</button>
+      <button class="bp" onclick="saveDailyEdit()">Save →</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY STANDARDS EDIT MODAL -->
+<div class="mb" id="standardsModal">
+  <div class="mo">
+    <div class="motit">Edit Weekly Standards</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">These are your non-negotiable weekly benchmarks. Hit all of them to extend your streak.</div>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;" id="standards-edit-fields"></div>
+    <button class="bs" style="width:100%;margin-bottom:10px;" onclick="addStandard()">+ Add Standard</button>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="bs" onclick="closeStandardsEdit()">Cancel</button>
+      <button class="bp" onclick="saveStandardsEdit()">Save →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="t1">Week saved!</div>
+<div class="toast blue" id="t2">Week updated!</div>
+<div class="toast" id="t3">Event added!</div>
+
+<script>
+// ==================== STATE ====================
+let S = {
+  repName:'All in Alan',
+  dailyOne: {text:'Make 10 calls before noon', done:false},
+  dailyStreak: 0,
+  dailyLongestStreak: 0,
+  weeklyStandards: [
+    {text:'Book 5 SC appointments', done:false},
+    {text:'Work at least 2 event shifts', done:false},
+    {text:'Update CRM after every appointment', done:false}
+  ],
+  weeklyStreak: 0,
+  weeklyLongestStreak: 0,
+  weeks:[],
+  yearNotes:{},
+  cats:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},
+  events:[],
+  g:{
+    yr:500000,ord:759,scC:237,ci:110000,cii:230000,ciii:160000,
+    cr:88,comp:92,avg:659,scAvg:807,
+    cats:{ev:175000,sc:155000,se:50000,mkt:50000,biz:60000,fed:0,demo:0},
+    p25:{ev:185335,sc:131615,se:24150,mkt:48174,biz:38297}
+  }
+};
+let editIdx=-1;
+let yearFilter='all';
+let profSort={key:'net',dir:'desc'};
+const fm=n=>'$'+Math.round(n).toLocaleString();
+const pct=(a,b)=>b>0?Math.min(100,Math.round(a/b*100)):0;
+const d1=n=>Math.round(n*10)/10;
+function formatDate(str){
+  if(!str)return'';
+  const [y,m,d]=str.split('-');
+  return `${parseInt(m)}/${parseInt(d)}`;
+}
+
+// ==================== NAV ====================
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  refreshAll();
+}
+
+// ==================== TOTALS ====================
+function totals(){
+  let cpo=0,ord=0,scb=0,scc=0,sco=0,scp=0,ci=0,cii=0,ciii=0,evC=0,evO=0,evSh=0;
+  S.weeks.forEach(w=>{
+    cpo+=w.cpo||0;ord+=w.ord||0;scb+=w.scb||0;scc+=w.scc||0;sco+=w.sco||0;scp+=w.scp||0;
+    evC+=w.ev||0;evO+=w.evOrd||0;evSh+=w.evSh||0;
+    if(w.camp==='CI')ci+=w.cpo||0;
+    if(w.camp==='CII')cii+=w.cpo||0;
+    if(w.camp==='CIII')ciii+=w.cpo||0;
+  });
+  return{cpo,ord,scb,scc,sco,scp,ci,cii,ciii,evC,evO,evSh,
+    cr:scc>0?Math.round(sco/scc*100):null,
+    comp:scb>0?Math.round(scc/scb*100):null,
+    avg:ord>0?Math.round(cpo/ord):null,
+    scAvg:sco>0?Math.round(scp/sco):null,
+    shiftAvg:evSh>0?Math.round(evC/evSh):null,
+    ordPerShift:evSh>0?d1(evO/evSh):null,
+    evAvgOrd:evO>0?Math.round(evC/evO):null
+  };
+}
+
+// ==================== HOME ====================
+function refreshHome(){
+  const t=totals();
+  document.getElementById('repNameEl').textContent = S.repName;
+  document.getElementById('avEl').textContent = 'AI';
+  document.getElementById('streakEl').textContent = 'Day ' + S.dailyStreak + ' streak';
+  // ---- GAME BAR ----
+  const ranks = [
+    {name:'Rookie',       icon:'🔰', floor:0,       ceil:50000,  sub:'Starting your All In journey'},
+    {name:'Contender',    icon:'⚡', floor:50000,   ceil:100000, sub:'Building real momentum'},
+    {name:'Pro Rep',      icon:'🎯', floor:100000,  ceil:175000, sub:'You\'re in the game now'},
+    {name:'All Star',     icon:'⭐', floor:175000,  ceil:275000, sub:'Top of the division'},
+    {name:'Elite',        icon:'🔥', floor:275000,  ceil:400000, sub:'Few reps reach this level'},
+    {name:'All In',       icon:'💎', floor:400000,  ceil:500000, sub:'The summit is in sight'},
+    {name:'Legend',       icon:'👑', floor:500000,  ceil:500000, sub:'Goal achieved. All In.'}
+  ];
+  const cpo = t.cpo;
+  const rank = ranks.reduce((r,lvl) => cpo>=lvl.floor ? lvl : r, ranks[0]);
+  const rankIdx = ranks.indexOf(rank);
+  const isMax = rankIdx === ranks.length-1;
+  const floor = rank.floor;
+  const ceil = isMax ? 500000 : rank.ceil;
+  const xpPct = isMax ? 100 : Math.min(100, Math.round((cpo-floor)/(ceil-floor)*100));
+  const toNext = isMax ? 0 : ceil-cpo;
+  document.getElementById('rank-icon').textContent = rank.icon;
+  document.getElementById('rank-name').textContent = rank.name;
+  document.getElementById('rank-sub').textContent = rank.sub;
+  document.getElementById('rank-cpo').textContent = fm(cpo);
+  document.getElementById('rank-next').textContent = isMax ? 'Goal achieved!' : fm(toNext)+' to '+ranks[rankIdx+1].name;
+  document.getElementById('xp-fill').style.width = xpPct+'%';
+  document.getElementById('xp-pct').textContent = xpPct+'%';
+  document.getElementById('rank-floor-label').textContent = fm(floor);
+  document.getElementById('rank-ceil-label').textContent = fm(ceil);
+
+  renderDailyOne();
+  renderWeeklyStandards();
+  document.getElementById('h-cpo').textContent=fm(t.cpo);
+  document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of $500,000 goal';
+  document.getElementById('h-ord').textContent=t.ord;
+  document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of 759 goal';
+  document.getElementById('h-profit').textContent=fm(Math.round(t.cpo*0.30));
+  if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=ok?'↑ Above $659 goal':'↓ Below $659 goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
+  const sp=pct(t.cpo,S.g.yr),op=pct(t.ord,S.g.ord),sp2=pct(t.scc,S.g.scC);
+  ['s','o','sc'].forEach((k,i)=>{document.getElementById('pr-'+k).style.width=[sp,op,sp2][i]+'%';});
+  document.getElementById('pr-s-l').textContent=fm(t.cpo)+' / $500,000';
+  document.getElementById('pr-o-l').textContent=t.ord+' / 759';
+  document.getElementById('pr-sc-l').textContent=t.scc+' / 237';
+  document.getElementById('h-pct').textContent=sp+'%';
+  const proj=S.weeks.length>0?Math.round(t.cpo/S.weeks.length*52):0;
+  document.getElementById('h-proj').textContent=proj>0?fm(proj):'$—';
+  // Last Week (most recent entry)
+  const last = S.weeks[S.weeks.length-1];
+  if(last){
+    document.getElementById('lw-label').textContent='Week '+last.wk;
+    document.getElementById('lw-grid').innerHTML=`
+      <div class="si"><div class="sil">CPO</div><div class="siv">${fm(last.cpo)}</div></div>
+      <div class="si"><div class="sil">Orders</div><div class="siv">${last.ord}</div></div>
+      <div class="si"><div class="sil">SC Booked</div><div class="siv">${last.scb}</div></div>
+      <div class="si"><div class="sil">SC Completed</div><div class="siv">${last.scc}</div></div>`;
+  }
+
+  // CPO Donut Chart
+  const chartCats = [
+    {label:'Events',       val:S.cats.ev||0,   color:'#1a5faa'},
+    {label:'Service Calls',val:S.cats.sc||0,   color:'#b8ff2e'},
+    {label:'Service Events',val:S.cats.se||0,  color:'#1a7a4a'},
+    {label:'Federal',      val:S.cats.fed||0,  color:'#7c3aed'},
+    {label:'Demos',        val:S.cats.demo||0, color:'#0891b2'},
+    {label:'Marketing',    val:S.cats.mkt||0,  color:'#c47d0e'},
+    {label:'Biz Gift',     val:S.cats.biz||0,  color:'#c0392b'}
+  ].filter(c=>c.val>0);
+  const totalCPO = chartCats.reduce((s,c)=>s+c.val,0);
+  const canvas = document.getElementById('donut-chart');
+  const legend = document.getElementById('chart-legend');
+  if(totalCPO===0){
+    document.getElementById('chart-empty').style.display='block';
+    document.getElementById('chart-wrap').style.display='none';
+  } else {
+    document.getElementById('chart-empty').style.display='none';
+    document.getElementById('chart-wrap').style.display='flex';
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,140,140);
+    const cx=70,cy=70,r=58,inner=36;
+    let angle=-Math.PI/2;
+    chartCats.forEach(c=>{
+      const slice=(c.val/totalCPO)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,angle,angle+slice);
+      ctx.closePath();
+      ctx.fillStyle=c.color;
+      ctx.fill();
+      angle+=slice;
+    });
+    // Donut hole
+    ctx.beginPath();
+    ctx.arc(cx,cy,inner,0,Math.PI*2);
+    ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--surface')||'#fff';
+    ctx.fill();
+    // Center text
+    ctx.fillStyle='#1a2332';
+    ctx.font='bold 11px Arial';
+    ctx.textAlign='center';
+    ctx.fillText('Total',cx,cy-4);
+    ctx.font='bold 12px Arial';
+    ctx.fillStyle='#1a5faa';
+    ctx.fillText(fm(totalCPO),cx,cy+10);
+    // Legend
+    legend.innerHTML=chartCats.map(c=>{
+      const pct=Math.round(c.val/totalCPO*100);
+      return`<div style="display:flex;align-items:center;gap:7px;">
+        <div style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:11px;color:var(--text2);font-weight:600;">${c.label}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);">${pct}%</div>
+      </div>`;
+    }).join('');
+  }
+  renderDailyOne();
+  renderWeeklyStandards();
+}
+
+// ==================== DAILY ONE THING ====================
+function renderDailyOne() {
+  const d = S.dailyOne;
+  const streakEl = document.getElementById('daily-streak-badge');
+  const ds = S.dailyStreak;
+  streakEl.textContent = ds + ' day streak';
+  streakEl.style.background = ds>=7?'var(--green-light)':ds>=3?'var(--gold-light)':'var(--accent-dim)';
+  streakEl.style.color = ds>=7?'var(--green)':ds>=3?'var(--gold)':'var(--accent-dark)';
+  streakEl.style.border = ds>=7?'1px solid #b8dfc9':ds>=3?'1px solid #f5d9a0':'1px solid var(--accent-border)';
+  const longestEl = document.getElementById('daily-longest');
+  if(longestEl) longestEl.textContent = S.dailyLongestStreak + (S.dailyLongestStreak===1?' day':' days');
+  document.getElementById('daily-one-display').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${d.done?'var(--green-light)':'var(--surface2)'};border-radius:8px;border:1.5px solid ${d.done?'#b8dfc9':'var(--border)'};">
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${d.done?'var(--green)':'var(--border2)'};background:${d.done?'var(--green)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        ${d.done?'<span style="color:#fff;font-size:12px;font-weight:700;">✓</span>':''}
+      </div>
+      <div style="font-size:14px;font-weight:700;color:${d.done?'var(--green)':'var(--text)'};${d.done?'text-decoration:line-through;':''}flex:1;">${d.text}</div>
+    </div>`;
+  const btn = document.getElementById('daily-check-btn');
+  if(d.done){
+    btn.textContent = 'Done Today ✓';
+    btn.style.background = 'var(--green)';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    btn.textContent = 'Mark Done';
+    btn.style.background = 'var(--accent)';
+    btn.style.color = '#111';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+}
+
+function completeDailyOne() {
+  if(S.dailyOne.done) return;
+  S.dailyOne.done = true;
+  S.dailyStreak++;
+  if(S.dailyStreak > S.dailyLongestStreak) S.dailyLongestStreak = S.dailyStreak;
+  document.getElementById('streakEl').textContent = 'Day ' + S.dailyStreak + ' streak';
+  renderDailyOne();
+  showToast('t1');
+}
+
+function openDailyEdit() {
+  document.getElementById('daily-edit-input').value = S.dailyOne.text;
+  document.getElementById('dailyModal').classList.add('open');
+}
+function closeDailyEdit() { document.getElementById('dailyModal').classList.remove('open'); }
+function saveDailyEdit() {
+  const val = document.getElementById('daily-edit-input').value.trim();
+  if(val) { S.dailyOne.text = val; S.dailyOne.done = false; }
+  closeDailyEdit();
+  renderDailyOne();
+}
+
+// ==================== WEEKLY STANDARDS ====================
+function renderWeeklyStandards() {
+  const all = S.weeklyStandards.length > 0;
+  const allDone = all && S.weeklyStandards.every(s => s.done);
+  const doneCount = S.weeklyStandards.filter(s => s.done).length;
+  const ws = S.weeklyStreak;
+  const streakEl = document.getElementById('weekly-streak-badge');
+  streakEl.textContent = ws + ' week streak';
+  streakEl.style.background = ws>=4?'var(--green-light)':ws>=2?'var(--gold-light)':'var(--blue-light)';
+  streakEl.style.color = ws>=4?'var(--green)':ws>=2?'var(--gold)':'var(--blue)';
+
+  const wLongestEl = document.getElementById('weekly-longest');
+  if(wLongestEl) wLongestEl.textContent = S.weeklyLongestStreak + (S.weeklyLongestStreak===1?' week':' weeks');
+
+  document.getElementById('weekly-standards-list').innerHTML = S.weeklyStandards.length === 0
+    ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0;">No standards set. Click edit to add some.</div>'
+    : S.weeklyStandards.map((s,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);" class="${i===S.weeklyStandards.length-1?'':''}">
+        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${s.done?'var(--blue)':'var(--border2)'};background:${s.done?'var(--blue)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;" onclick="toggleStandard(${i})">
+          ${s.done?'<span style="color:#fff;font-size:10px;font-weight:700;">✓</span>':''}
+        </div>
+        <div style="font-size:13px;flex:1;${s.done?'text-decoration:line-through;color:var(--text3);':'color:var(--text);'}">${s.text}</div>
+      </div>`).join('');
+
+  const claimWrap = document.getElementById('weekly-claim-wrap');
+  if(allDone && !S.weeklyStandards._claimed) {
+    claimWrap.innerHTML = `
+      <div style="background:var(--green-light);border:1px solid #b8dfc9;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;font-weight:700;color:var(--green);">All standards hit this week!</div>
+        <button class="bp" onclick="claimWeeklyStreak()" style="padding:5px 14px;font-size:12px;background:var(--green);">Claim Week ✓</button>
+      </div>`;
+  } else if(S.weeklyStandards._claimed) {
+    claimWrap.innerHTML = `<div style="font-size:12px;color:var(--green);font-weight:700;text-align:center;">✓ Week claimed — ${ws} week streak!</div>`;
+  } else {
+    claimWrap.innerHTML = `<div style="font-size:11px;color:var(--text2);text-align:center;">${doneCount} of ${S.weeklyStandards.length} standards done this week</div>`;
+  }
+}
+
+function toggleStandard(i) {
+  S.weeklyStandards[i].done = !S.weeklyStandards[i].done;
+  renderWeeklyStandards();
+}
+
+function claimWeeklyStreak() {
+  S.weeklyStreak++;
+  if(S.weeklyStreak > S.weeklyLongestStreak) S.weeklyLongestStreak = S.weeklyStreak;
+  S.weeklyStandards._claimed = true;
+  renderWeeklyStandards();
+}
+
+function resetWeeklyStandards() {
+  S.weeklyStandards = S.weeklyStandards.filter(s => typeof s === 'object' && s.text);
+  S.weeklyStandards.forEach(s => s.done = false);
+  S.weeklyStandards._claimed = false;
+  renderWeeklyStandards();
+}
+
+function openStandardsEdit() {
+  const fields = document.getElementById('standards-edit-fields');
+  fields.innerHTML = S.weeklyStandards.filter(s=>s.text).map((s,i) => `
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input type="text" class="fin" id="std-${i}" value="${s.text}" style="flex:1;">
+      <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px;">×</button>
+    </div>`).join('');
+  document.getElementById('standardsModal').classList.add('open');
+}
+
+function addStandard() {
+  const fields = document.getElementById('standards-edit-fields');
+  const idx = fields.children.length;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  div.innerHTML = `<input type="text" class="fin" id="std-${idx}" placeholder="New standard..." style="flex:1;"><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px;">×</button>`;
+  fields.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function closeStandardsEdit() { document.getElementById('standardsModal').classList.remove('open'); }
+
+function saveStandardsEdit() {
+  const inputs = document.querySelectorAll('#standards-edit-fields input');
+  const newStandards = Array.from(inputs).map(inp => inp.value.trim()).filter(Boolean).map(text => ({text, done:false}));
+  S.weeklyStandards = newStandards;
+  closeStandardsEdit();
+  renderWeeklyStandards();
+}
+
+// ==================== CAMPAIGN ====================
+function refreshCampaign(){
+  const t=totals();
+  [['ci',t.ci,S.g.ci],['cii',t.cii,S.g.cii],['ciii',t.ciii,S.g.ciii]].forEach(([id,a,g])=>{
+    const p=pct(a,g);
+    document.getElementById(id+'-a').textContent=fm(a);
+    document.getElementById(id+'-b').style.width=p+'%';
+    document.getElementById(id+'-p').textContent=p+'%';
+    document.getElementById(id+'-g').textContent='Gap: '+fm(Math.max(0,g-a));
+  });
+
+  // Per-campaign category breakdown from weekly entries
+  const cc={CI:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},CII:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},CIII:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0}};
+  S.weeks.forEach(w=>{
+    const c=cc[w.camp]; if(!c) return;
+    c.ev+=w.ev||0; c.sc+=w.scp||0; c.se+=w.se||0; c.mkt+=w.mkt||0; c.biz+=w.biz||0;
+    c.fed+=w.fed||0; c.demo+=w.demo||0;
+  });
+
+  const cats=[
+    {k:'ev', l:'Events',            g:S.g.cats.ev},
+    {k:'sc', l:'Service Calls',     g:S.g.cats.sc},
+    {k:'se', l:'Service Events',    g:S.g.cats.se},
+    {k:'fed',l:'Federal / Base',    g:S.g.cats.fed},
+    {k:'demo',l:'Demos',            g:S.g.cats.demo},
+    {k:'mkt',l:'Marketing / Phone', g:S.g.cats.mkt},
+    {k:'biz',l:'Biz Gift / Realtor',g:S.g.cats.biz}
+  ].filter(c=>c.g>0||S.cats[c.k]>0);
+
+  document.getElementById('cat-rows').innerHTML=cats.map(c=>{
+    const ci=cc.CI[c.k]||0, cii=cc.CII[c.k]||0, ciii=cc.CIII[c.k]||0;
+    const tot=ci+cii+ciii;
+    const p=pct(tot,c.g);
+    const col=p>=100?'var(--green)':p>=50?'var(--gold)':'var(--red)';
+    const dim='color:var(--text3);';
+    return`<div class="cr-ext">
+      <div style="font-weight:600;">${c.l}</div>
+      <div style="${ci?'':dim}">${ci?fm(ci):'—'}</div>
+      <div style="${cii?'':dim}">${cii?fm(cii):'—'}</div>
+      <div style="${ciii?'':dim}">${ciii?fm(ciii):'—'}</div>
+      <div style="font-weight:700;">${tot?fm(tot):'—'}</div>
+      <div style="color:var(--text2);">${fm(c.g)}</div>
+      <div style="font-weight:700;color:${col};">${p}%</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('yoy-rows').innerHTML=cats.map(c=>{
+    const p25=S.g.p25[c.k]||0, p26=S.cats[c.k]||0;
+    const yoy=p26>0&&p25>0?Math.round((p26-p25)/p25*100):null;
+    return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(p25)}</div><div>${fm(p26)}</div><div style="font-weight:700;color:${yoy===null?'var(--text3)':yoy>=0?'var(--green)':'var(--red)'};">${yoy!==null?(yoy>=0?'+':'')+yoy+'%':'—'}</div></div>`;
+  }).join('');
+}
+
+// ==================== RATIOS ====================
+function refreshRatios(){
+  const t=totals();
+  // ---- TOP 4 CARDS ----
+  // Total Sales
+  document.getElementById('rv-sales').textContent = fm(t.cpo);
+  document.getElementById('rd-sales').textContent = pct(t.cpo,S.g.yr)+'% of $500,000 goal';
+
+  // Avg Order
+  document.getElementById('rv-avg').textContent = t.avg!==null?fm(t.avg):'—';
+  document.getElementById('rd-avg').textContent = t.avg!==null?(t.avg>=S.g.avg?'↑ Above $659 goal':'↓ Below $659 goal'):'Goal: $659';
+  document.getElementById('rd-avg').style.color = t.avg!==null?(t.avg>=S.g.avg?'var(--green)':'var(--red)'):'var(--text2)';
+
+  // ---- CATEGORY VARIABLE CALCULATIONS (must come before health scores) ----
+  // Service Calls
+  const scCPO = S.weeks.reduce((s,w)=>s+(w.scp||0),0);
+  const scOrd = S.weeks.reduce((s,w)=>s+(w.sco||0),0);
+  const scBooked = S.weeks.reduce((s,w)=>s+(w.scb||0),0);
+  const scComp = S.weeks.reduce((s,w)=>s+(w.scc||0),0);
+  const scAvgOrd = scOrd>0?Math.round(scCPO/scOrd):null;
+  const scCR = scComp>0?Math.round(scOrd/scComp*100):null;
+  const scCompR = scBooked>0?Math.round(scComp/scBooked*100):null;
+
+  // Service Events
+  const seCPO = S.weeks.reduce((s,w)=>s+(w.se||0),0);
+  const seOrd = S.weeks.reduce((s,w)=>s+(w.seOrd||0),0);
+  const seCount = S.weeks.filter(w=>w.se>0).length;
+  const seAvgOrd = seOrd>0?Math.round(seCPO/seOrd):null;
+  const seCPE = seCount>0?Math.round(seCPO/seCount):null;
+
+  // Marketing / Phone
+  const mktCPO = S.weeks.reduce((s,w)=>s+(w.mkt||0),0);
+  const mktOrd = S.weeks.reduce((s,w)=>s+(w.mktOrd||0),0);
+  const mktAvg = mktOrd>0?Math.round(mktCPO/mktOrd):null;
+  const mktPct = t.cpo>0?Math.round(mktCPO/t.cpo*100):null;
+
+  // Biz Gift / Realtor
+  const bizCPO = S.weeks.reduce((s,w)=>s+(w.biz||0),0);
+  const bizOrd = S.weeks.reduce((s,w)=>s+(w.bizOrd||0),0);
+  const bizAvg = bizOrd>0?Math.round(bizCPO/bizOrd):null;
+  const bizPct = t.cpo>0?Math.round(bizCPO/t.cpo*100):null;
+
+  // Federal / Base Work
+  const fedCPO = S.weeks.reduce((s,w)=>s+(w.fed||0),0);
+  const fedOrd = S.weeks.reduce((s,w)=>s+(w.fedOrd||0),0);
+  const fedSh  = S.weeks.reduce((s,w)=>s+(w.fedSh||0),0);
+  const fedShAvg = fedSh>0?Math.round(fedCPO/fedSh):null;
+  const fedOrdShift = fedSh>0?d1(fedOrd/fedSh):null;
+
+  // Demos
+  const demoCPO   = S.weeks.reduce((s,w)=>s+(w.demo||0),0);
+  const demoOrd   = S.weeks.reduce((s,w)=>s+(w.demoOrd||0),0);
+  const demoBooked= S.weeks.reduce((s,w)=>s+(w.demoBooked||0),0);
+  const demoComp  = S.weeks.reduce((s,w)=>s+(w.demoComp||0),0);
+  const demoAvg   = demoOrd>0?Math.round(demoCPO/demoOrd):null;
+  const demoCR    = demoComp>0?Math.round(demoOrd/demoComp*100):null;
+  const demoCompR = demoBooked>0?Math.round(demoComp/demoBooked*100):null;
+
+  // ---- CATEGORY HEALTH SCORES ----
+  function catScore(metrics) {
+    const valid = metrics.filter(m => m.actual !== null && m.actual > 0 && m.goal > 0);
+    if (valid.length === 0) return null;
+    const avg = valid.reduce((s,m) => s + Math.min(100, Math.round(m.actual/m.goal*100)), 0) / valid.length;
+    return Math.round(avg);
+  }
+
+  function scoreBadge(id, score) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (score === null) { el.textContent = 'Score: —'; el.className = 'badge bgy'; return; }
+    const cls = score >= 80 ? 'bg' : score >= 60 ? 'bgo' : 'br';
+    el.textContent = 'Score: ' + score;
+    el.className = 'badge ' + cls;
+  }
+
+  // Event score: shift avg vs $2,500 | orders/shift vs 4.6 | event avg order vs $659
+  const evScore = catScore([
+    {actual: t.shiftAvg, goal: 2500},
+    {actual: t.ordPerShift, goal: 4.6},
+    {actual: t.evAvgOrd, goal: 659}
+  ]);
+  scoreBadge('ev-score-badge', evScore);
+
+  // SC score: closing ratio vs 88 | completion ratio vs 92 | SC avg order vs $807
+  const scScore = catScore([
+    {actual: t.cr, goal: 88},
+    {actual: t.comp, goal: 92},
+    {actual: t.scAvg, goal: 807}
+  ]);
+  scoreBadge('sc-score-badge', scScore);
+
+  // SE score: SE avg order vs $576 | CPO per SE week vs $3,019
+  const seAvgOrd2 = seOrd>0 ? Math.round(seCPO/seOrd) : null;
+  const seCPW = seCount>0 ? Math.round(seCPO/seCount) : null;
+  const seScore = catScore([
+    {actual: seAvgOrd2, goal: 576},
+    {actual: seCPW, goal: 3019}
+  ]);
+  scoreBadge('se-score-badge', seScore);
+
+  // Marketing score: avg order vs $659
+  const mktScore = catScore([{actual: mktAvg, goal: 659}]);
+  scoreBadge('mkt-score-badge', mktScore);
+
+  // Biz Gift score: avg order vs $659
+  const bizScore = catScore([{actual: bizAvg, goal: 659}]);
+  scoreBadge('biz-score-badge', bizScore);
+
+  // Federal score: shift avg vs $2,500 | orders/shift vs 4.6 | avg order vs $659
+  const fedScore = catScore([
+    {actual: fedShAvg, goal: 2500},
+    {actual: fedOrdShift, goal: 4.6},
+    {actual: fedOrd>0?Math.round(fedCPO/fedOrd):null, goal: 659}
+  ]);
+  scoreBadge('fed-score-badge', fedScore);
+
+  // Demo score: closing ratio vs 88 | avg order vs $659
+  const demoScore = catScore([
+    {actual: demoCR, goal: 88},
+    {actual: demoAvg, goal: 659}
+  ]);
+  scoreBadge('demo-score-badge', demoScore);
+
+  // Overall = average of category scores that have data
+  const allScores = [evScore, scScore, seScore, mktScore, bizScore, fedScore, demoScore].filter(s => s !== null);
+  const healthScore = allScores.length > 0 ? Math.round(allScores.reduce((s,v)=>s+v,0)/allScores.length) : null;
+  const hasData = healthScore !== null;
+  const healthColor = !hasData?'var(--text)':healthScore>=80?'var(--green)':healthScore>=60?'var(--gold)':'var(--red)';
+  const healthLabel = !hasData?'No data yet':healthScore>=80?'Healthy':healthScore>=60?'Needs attention':'At risk';
+  document.getElementById('rv-health').textContent = hasData?healthScore+'/100':'—';
+  document.getElementById('rv-health').style.color = healthColor;
+  document.getElementById('rd-health').textContent = healthLabel;
+  document.getElementById('rd-health').style.color = healthColor;
+
+  // Closing Ratio
+  const crOk = t.cr!==null && t.cr>=88;
+  document.getElementById('rv-close').textContent = t.cr!==null?t.cr+'%':'—';
+  document.getElementById('rd-close').textContent = t.cr!==null?(crOk?'↑ Above 88% goal':'↓ Below 88% goal'):'Goal: 88%';
+  document.getElementById('rd-close').style.color = t.cr!==null?(crOk?'var(--green)':'var(--red)'):'var(--text2)';
+
+  // Keep old IDs working for any remaining references
+  function sc(ci,vi,di,val,goal,fn){const ok=val!==null&&val>=goal;if(!document.getElementById(ci))return;document.getElementById(ci).className='mc '+(val!==null?(ok?'pos':'neg'):'neu');document.getElementById(vi).textContent=val!==null?fn(val):'—';document.getElementById(di).textContent=val!==null?(ok?'↑ Above goal':'↓ Below goal'):'Goal: '+fn(goal);document.getElementById(di).className='msub '+(val!==null?(ok?'tg':'tr'):'tm');}
+
+  document.getElementById('ev-sh-tot').textContent=t.evSh||'—';
+  document.getElementById('ev-sh-avg').textContent=t.shiftAvg?fm(t.shiftAvg):'—';
+  document.getElementById('ev-os').textContent=t.ordPerShift!==null?t.ordPerShift:'—';
+  document.getElementById('ev-ao').textContent=t.evAvgOrd?fm(t.evAvgOrd):'—';
+
+  const ins=[];
+  if(S.weeks.length < 6){
+    document.getElementById('coach').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;line-height:1.8;">The Coach unlocks after <strong style="color:var(--blue);">6 weeks</strong> of data.<br>'+S.weeks.length+' of 6 weeks entered. Keep going.</div>';
+  } else {
+
+    // Helper: how far off from goal as a %
+    const gapPct = (actual, goal) => actual !== null ? Math.round((goal - actual) / goal * 100) : null;
+
+    // CLOSING RATIO — only flag if gap is meaningful (>5pts AND dollar impact >$1000)
+    if(t.cr !== null) {
+      const gap = 88 - t.cr;
+      const dollarImpact = Math.round((gap/100) * t.scc * (t.scAvg||807));
+      if(gap <= 0) {
+        ins.push({type:'ok', title:'Closing ratio is solid', text:`${t.cr}% — above your 88% goal. Your SC conversion is working. Keep stacking appointments.`});
+      } else if(gap <= 4 && dollarImpact < 1500) {
+        ins.push({type:'info', title:'Closing ratio is close', text:`${t.cr}% vs 88% goal — you're ${gap} point${gap>1?'s':''} off. That's within normal variation. Nothing to overhaul here.`});
+      } else if(gap > 4) {
+        ins.push({type:'warn', title:'Closing ratio has room to grow', text:`${t.cr}% vs 88% goal. At your current volume, closing ${gap}% more appointments is worth approx. ${fm(dollarImpact)} in SC revenue. Focus on your top 2 objections.`});
+      }
+    }
+
+    // COMPLETION RATIO — only flag if meaningfully below (>6 pts off)
+    if(t.comp !== null) {
+      const gap = 92 - t.comp;
+      if(gap <= 0) {
+        ins.push({type:'ok', title:'Completion rate is strong', text:`${t.comp}% of booked appointments are completing — above your 92% goal. Your confirmation process is working.`});
+      } else if(gap > 6) {
+        const missed = Math.round(t.scb * (gap/100));
+        ins.push({type:'warn', title:'Appointments not completing', text:`${t.comp}% completion vs 92% goal. Roughly ${missed} appointments went unconfirmed this year. A tighter day-before confirmation process would close that gap.`});
+      }
+      // 1–6 pts off = not worth mentioning
+    }
+
+    // AVERAGE ORDER — only flag if >10% below goal AND dollar impact >$1500
+    if(t.avg !== null) {
+      const pctOff = gapPct(t.avg, 659);
+      const dollarLoss = (659 - t.avg) * t.ord;
+      if(pctOff !== null && pctOff <= 0) {
+        // above goal — only mention if notably above
+        if(t.avg >= 720) ins.push({type:'ok', title:'Average order above goal', text:`${fm(t.avg)} avg order — well above your $659 goal. You're presenting full value consistently.`});
+      } else if(pctOff > 10 && dollarLoss > 1500) {
+        ins.push({type:'warn', title:'Average order has upside', text:`${fm(t.avg)} avg vs $659 goal. Across ${t.ord} orders that's ${fm(dollarLoss)} in potential revenue. Are you consistently presenting the full set options and upgrades?`});
+      } else if(pctOff > 5 && pctOff <= 10) {
+        ins.push({type:'info', title:'Average order is close', text:`${fm(t.avg)} avg vs $659 goal — a small gap. Focus on one upsell per appointment and this moves on its own.`});
+      }
+    }
+
+    // SC AVG ORDER — only flag if >15% below $807 AND have meaningful SC volume
+    if(t.scAvg !== null && t.sco >= 10) {
+      const gap = 807 - t.scAvg;
+      if(gap > 120) {
+        ins.push({type:'warn', title:'SC average order below goal', text:`${fm(t.scAvg)} SC avg vs $807 goal. With ${t.sco} SC orders, you have a real opportunity here. Are you consistently running through the full upgrade menu at every service call?`});
+      } else if(gap > 0 && gap <= 120) {
+        ins.push({type:'info', title:'SC average order is close', text:`${fm(t.scAvg)} vs $807 goal — ${fm(gap)} off. A single extra upgrade per week would close this.`});
+      } else {
+        ins.push({type:'ok', title:'SC average order is strong', text:`${fm(t.scAvg)} — above your $807 goal. Your service call upgrade game is working.`});
+      }
+    }
+
+    // ANNUAL PROJECTION — show as opportunity, not pressure
+    if(S.weeks.length > 0) {
+      const workedWeeks = S.weeks.filter(w=>w.cpo>0).length;
+      if(workedWeeks >= 4) {
+        const proj = Math.round(t.cpo / workedWeeks * 52);
+        if(proj >= 475000) {
+          ins.push({type:'ok', title:'Pace to hit $500K', text:`At your current rate across worked weeks, you're on track for ${fm(proj)} this year. Stay consistent.`});
+        } else {
+          const needed = Math.round((500000 - t.cpo) / Math.max(1, 52 - S.weeks.length));
+          ins.push({type:'info', title:'What it takes to hit $500K', text:`You need avg ${fm(needed)}/week for the rest of the year to hit $500K. Your recent pace is ${fm(Math.round(t.cpo/workedWeeks))}/week. The gap is closeable.`});
+        }
+      }
+    }
+
+    // EVENT SHIFT AVERAGE — only if notable
+    if(t.shiftAvg !== null && t.evSh >= 5) {
+      if(t.shiftAvg >= 2781) {
+        ins.push({type:'ok', title:'Event shift average is strong', text:`${fm(t.shiftAvg)}/shift across ${t.evSh} shifts — above your 2025 average. You're picking the right events.`});
+      } else if(t.shiftAvg < 2000) {
+        ins.push({type:'warn', title:'Event shift average is low', text:`${fm(t.shiftAvg)}/shift. Look at your event mix — are you taking enough Key and Elite shifts vs Traditional?`});
+      }
+    }
+
+    // Cap at 3 most important insights
+    const priority = ['warn','ok','info'];
+    const sorted = ins.sort((a,b) => priority.indexOf(a.type) - priority.indexOf(b.type));
+    const top3 = sorted.slice(0,3);
+
+    document.getElementById('coach').innerHTML = top3.length===0
+      ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;">No significant gaps detected. Keep entering stats.</div>'
+      : top3.map(i=>`<div class="ins ${i.type==='warn'?'warn':i.type==='ok'?'ok':'info'}"><div class="ins-ic">${i.type==='warn'?'↓':i.type==='ok'?'↑':'→'}</div><div><div class="ins-tit">${i.title}</div><div class="ins-desc">${i.text}</div></div></div>`).join('');
+  }
+
+  // ---- CATEGORY STAT DOM UPDATES ----
+  document.getElementById('sc-stat-cpo').textContent = scCPO>0?fm(scCPO):'—';
+  document.getElementById('sc-stat-ord').textContent = scOrd||'—';
+  document.getElementById('sc-stat-avg').textContent = scAvgOrd?fm(scAvgOrd):'—';
+  document.getElementById('sc-stat-booked').textContent = scBooked||'—';
+  document.getElementById('sc-stat-comp').textContent = scComp||'—';
+  const scCRel = document.getElementById('sc-stat-cr');
+  scCRel.textContent = scCR?scCR+'%':'—';
+  scCRel.style.color = scCR?scCR>=88?'var(--green)':'var(--red)':'var(--text)';
+  const scCPRel = document.getElementById('sc-stat-compr');
+  scCPRel.textContent = scCompR?scCompR+'%':'—';
+  scCPRel.style.color = scCompR?scCompR>=92?'var(--green)':'var(--red)':'var(--text)';
+  document.getElementById('se-stat-cpo').textContent = seCPO>0?fm(seCPO):'—';
+  document.getElementById('se-stat-ord').textContent = seOrd||'—';
+  document.getElementById('se-stat-avg').textContent = seAvgOrd?fm(seAvgOrd):'—';
+  document.getElementById('se-stat-cpe').textContent = seCPE?fm(seCPE):'—';
+  document.getElementById('mkt-stat-cpo').textContent = mktCPO>0?fm(mktCPO):'—';
+  document.getElementById('mkt-stat-ord').textContent = mktOrd||'—';
+  document.getElementById('mkt-stat-avg').textContent = mktAvg?fm(mktAvg):'—';
+  document.getElementById('mkt-stat-pct').textContent = mktPct!==null?mktPct+'%':'—';
+  document.getElementById('biz-stat-cpo').textContent = bizCPO>0?fm(bizCPO):'—';
+  document.getElementById('biz-stat-ord').textContent = bizOrd||'—';
+  document.getElementById('biz-stat-avg').textContent = bizAvg?fm(bizAvg):'—';
+  document.getElementById('biz-stat-pct').textContent = bizPct!==null?bizPct+'%':'—';
+
+  // Federal DOM
+  document.getElementById('fed-stat-cpo').textContent = fedCPO>0?fm(fedCPO):'—';
+  document.getElementById('fed-stat-ord').textContent = fedOrd||'—';
+  document.getElementById('fed-stat-sh').textContent  = fedSh||'—';
+  document.getElementById('fed-stat-savg').textContent = fedShAvg?fm(fedShAvg):'—';
+
+  // Demo DOM
+  document.getElementById('demo-stat-cpo').textContent = demoCPO>0?fm(demoCPO):'—';
+  document.getElementById('demo-stat-ord').textContent = demoOrd||'—';
+  document.getElementById('demo-stat-avg').textContent = demoAvg?fm(demoAvg):'—';
+  const dcrEl = document.getElementById('demo-stat-cr');
+  dcrEl.innerHTML = demoCR!==null ? `${demoCR}%<br><span style="font-size:11px;color:${demoCR>=88?'var(--green)':'var(--red)'};">${demoCR>=88?'↑ Above':'↓ Below'} 88%</span>` : '—<br><span style="font-size:11px;color:var(--text2);">Goal: 88%</span>';
+}
+
+// ==================== YEAR VIEW ====================
+function buildYearWeeks(){
+  const weeks=[];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];
+  let weekNum=1,date=new Date('2026-01-06'); // First Tuesday of 2026
+  // Pre-populate 52 weeks starting from Jan 1
+  const startDate=new Date('2026-01-01');
+  let d=new Date(startDate);
+  for(let i=0;i<52;i++){
+    const start=new Date(d);
+    const end=new Date(d);end.setDate(end.getDate()+6);
+    const label=`${months[start.getMonth()]} ${start.getDate()}–${end.getDate()<=daysInMonth[end.getMonth()-1]||end.getMonth()===start.getMonth()?end.getDate():end.getDate()} ${end.getMonth()!==start.getMonth()?months[end.getMonth()]:''}`;
+    const monthLabel=months[start.getMonth()];
+    weeks.push({wk:i+1,startDate:new Date(start),endDate:new Date(end),label:label.trim(),month:monthLabel,monthNum:start.getMonth()});
+    d.setDate(d.getDate()+7);
+  }
+  return weeks;
+}
+
+function refreshYearView(){
+  const yearWeeks=buildYearWeeks();
+  // Map entered weeks by week number
+  const weekMap={};
+  S.weeks.forEach(w=>{weekMap[w.wk]=w;});
+  const threshold=parseFloat(document.getElementById('comm-rate')?.value)||45;
+
+  // Summary cards
+  const workedCount=S.weeks.length;
+  const totalCPO=S.weeks.reduce((s,w)=>s+(w.cpo||0),0);
+  const totalDaysOff=S.weeks.reduce((s,w)=>s+(w.daysOff||0),0);
+  const vacationCount=Object.values(S.yearNotes).filter(n=>n.toLowerCase().includes('vacation')||n.toLowerCase().includes('honeymoon')||n.toLowerCase().includes('off')||n.toLowerCase().includes('wedding')).length;
+  document.getElementById('ys-cards').innerHTML=`
+    <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${workedCount}</div><div class="msub tm">of 52 weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${workedCount} weeks</div></div>
+    <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
+
+  let lastMonth='';
+  const rows=yearWeeks.map(yw=>{
+    const w=weekMap[yw.wk];
+    const note=S.yearNotes[yw.wk]||'';
+    const isVacation=note.toLowerCase().includes('vacation')||note.toLowerCase().includes('honeymoon')||note.toLowerCase().includes('off')||note.toLowerCase().includes('wedding');
+    const status=w?'worked':(isVacation?'vacation':'no-data');
+
+    if(yearFilter==='worked'&&status!=='worked')return'';
+    if(yearFilter==='vacation'&&!isVacation)return'';
+    if(yearFilter==='empty'&&(status==='worked'||isVacation))return'';
+
+    let monthRow='';
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+
+    const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
+    const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
+
+    return monthRow+`<tr class="${status}">
+      <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
+      <td>${dot}Wk ${yw.wk}</td>
+      <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
+      <td style="font-size:12px;color:var(--text2);">${w&&w.ev?fm(w.ev):'—'}</td>
+      <td style="font-size:12px;color:var(--text2);">${w&&w.scp?fm(w.scp):'—'}</td>
+      <td style="font-size:12px;color:var(--text2);">${w&&w.se?fm(w.se):'—'}</td>
+      <td style="font-size:12px;">${w?w.ord:'—'}</td>
+      <td style="font-size:12px;">${w&&w.evSh?w.evSh:'—'}</td>
+      <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
+      <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+}
+
+function saveYearNote(wk,val){
+  S.yearNotes[wk]=val;
+}
+
+function filterYear(f,btn){
+  yearFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  refreshYearView();
+}
+
+function recalcAllEvents() {
+  const rate = (parseFloat(document.getElementById('comm-rate').value)||45) / 100;
+  S.events.forEach(e => {
+    e.comm = Math.round((e.cpo||0) * rate);
+    e.net = e.comm - (e.totalExp||0);
+  });
+  refreshProfit();
+}
+
+function sortEvents(key,dir,btn){
+  profSort={key,dir};
+  document.querySelectorAll('[id^="sort-btn-"]').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  refreshProfit();
+}
+
+function clearDateRange(){
+  document.getElementById('prof-date-from').value='';
+  document.getElementById('prof-date-to').value='';
+  document.getElementById('prof-range-count').textContent='';
+  refreshProfit();
+}
+
+// ==================== PROFITABILITY ====================
+function calcProfit(){
+  const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
+  const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
+  const comm=Math.round(cpo*rate);
+  document.getElementById('p-comm').value=comm>0?fm(comm):'';
+  const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
+  const gas=parseFloat(document.getElementById('p-gas').value)||0;
+  const food=parseFloat(document.getElementById('p-food').value)||0;
+  const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
+  const other=parseFloat(document.getElementById('p-other').value)||0;
+  const totalExp=hotel+gas+food+tolls+other;
+  document.getElementById('p-total-exp').value=totalExp>0?fm(totalExp):'';
+  const net=comm-totalExp;
+  if(cpo>0){
+    const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
+    const ok=net>=threshold;
+    document.getElementById('p-net-preview').textContent=fm(net);
+    document.getElementById('p-net-preview').style.color=ok?'var(--green)':'var(--red)';
+    document.getElementById('p-net-note').textContent=ok?`↑ Above $${threshold.toLocaleString()} threshold`:`↓ Below $${threshold.toLocaleString()} threshold — consider if worth it`;
+  } else {document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';}
+}
+
+function addEvent(){
+  const name=document.getElementById('p-name').value;
+  if(!name){alert('Please enter an event name.');return;}
+  const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
+  const shifts=parseInt(document.getElementById('p-shifts').value)||0;
+  const ord=parseInt(document.getElementById('p-ord').value)||0;
+  const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
+  const comm=Math.round(cpo*rate);
+  const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
+  const gas=parseFloat(document.getElementById('p-gas').value)||0;
+  const food=parseFloat(document.getElementById('p-food').value)||0;
+  const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
+  const other=parseFloat(document.getElementById('p-other').value)||0;
+  const totalExp=hotel+gas+food+tolls+other;
+  const net=comm-totalExp;
+  const dtStart = document.getElementById('p-dt-start').value;
+  const dtEnd = document.getElementById('p-dt-end').value;
+  const dtDisplay = dtStart && dtEnd ? `${formatDate(dtStart)} – ${formatDate(dtEnd)}` : dtStart ? formatDate(dtStart) : '';
+  const loc=document.getElementById('p-loc').value;
+  const camp=document.getElementById('p-camp').value;
+  S.events.push({name,loc,camp,cpo,shifts,ord,comm,hotel,gas,food,tolls,other,totalExp,net,dt:dtStart,dtDisplay});
+  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-hotel','p-gas','p-food','p-tolls','p-other'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('p-comm').value='';document.getElementById('p-total-exp').value='';document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';
+  showToast('t3');refreshProfit();
+}
+
+function deleteEvent(idx){S.events.splice(idx,1);refreshProfit();}
+
+function refreshProfit(){
+  const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
+  const totalComm=S.events.reduce((s,e)=>s+(e.comm||0),0);
+  const totalExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
+  const totalNet=S.events.reduce((s,e)=>s+(e.net||0),0);
+  const hitCount=S.events.filter(e=>e.net>=threshold).length;
+  document.getElementById('prof-summary').innerHTML=`
+    <div class="mc neu"><div class="mlbl">Total Commission</div><div class="mval">${S.events.length>0?fm(totalComm):'—'}</div><div class="msub tm">${S.events.length} events</div></div>
+    <div class="mc ${totalNet>0?'pos':'neg'}"><div class="mlbl">Total Net Profit</div><div class="mval" style="color:${totalNet>=0?'var(--green)':'var(--red)'}">${S.events.length>0?fm(totalNet):'—'}</div><div class="msub tm">after all expenses</div></div>
+    <div class="mc neu"><div class="mlbl">Total Out of Pocket</div><div class="mval">${S.events.length>0?fm(totalExp):'—'}</div><div class="msub tm">travel &amp; expenses</div></div>
+    <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${S.events.length>0?fm(Math.round(totalNet/S.events.length)):'—'}</div><div class="msub tm" style="color:${S.events.length>0&&Math.round(totalNet/S.events.length)>=threshold?'var(--green)':'var(--text2)'};">${S.events.length>0?(Math.round(totalNet/S.events.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`;
+
+  if(S.events.length===0){
+    document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No events logged yet. Add your first event →</div>';
+    return;
+  }
+
+  // Sort by date desc
+  const dateFrom = document.getElementById('prof-date-from')?.value;
+  const dateTo = document.getElementById('prof-date-to')?.value;
+  const filtered = S.events.map((e,i)=>({...e,_idx:i})).filter(e=>{
+    if(dateFrom && e.dt && e.dt < dateFrom) return false;
+    if(dateTo && e.dt && e.dt > dateTo) return false;
+    return true;
+  });
+  const countEl = document.getElementById('prof-range-count');
+  if(countEl) countEl.textContent = (dateFrom||dateTo) ? `${filtered.length} of ${S.events.length} events` : '';
+
+  const sorted=[...filtered].sort((a,b)=>{
+    let av=profSort.key==='dt'?new Date(a.dt):a[profSort.key]||0;
+    let bv=profSort.key==='dt'?new Date(b.dt):b[profSort.key]||0;
+    return profSort.dir==='desc'?bv-av:av-bv;
+  });
+  const best=S.events.reduce((b,e,i)=>e.net>b.net?{...e,_idx:i}:b,{...S.events[0],_idx:0});
+  const worst=S.events.reduce((b,e,i)=>e.net<b.net?{...e,_idx:i}:b,{...S.events[0],_idx:0});
+
+  document.getElementById('prof-events-list').innerHTML=sorted.map(e=>{
+    const hit=e.net>=threshold;const close=e.net>=threshold*0.7&&e.net<threshold;
+    const pillClass=hit?'pill-hit':close?'pill-close':'pill-miss';
+    const pillText=hit?'↑ Above threshold':close?'↗ Close':'↓ Below threshold';
+    const isBest=S.events.length>1&&e.name===best.name&&e.dt===best.dt;
+    const isWorst=S.events.length>1&&e.name===worst.name&&e.dt===worst.dt;
+    return`<div class="prof-event ${hit?'hit':'miss'}">
+      <div class="prof-event-header">
+        <div>
+          <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&S.events.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''}</div>
+          <div class="prof-event-meta">${e.loc?e.loc+' · ':''}${e.dtDisplay||e.dt||''}${e.shifts?' · '+e.shifts+' shifts':''} · ${e.camp}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="profit-pill ${pillClass}">${pillText}</span>
+          <button class="bdel" onclick="deleteEvent(${e._idx})">del</button>
+        </div>
+      </div>
+      <div class="prof-grid">
+        <div class="prof-stat"><div class="prof-stat-lbl">Event CPO</div><div class="prof-stat-val">${fm(e.cpo)}</div></div>
+        <div class="prof-stat"><div class="prof-stat-lbl">Commission (${document.getElementById('comm-rate').value}%)</div><div class="prof-stat-val tb">${fm(e.comm)}</div></div>
+        <div class="prof-stat"><div class="prof-stat-lbl">Expenses</div><div class="prof-stat-val tr">-${fm(e.totalExp)}</div></div>
+        <div class="prof-stat"><div class="prof-stat-lbl">Net Profit</div><div class="prof-stat-val" style="color:${hit?'var(--green)':'var(--red)'};">${fm(e.net)}</div></div>
+      </div>
+      ${e.shifts>0?`<div style="font-size:11px;color:var(--text2);margin-top:8px;">Profit per shift: <strong style="color:${e.net/e.shifts>=500?'var(--green)':'var(--text)'};">${fm(Math.round(e.net/e.shifts))}</strong></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ==================== ENTRIES ====================
+function refreshEntries(){
+  document.getElementById('e-count').textContent=S.weeks.length+' weeks';
+  document.getElementById('e-list').innerHTML=S.weeks.length===0?'<div style="font-size:12px;color:var(--text3);text-align:center;padding:18px 0;">No entries yet</div>':S.weeks.map((w,i)=>{
+    const vt=w.target>0?(w.cpo>=w.target?`<span style="font-size:11px;color:var(--green);font-weight:700;">↑ Hit</span>`:`<span style="font-size:11px;color:var(--red);font-weight:700;">↓ Missed</span>`):'';
+    return`<div class="erow"><div><div style="font-size:12px;font-weight:700;">Week ${w.wk} ${vt}</div><div style="font-size:11px;color:var(--text2);">${w.dt} · ${w.camp}${w.tnote?' · '+w.tnote:''}</div></div><div style="display:flex;align-items:center;gap:7px;"><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--blue);">${fm(w.cpo)}</div><div style="font-size:11px;color:var(--text2);">${w.ord} orders</div></div><div style="display:flex;flex-direction:column;gap:3px;"><button class="bedit" onclick="editWeek(${i})">edit</button><button class="bdel" onclick="deleteWeek(${i})">del</button></div></div></div>`;
+  }).join('');
+  updTgt();
+}
+
+// ==================== TARGET PANEL ====================
+function updTgt(){
+  const tgt=parseFloat(document.getElementById('i-target').value)||0;
+  const cpo=parseFloat(document.getElementById('i-cpo').value)||0;
+  if(tgt>0){
+    const p=pct(cpo,tgt),hit=cpo>=tgt;
+    document.getElementById('tp-badge').textContent=hit?'Target hit!':p+'% of target';
+    document.getElementById('tp-badge').className='badge '+(hit?'bg':p>=70?'bgo':'br');
+    document.getElementById('tp-display').innerHTML=`<div class="tstat"><span class="ts-lbl">Target</span><span class="ts-val tb">${fm(tgt)}</span></div><div class="tstat"><span class="ts-lbl">Actual CPO</span><span class="ts-val ${hit?'':'tr'}" style="${hit?'color:var(--accent-dark);font-weight:800;':''}">${cpo>0?fm(cpo):'—'}</span></div><div style="margin:10px 0 5px;"><div class="ptrack" style="height:8px;"><div class="pfill" style="width:${p}%;background:${hit?'var(--accent)':'var(--blue)'};"></div></div></div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;"><span class="tm">${p}% there</span><span style="color:${hit?'var(--accent-dark)':'var(--red)'};">${hit?'↑ Hit!':'↓ '+fm(tgt-cpo)+' to go'}</span></div>`;
+  } else {document.getElementById('tp-badge').textContent='No target set';document.getElementById('tp-badge').className='badge bgy';document.getElementById('tp-display').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:18px 0;">Set a CPO target to track progress.</div>';}
+}
+
+// ==================== CALCS ====================
+function calcAll(){
+  const cpo=parseFloat(document.getElementById('i-cpo').value)||0;
+  const ord=parseInt(document.getElementById('i-ord').value)||0;
+  document.getElementById('i-avg').value=ord>0?'$'+Math.round(cpo/ord).toLocaleString():'';
+  updTgt();
+}
+function calcShifts(){
+  const ev=parseFloat(document.getElementById('i-ev').value)||0;
+  const evO=parseInt(document.getElementById('i-ev-ord').value)||0;
+  const sh=parseInt(document.getElementById('i-ev-sh').value)||0;
+  document.getElementById('sc-sa').textContent=sh>0&&ev>0?fm(Math.round(ev/sh)):'—';
+  document.getElementById('sc-os').textContent=sh>0&&evO>0?d1(evO/sh):'—';
+  document.getElementById('sc-ao').textContent=evO>0&&ev>0?fm(Math.round(ev/evO)):'—';
+}
+function calcFederal(){
+  const fed=parseFloat(document.getElementById('i-fed').value)||0;
+  const fedO=parseInt(document.getElementById('i-fed-ord').value)||0;
+  const sh=parseInt(document.getElementById('i-fed-sh').value)||0;
+  document.getElementById('fed-sa').textContent=sh>0&&fed>0?fm(Math.round(fed/sh)):'—';
+  document.getElementById('fed-os').textContent=sh>0&&fedO>0?d1(fedO/sh):'—';
+  document.getElementById('fed-ao').textContent=fedO>0&&fed>0?fm(Math.round(fed/fedO)):'—';
+}
+function calcDemos(){
+  const demo=parseFloat(document.getElementById('i-demo').value)||0;
+  const demoO=parseInt(document.getElementById('i-demo-ord').value)||0;
+  const demoC=parseInt(document.getElementById('i-demo-comp').value)||0;
+  document.getElementById('demo-ao').textContent=demoO>0&&demo>0?fm(Math.round(demo/demoO)):'—';
+  document.getElementById('demo-cr').textContent=demoC>0&&demoO>0?Math.round(demoO/demoC*100)+'%':'—';
+  const demoB=parseInt(document.getElementById('i-demo-booked').value)||0;
+  document.getElementById('demo-comp-r').textContent=demoB>0&&demoC>0?Math.round(demoC/demoB*100)+'%':'—';
+}
+
+// ==================== EDIT WEEK ====================
+function editWeek(idx){
+  const w=S.weeks[idx];editIdx=idx;
+  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||'']];
+  map.forEach(([id,val])=>{document.getElementById(id).value=val;});
+  document.getElementById('i-camp').value=w.camp;
+  calcAll();calcShifts();
+  document.getElementById('edbanner').style.display='flex';document.getElementById('ed-wk-lbl').textContent=w.wk;
+  document.getElementById('save-btn').textContent='Update Week →';document.getElementById('save-btn').style.background='var(--blue2)';
+  window.scrollTo(0,0);
+}
+function cancelEdit(){editIdx=-1;clearForm();document.getElementById('edbanner').style.display='none';document.getElementById('save-btn').textContent='Save Week →';document.getElementById('save-btn').style.background='var(--blue)';}
+function deleteWeek(idx){const w=S.weeks[idx];S.cats.ev-=w.ev||0;S.cats.sc-=w.scp||0;S.cats.se-=w.se||0;S.cats.mkt-=w.mkt||0;S.cats.biz-=w.biz||0;S.cats.fed-=w.fed||0;S.cats.demo-=w.demo||0;S.weeks.splice(idx,1);if(editIdx===idx)cancelEdit();refreshAll();}
+
+// ==================== SUBMIT ====================
+function submitStats(){
+  const g=id=>document.getElementById(id);
+  const entry={
+    wk:parseInt(g('i-wk').value)||(S.weeks.length+1),camp:g('i-camp').value,
+    dt:g('i-dt').value||new Date().toISOString().split('T')[0],
+    cpo:parseFloat(g('i-cpo').value)||0,ord:parseInt(g('i-ord').value)||0,
+    ev:parseFloat(g('i-ev').value)||0,evOrd:parseInt(g('i-ev-ord').value)||0,evSh:parseInt(g('i-ev-sh').value)||0,
+    scp:parseFloat(g('i-scp').value)||0,sco:parseInt(g('i-sco').value)||0,scb:parseInt(g('i-scb').value)||0,scc:parseInt(g('i-scc').value)||0,
+    se:parseFloat(g('i-se').value)||0,seOrd:parseInt(g('i-se-ord').value)||0,
+    mkt:parseFloat(g('i-mkt').value)||0,mktOrd:parseInt(g('i-mkt-ord').value)||0,
+    biz:parseFloat(g('i-biz').value)||0,bizOrd:parseInt(g('i-biz-ord').value)||0,
+    fed:parseFloat(g('i-fed').value)||0,fedOrd:parseInt(g('i-fed-ord').value)||0,fedSh:parseInt(g('i-fed-sh').value)||0,
+    demo:parseFloat(g('i-demo').value)||0,demoOrd:parseInt(g('i-demo-ord').value)||0,demoBooked:parseInt(g('i-demo-booked').value)||0,demoComp:parseInt(g('i-demo-comp').value)||0,
+    target:parseFloat(g('i-target').value)||0,tnote:g('i-tnote').value,
+    daysOff:parseInt(g('i-daysoff').value)||0
+  };
+  const rep=g('i-rep')?.value; // field removed, safe no-op
+  if(editIdx>=0){
+    const old=S.weeks[editIdx];S.cats.ev-=old.ev||0;S.cats.sc-=old.scp||0;S.cats.se-=old.se||0;S.cats.mkt-=old.mkt||0;S.cats.biz-=old.biz||0;S.cats.fed-=old.fed||0;S.cats.demo-=old.demo||0;
+    S.weeks[editIdx]=entry;editIdx=-1;
+    document.getElementById('edbanner').style.display='none';document.getElementById('save-btn').textContent='Save Week →';document.getElementById('save-btn').style.background='var(--blue)';
+    showToast('t2');
+  } else {S.weeks.push(entry);showToast('t1');saveToSheets();}
+  S.cats.ev+=entry.ev;S.cats.sc+=entry.scp;S.cats.se+=entry.se;S.cats.mkt+=entry.mkt;S.cats.biz+=entry.biz;
+  S.cats.fed+=entry.fed||0;S.cats.demo+=entry.demo||0;
+  clearForm();refreshAll();
+}
+
+function clearForm(){
+  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  calcShifts();
+}
+
+function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshProfit();refreshEntries();}
+
+// ==================== GOOGLE SHEETS SYNC ====================
+// Paste your Apps Script Web App URL here after setup:
+const SHEETS_URL = '';
+
+function syncStatus(msg, color='var(--text2)'){
+  const el = document.getElementById('sync-status');
+  if(el){ el.textContent = msg; el.style.color = color; }
+}
+
+async function saveToSheets(){
+  if(!SHEETS_URL){ syncStatus('No sync URL set', 'var(--gold)'); return; }
+  syncStatus('Saving...', 'var(--blue)');
+  try {
+    const payload = JSON.stringify({
+      repName: S.repName,
+      dailyOne: S.dailyOne,
+      dailyStreak: S.dailyStreak,
+      dailyLongestStreak: S.dailyLongestStreak,
+      weeklyStandards: S.weeklyStandards,
+      weeklyStreak: S.weeklyStreak,
+      weeklyLongestStreak: S.weeklyLongestStreak,
+      weeks: S.weeks,
+      yearNotes: S.yearNotes,
+      cats: S.cats,
+      events: S.events,
+      g: S.g
+    });
+    const res = await fetch(SHEETS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: payload,
+      mode:'no-cors'
+    });
+    syncStatus('Saved ✓ ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--green)');
+  } catch(e){
+    syncStatus('Save failed — check connection', 'var(--red)');
+  }
+}
+
+async function loadFromSheets(){
+  if(!SHEETS_URL){ syncStatus('No sync URL set', 'var(--gold)'); return; }
+  syncStatus('Loading...', 'var(--blue)');
+  try {
+    const res = await fetch(SHEETS_URL + '?action=load', { method:'GET' });
+    const data = await res.json();
+    if(data && data.repName){
+      Object.assign(S, data);
+      refreshAll();
+      syncStatus('Loaded ✓ ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--green)');
+    } else {
+      syncStatus('No data found', 'var(--gold)');
+    }
+  } catch(e){
+    syncStatus('Load failed — check connection', 'var(--red)');
+  }
+}
+
+// Auto-load on page open if URL is set
+if(SHEETS_URL){
+  loadFromSheets();
+} else {
+  refreshAll();
+}
+
+</script>
+</body>
+</html>
