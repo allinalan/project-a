@@ -1612,8 +1612,8 @@ function refreshYearView(){
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
-      <td style="font-size:12px;color:var(--blue);">${proj&&proj.cpo?fm(proj.cpo):'—'}</td>
-      <td style="font-size:12px;color:var(--blue);">${proj&&proj.ord?proj.ord:'—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj ? fm(proj.cpo||0) : '—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
     </tr>`;
@@ -1646,12 +1646,12 @@ function refreshYearView(){
         <div style="color:var(--text2);font-weight:600;text-align:right;">Variance</div>
         <div style="color:var(--text);font-weight:600;">Total CPO</div>
         <div style="text-align:right;font-weight:600;">${fm(actCPO)}</div>
-        <div style="text-align:right;color:var(--blue);">${projCPO>0?fm(projCPO):'—'}</div>
-        <div style="text-align:right;color:${cpoColor};font-weight:600;">${projCPO>0?cpoSign+fm(varCPO)+(cpoVarPct!==null?' ('+cpoSign+cpoVarPct+'%)':''):'—'}</div>
+        <div style="text-align:right;color:var(--blue);">${projWks.length>0?fm(projCPO):'—'}</div>
+        <div style="text-align:right;color:${cpoColor};font-weight:600;">${projWks.length>0?cpoSign+fm(varCPO)+(cpoVarPct!==null?' ('+cpoSign+cpoVarPct+'%)':''):'—'}</div>
         <div style="color:var(--text);font-weight:600;">Total Orders</div>
         <div style="text-align:right;font-weight:600;">${actOrd}</div>
-        <div style="text-align:right;color:var(--blue);">${projOrd>0?projOrd:'—'}</div>
-        <div style="text-align:right;color:${ordColor};font-weight:600;">${projOrd>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
+        <div style="text-align:right;color:var(--blue);">${projWks.length>0?projOrd:'—'}</div>
+        <div style="text-align:right;color:${ordColor};font-weight:600;">${projWks.length>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
       </div>
     </div>`;
   };
@@ -1715,7 +1715,7 @@ function refreshPlan(){
     rows.push(`<tr>
       <td style="font-weight:700;">Wk ${wk}</td>
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
-      <td class="plan-total-cell" id="plan-total-${wk}">${totalCPO>0?fm(totalCPO):'—'}</td>
+      <td class="plan-total-cell" id="plan-total-${wk}">${S.projections[wk]?fm(totalCPO):'—'}</td>
       ${cells}
       <td><input type="number" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
     </tr>`);
@@ -1726,13 +1726,14 @@ function refreshPlan(){
   const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
   const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.cpo)||0),0);
   const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
-  const filledWeeks=projWks.filter(p=>(parseFloat(p.cpo)||0)>0).length;
+  // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
+  const filledWeeks=projWks.length;
   const range_size = range[1]-range[0]+1;
   document.getElementById('plan-totals').innerHTML=`<div class="panel" style="padding:14px 18px;">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">${planCamp} Campaign Plan Totals</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:13px;">
-      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED CPO SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${sumCPO>0?fm(sumCPO):'—'}</div></div>
-      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED ORDERS SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${sumOrd>0?sumOrd:'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED CPO SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?fm(sumCPO):'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED ORDERS SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?sumOrd:'—'}</div></div>
       <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">WEEKS PLANNED</div><div style="font-size:18px;font-weight:700;color:var(--text);">${filledWeeks} / ${range_size}</div></div>
     </div>
   </div>`;
@@ -1748,13 +1749,21 @@ function onProjEdit(input){
   } else {
     S.projections[wk][cat] = cat==='ord' ? (parseInt(val)||0) : (parseFloat(val)||0);
   }
-  // Auto-recompute total CPO from category cells (excluding ord)
+  // Auto-recompute total CPO from category cells
   const cats=['ev','scp','se','mkt','biz','fed','demo'];
   const total = cats.reduce((s,c)=>s+(parseFloat(S.projections[wk][c])||0), 0);
-  S.projections[wk].cpo = total;
-  // Update the total cell in the row inline
+  // Cleanup: if user has cleared every input field, drop the whole projection entry.
+  // Otherwise keep cpo in sync with the category sum (could be 0 — explicit "planned 0" week).
+  const hasAnyCat = cats.some(c => S.projections[wk][c] !== undefined);
+  const hasOrd = S.projections[wk].ord !== undefined;
+  if (!hasAnyCat && !hasOrd) {
+    delete S.projections[wk];
+  } else {
+    S.projections[wk].cpo = total;
+  }
+  // Update the total cell display
   const totalCell=document.getElementById('plan-total-'+wk);
-  if(totalCell) totalCell.textContent = total>0 ? fm(total) : '—';
+  if(totalCell) totalCell.textContent = S.projections[wk] ? fm(total) : '—';
   // Persist (debounced) and refresh dependent views
   debouncedSave();
   // Year View depends on projections — refresh if visible
