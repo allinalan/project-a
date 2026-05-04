@@ -366,7 +366,14 @@
             </select>
           </div>
           <div class="fgrp"><label class="flbl">My CPO Target ($)</label><input type="number" class="fin" id="i-target" placeholder="e.g. 12000" oninput="updTgt()"></div>
-          <div class="fgrp"><label class="flbl">Days Off Planned</label><input type="number" class="fin" id="i-daysoff" placeholder="0" min="0" max="7"></div>
+          <div class="fgrp">
+            <label class="flbl">Days Off / Vacation</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-bottom:6px;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="i-vac" onchange="toggleVac()" style="width:13px;height:13px;cursor:pointer;flex:0 0 auto;margin:0;">
+              Full vacation week (auto = 7)
+            </label>
+            <input type="number" class="fin" id="i-daysoff" placeholder="0–5" min="0" max="5" oninput="capDaysOff()">
+          </div>
         </div>
         <div class="fgrp" style="margin-top:10px;"><label class="flbl">Week Context / Notes</label><input type="text" class="fin" id="i-tnote" placeholder="e.g. SC push week, out of town event, slow week..."></div>
       </div>
@@ -1495,14 +1502,23 @@ function refreshYearView(){
   S.weeks.forEach(w=>{weekMap[w.wk]=w;});
   const threshold=parseFloat(document.getElementById('comm-rate')?.value)||45;
 
+  // Backward-compat: infer isVacation for legacy weeks (one-time normalization, idempotent)
+  S.weeks.forEach(w=>{ if(w.isVacation===undefined) w.isVacation=((w.daysOff||0)>=7); });
+
+  // Helper: a week counts as vacation if explicit toggle is on, OR a note keyword matches
+  const noteIsVac=n=>{const t=(n||'').toLowerCase();return t.includes('vacation')||t.includes('honeymoon')||t.includes('off')||t.includes('wedding');};
+
   // Summary cards
-  const workedCount=S.weeks.length;
+  const entriesCount=S.weeks.length;                              // all logged weeks (incl vacation)
+  const workedCount=S.weeks.filter(w=>!w.isVacation).length;      // for avg CPO denominator
   const totalCPO=S.weeks.reduce((s,w)=>s+(w.cpo||0),0);
   const totalDaysOff=S.weeks.reduce((s,w)=>s+(w.daysOff||0),0);
-  const vacationCount=Object.values(S.yearNotes).filter(n=>n.toLowerCase().includes('vacation')||n.toLowerCase().includes('honeymoon')||n.toLowerCase().includes('off')||n.toLowerCase().includes('wedding')).length;
+  const vacationWkSet=new Set(S.weeks.filter(w=>w.isVacation).map(w=>w.wk));
+  Object.entries(S.yearNotes).forEach(([wk,n])=>{ if(noteIsVac(n)) vacationWkSet.add(parseInt(wk)); });
+  const vacationCount=vacationWkSet.size;
   document.getElementById('ys-cards').innerHTML=`
-    <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${workedCount}</div><div class="msub tm">of 52 weeks</div></div>
-    <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${workedCount} weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${entriesCount}</div><div class="msub tm">of 52 weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${entriesCount} weeks</div></div>
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
@@ -1510,12 +1526,12 @@ function refreshYearView(){
   const rows=yearWeeks.map(yw=>{
     const w=weekMap[yw.wk];
     const note=S.yearNotes[yw.wk]||'';
-    const isVacation=note.toLowerCase().includes('vacation')||note.toLowerCase().includes('honeymoon')||note.toLowerCase().includes('off')||note.toLowerCase().includes('wedding');
-    const status=w?'worked':(isVacation?'vacation':'no-data');
+    const isVacation=(w && w.isVacation===true) || noteIsVac(note);
+    const status=isVacation?'vacation':(w?'worked':'no-data');
 
     if(yearFilter==='worked'&&status!=='worked')return'';
     if(yearFilter==='vacation'&&!isVacation)return'';
-    if(yearFilter==='empty'&&(status==='worked'||isVacation))return'';
+    if(yearFilter==='empty'&&status!=='no-data')return'';
 
     let monthRow='';
     if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
@@ -1756,6 +1772,13 @@ function editWeek(idx){
   const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||'']];
   map.forEach(([id,val])=>{document.getElementById(id).value=val;});
   document.getElementById('i-camp').value=w.camp;
+  // Restore vacation toggle state (with backward-compat: infer from daysOff if missing)
+  const vacChk=document.getElementById('i-vac');
+  if(vacChk){
+    const inferred = (w.isVacation===undefined) ? ((w.daysOff||0)>=7) : !!w.isVacation;
+    vacChk.checked = inferred;
+    toggleVac();
+  }
   calcAll();calcShifts();
   document.getElementById('edbanner').style.display='flex';document.getElementById('ed-wk-lbl').textContent=w.wk;
   document.getElementById('save-btn').textContent='Update Week →';document.getElementById('save-btn').style.background='var(--blue2)';
@@ -1779,7 +1802,8 @@ function submitStats(){
     fed:parseFloat(g('i-fed').value)||0,fedOrd:parseInt(g('i-fed-ord').value)||0,fedSh:parseInt(g('i-fed-sh').value)||0,
     demo:parseFloat(g('i-demo').value)||0,demoOrd:parseInt(g('i-demo-ord').value)||0,demoBooked:parseInt(g('i-demo-booked').value)||0,demoComp:parseInt(g('i-demo-comp').value)||0,
     target:parseFloat(g('i-target').value)||0,tnote:g('i-tnote').value,
-    daysOff:parseInt(g('i-daysoff').value)||0
+    daysOff: g('i-vac')?.checked ? 7 : Math.min(parseInt(g('i-daysoff').value)||0, 5),
+    isVacation: !!g('i-vac')?.checked
   };
   const rep=g('i-rep')?.value; // field removed, safe no-op
   if(editIdx>=0){
@@ -1797,7 +1821,35 @@ function clearForm(){
   ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
+  const vacChk=document.getElementById('i-vac');
+  if(vacChk){ vacChk.checked=false; toggleVac(); }
   calcShifts();
+}
+
+// ==================== VACATION TOGGLE ====================
+function toggleVac(){
+  const chk=document.getElementById('i-vac');
+  const inp=document.getElementById('i-daysoff');
+  if(!chk||!inp) return;
+  if(chk.checked){
+    inp.value='';
+    inp.disabled=true;
+    inp.style.opacity='0.4';
+    inp.style.cursor='not-allowed';
+    inp.placeholder='—';
+  } else {
+    inp.disabled=false;
+    inp.style.opacity='1';
+    inp.style.cursor='';
+    inp.placeholder='0–5';
+  }
+}
+function capDaysOff(){
+  const inp=document.getElementById('i-daysoff');
+  if(!inp) return;
+  const v=parseInt(inp.value)||0;
+  if(v>5) inp.value=5;
+  if(v<0) inp.value=0;
 }
 
 function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
