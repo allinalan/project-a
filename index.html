@@ -161,6 +161,10 @@
   .cpo-cell{font-weight:700;color:var(--blue);}
   .cpo-cell.empty{color:var(--text3);font-weight:400;}
   .month-header td{background:var(--surface3)!important;font-weight:700;font-size:12px;color:var(--blue);padding:6px 10px;}
+  .camp-divider td{background:linear-gradient(90deg,var(--blue),var(--blue2))!important;color:#fff;font-weight:800;font-size:13px;padding:10px 14px;text-align:center;letter-spacing:.5px;border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);}
+  .plan-input{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:6px 8px;border-radius:5px;font-size:12px;font-family:var(--font);text-align:right;}
+  .plan-input:focus{outline:none;border-color:var(--blue);background:var(--blue-light);}
+  .plan-total-cell{font-weight:700;color:var(--blue);background:var(--blue-light);font-size:13px;text-align:right;}
   .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
   .dot-worked{background:var(--green);}
   .dot-vacation{background:var(--gold);}
@@ -208,6 +212,7 @@
     <button class="tab" onclick="showPage('campaign',this)">Campaign</button>
     <button class="tab" onclick="showPage('ratios',this)">Scorecard</button>
     <button class="tab" onclick="showPage('yearview',this)">Year View</button>
+    <button class="tab" onclick="showPage('plan',this)">Plan</button>
     <button class="tab" onclick="showPage('profit',this)">Event Profitability</button>
     <button class="tab" onclick="showPage('enter',this)">Enter Stats</button>
   </div>
@@ -356,7 +361,7 @@
           <div style="font-size:13px;font-weight:700;color:var(--blue);">Before the Week Starts</div>
         </div>
         <div class="fg">
-          <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16"></div>
+          <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16" oninput="onWeekChange()"></div>
           <div class="fgrp"><label class="flbl">Week Start Date</label><input type="date" class="fin" id="i-dt"></div>
           <div class="fgrp"><label class="flbl">Campaign</label>
             <select class="fin" id="i-camp">
@@ -722,20 +727,53 @@
       <thead>
         <tr>
           <th style="width:90px;">Dates</th>
-          <th style="width:80px;">Week</th>
+          <th style="width:70px;">Week</th>
           <th style="width:100px;">Total CPO</th>
-          <th style="width:90px;">Event CPO</th>
-          <th style="width:90px;">SC CPO</th>
-          <th style="width:90px;">SE CPO</th>
-          <th style="width:70px;">Orders</th>
-          <th style="width:60px;">Shifts</th>
-          <th style="width:65px;">Days Off</th>
+          <th style="width:80px;">Orders</th>
+          <th style="width:100px;color:var(--blue);">Proj. CPO</th>
+          <th style="width:80px;color:var(--blue);">Proj. Orders</th>
+          <th style="width:70px;">Days Off</th>
           <th>Notes</th>
         </tr>
       </thead>
       <tbody id="year-tbody"></tbody>
     </table>
   </div>
+  <div id="year-totals" style="margin-top:18px;"></div>
+</div>
+
+<!-- PLAN -->
+<div class="page" id="page-plan">
+  <div class="eyebrow">Forecast & Targets</div>
+  <div class="ptitle">Plan <span>Ahead.</span></div>
+  <div class="year-filters" style="margin-bottom:14px;">
+    <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
+    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I (Wks 1–17)</button>
+    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II (Wks 18–34)</button>
+    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III (Wks 35–52)</button>
+    <span style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:auto;">
+    <table class="year-table" id="plan-table">
+      <thead>
+        <tr>
+          <th style="width:60px;">Wk</th>
+          <th style="width:90px;">Dates</th>
+          <th style="width:95px;background:var(--blue-light);">Total CPO</th>
+          <th style="width:80px;">Event</th>
+          <th style="width:80px;">Svc Call</th>
+          <th style="width:80px;">Svc Event</th>
+          <th style="width:80px;">Mkt</th>
+          <th style="width:80px;">Biz Gift</th>
+          <th style="width:80px;">Federal</th>
+          <th style="width:80px;">Demo</th>
+          <th style="width:80px;background:var(--blue-light);">Total Ord.</th>
+        </tr>
+      </thead>
+      <tbody id="plan-tbody"></tbody>
+    </table>
+  </div>
+  <div id="plan-totals" style="margin-top:18px;"></div>
 </div>
 
 <!-- PROFITABILITY -->
@@ -827,6 +865,7 @@ let S = {
   weeklyLongestStreak: 0,
   weeks:[],
   yearNotes:{},
+  projections:{},
   cats:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},
   events:[],
   g:{
@@ -1522,49 +1561,187 @@ function refreshYearView(){
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
-  let lastMonth='';
+  // Helpers for campaign rollups
+  const campOf = wk => wk<=17?'CI':wk<=34?'CII':'CIII';
+
+  let lastMonth='', lastCamp=null;
   const rows=yearWeeks.map(yw=>{
     const w=weekMap[yw.wk];
-    const note=S.yearNotes[yw.wk]||'';
+    const note=S.yearNotes[yw.wk]||(w&&w.tnote)||'';
     const isVacation=(w && w.isVacation===true) || noteIsVac(note);
     const status=isVacation?'vacation':(w?'worked':'no-data');
+    const proj=S.projections[yw.wk];
 
     if(yearFilter==='worked'&&status!=='worked')return'';
     if(yearFilter==='vacation'&&!isVacation)return'';
     if(yearFilter==='empty'&&status!=='no-data')return'';
 
+    // Campaign divider — emitted when crossing 17→18 and 34→35
+    const camp=campOf(yw.wk);
+    let campDivider='';
+    if(lastCamp && lastCamp!==camp){
+      campDivider=`<tr class="camp-divider"><td colspan="8">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
+    }
+    lastCamp=camp;
+
     let monthRow='';
-    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="8">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
 
-    return monthRow+`<tr class="${status}">
+    return campDivider+monthRow+`<tr class="${status}">
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.ev?fm(w.ev):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.scp?fm(w.scp):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.se?fm(w.se):'—'}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
-      <td style="font-size:12px;">${w&&w.evSh?w.evSh:'—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj&&proj.cpo?fm(proj.cpo):'—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj&&proj.ord?proj.ord:'—'}</td>
       <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
     </tr>`;
   }).join('');
 
-  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+
+  // Bottom totals — per-campaign + YTD
+  const renderTotalsBlock = (label, range) => {
+    const wks = S.weeks.filter(w => w.wk >= range[0] && w.wk <= range[1]);
+    const projWks = Object.keys(S.projections).filter(k => +k >= range[0] && +k <= range[1]).map(k => S.projections[k]);
+    const actCPO = wks.reduce((s,w) => s + (w.cpo||0), 0);
+    const actOrd = wks.reduce((s,w) => s + (w.ord||0), 0);
+    const projCPO = projWks.reduce((s,p) => s + (parseFloat(p.cpo)||0), 0);
+    const projOrd = projWks.reduce((s,p) => s + (parseInt(p.ord)||0), 0);
+    const varCPO = actCPO - projCPO;
+    const varOrd = actOrd - projOrd;
+    const cpoVarPct = projCPO>0 ? Math.round(varCPO/projCPO*100) : null;
+    const ordVarPct = projOrd>0 ? Math.round(varOrd/projOrd*100) : null;
+    const cpoColor = varCPO >= 0 ? 'var(--green)' : 'var(--red)';
+    const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
+    const cpoSign = varCPO >= 0 ? '+' : '';
+    const ordSign = varOrd >= 0 ? '+' : '';
+    return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:.4px;">${label}</div>
+      <div style="display:grid;grid-template-columns:140px 1fr 1fr 1fr;gap:10px;font-size:12px;align-items:center;">
+        <div style="color:var(--text2);font-weight:600;"></div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Actual</div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Projected</div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Variance</div>
+        <div style="color:var(--text);font-weight:600;">Total CPO</div>
+        <div style="text-align:right;font-weight:600;">${fm(actCPO)}</div>
+        <div style="text-align:right;color:var(--blue);">${projCPO>0?fm(projCPO):'—'}</div>
+        <div style="text-align:right;color:${cpoColor};font-weight:600;">${projCPO>0?cpoSign+fm(varCPO)+(cpoVarPct!==null?' ('+cpoSign+cpoVarPct+'%)':''):'—'}</div>
+        <div style="color:var(--text);font-weight:600;">Total Orders</div>
+        <div style="text-align:right;font-weight:600;">${actOrd}</div>
+        <div style="text-align:right;color:var(--blue);">${projOrd>0?projOrd:'—'}</div>
+        <div style="text-align:right;color:${ordColor};font-weight:600;">${projOrd>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
+      </div>
+    </div>`;
+  };
+  document.getElementById('year-totals').innerHTML =
+    `<div style="font-size:11px;color:var(--text2);margin-bottom:10px;letter-spacing:.5px;font-weight:700;">PROGRESS VS PLAN</div>`
+    + renderTotalsBlock('Campaign I (Wks 1–17)', [1,17])
+    + renderTotalsBlock('Campaign II (Wks 18–34)', [18,34])
+    + renderTotalsBlock('Campaign III (Wks 35–52)', [35,52])
+    + renderTotalsBlock('YTD Total', [1,52]);
 }
 
 function saveYearNote(wk,val){
   S.yearNotes[wk]=val;
+  // Keep the week entry's tnote in sync so re-editing in Step 1 reflects inline edits
+  const w=S.weeks.find(x=>x.wk===wk);
+  if(w) w.tnote=val;
 }
 
 function filterYear(f,btn){
   yearFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  // Scope to year-view page so Plan tab buttons aren't affected
+  document.querySelectorAll('#page-yearview .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   refreshYearView();
+}
+
+// ==================== PLAN ====================
+let planCamp='CII'; // default to current-ish campaign
+let saveDebounce=null;
+function debouncedSave(){
+  if(saveDebounce) clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(()=>{ saveToSheets(); }, 1500);
+}
+
+function showPlanCampaign(camp,btn){
+  planCamp=camp;
+  document.querySelectorAll('.plan-camp-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  refreshPlan();
+}
+
+function refreshPlan(){
+  const tbody=document.getElementById('plan-tbody');
+  if(!tbody) return; // page not in DOM yet
+  const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,34] : [35,52];
+  const yearWeeks=buildYearWeeks();
+  const cats=['ev','scp','se','mkt','biz','fed','demo'];
+
+  const rows=[];
+  for(let wk=range[0]; wk<=range[1]; wk++){
+    const yw=yearWeeks[wk-1];
+    if(!yw) continue;
+    const proj=S.projections[wk]||{};
+    const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
+    // Auto-sum total CPO from category fields
+    const totalCPO=cats.reduce((s,c)=>s+(parseFloat(proj[c])||0),0);
+    const cells=cats.map(c=>{
+      const val=proj[c]||'';
+      return `<td><input type="number" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
+    }).join('');
+    rows.push(`<tr>
+      <td style="font-weight:700;">Wk ${wk}</td>
+      <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
+      <td class="plan-total-cell" id="plan-total-${wk}">${totalCPO>0?fm(totalCPO):'—'}</td>
+      ${cells}
+      <td><input type="number" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
+    </tr>`);
+  }
+  tbody.innerHTML=rows.join('');
+
+  // Plan footer totals
+  const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
+  const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.cpo)||0),0);
+  const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
+  const filledWeeks=projWks.filter(p=>(parseFloat(p.cpo)||0)>0).length;
+  const range_size = range[1]-range[0]+1;
+  document.getElementById('plan-totals').innerHTML=`<div class="panel" style="padding:14px 18px;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">${planCamp} Campaign Plan Totals</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:13px;">
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED CPO SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${sumCPO>0?fm(sumCPO):'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED ORDERS SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${sumOrd>0?sumOrd:'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">WEEKS PLANNED</div><div style="font-size:18px;font-weight:700;color:var(--text);">${filledWeeks} / ${range_size}</div></div>
+    </div>
+  </div>`;
+}
+
+function onProjEdit(input){
+  const wk=parseInt(input.dataset.wk);
+  const cat=input.dataset.cat;
+  const val=input.value;
+  if(!S.projections[wk]) S.projections[wk]={};
+  if(val==='' || val===null){
+    delete S.projections[wk][cat];
+  } else {
+    S.projections[wk][cat] = cat==='ord' ? (parseInt(val)||0) : (parseFloat(val)||0);
+  }
+  // Auto-recompute total CPO from category cells (excluding ord)
+  const cats=['ev','scp','se','mkt','biz','fed','demo'];
+  const total = cats.reduce((s,c)=>s+(parseFloat(S.projections[wk][c])||0), 0);
+  S.projections[wk].cpo = total;
+  // Update the total cell in the row inline
+  const totalCell=document.getElementById('plan-total-'+wk);
+  if(totalCell) totalCell.textContent = total>0 ? fm(total) : '—';
+  // Persist (debounced) and refresh dependent views
+  debouncedSave();
+  // Year View depends on projections — refresh if visible
+  if(document.getElementById('page-yearview')?.classList.contains('active')) refreshYearView();
 }
 
 function recalcAllEvents() {
@@ -1722,9 +1899,27 @@ function refreshEntries(){
 }
 
 // ==================== TARGET PANEL ====================
+function onWeekChange(){
+  // When user types a week number in Step 1, prefill target from any existing projection.
+  // Don't overwrite if user already has a value typed in target.
+  const wk=parseInt(document.getElementById('i-wk').value);
+  if(!wk || wk<1 || wk>52) return;
+  const proj=S.projections[wk];
+  const tgtEl=document.getElementById('i-target');
+  if(proj && proj.cpo && (!tgtEl.value || tgtEl.value==='')){
+    tgtEl.value = proj.cpo;
+    updTgt();
+  }
+}
 function updTgt(){
   const tgt=parseFloat(document.getElementById('i-target').value)||0;
   const cpo=parseFloat(document.getElementById('i-cpo').value)||0;
+  // Sync Step 1 target back into projections so Plan tab and Year View stay in lockstep.
+  const wk=parseInt(document.getElementById('i-wk').value);
+  if(wk && wk>=1 && wk<=52 && tgt>0){
+    if(!S.projections[wk]) S.projections[wk]={};
+    S.projections[wk].cpo = tgt;
+  }
   if(tgt>0){
     const p=pct(cpo,tgt),hit=cpo>=tgt;
     document.getElementById('tp-badge').textContent=hit?'Target hit!':p+'% of target';
@@ -1814,6 +2009,14 @@ function submitStats(){
   } else {S.weeks.push(entry);showToast('t1');saveToSheets();}
   S.cats.ev+=entry.ev;S.cats.sc+=entry.scp;S.cats.se+=entry.se;S.cats.mkt+=entry.mkt;S.cats.biz+=entry.biz;
   S.cats.fed+=entry.fed||0;S.cats.demo+=entry.demo||0;
+  // Mirror Step 1 notes into yearNotes so they show in Year View.
+  // Only overwrite if Step 1 had content — preserves any prior inline-edit notes.
+  if(entry.tnote && entry.tnote.trim()){
+    S.yearNotes[entry.wk] = entry.tnote;
+  } else if(S.yearNotes[entry.wk]){
+    // Backfill: inline note exists but Step 1 was empty — promote inline note onto the entry too
+    entry.tnote = S.yearNotes[entry.wk];
+  }
   clearForm();refreshAll();
 }
 
@@ -1853,7 +2056,7 @@ function capDaysOff(){
 }
 
 function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshProfit();refreshEntries();}
+function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();}
 
 // ==================== GOOGLE SHEETS SYNC ====================
 // Paste your Apps Script Web App URL here after setup:
@@ -1878,6 +2081,7 @@ async function saveToSheets(){
       weeklyLongestStreak: S.weeklyLongestStreak,
       weeks: S.weeks,
       yearNotes: S.yearNotes,
+      projections: S.projections,
       cats: S.cats,
       events: S.events,
       g: S.g
