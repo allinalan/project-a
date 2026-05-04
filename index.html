@@ -748,9 +748,9 @@
   <div class="ptitle">Plan <span>Ahead.</span></div>
   <div class="year-filters" style="margin-bottom:14px;">
     <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
-    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I (Wks 1–17)</button>
-    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II (Wks 18–34)</button>
-    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III (Wks 35–52)</button>
+    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I (Jan–Apr · Wks 1–17)</button>
+    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II (May–Aug · Wks 18–35)</button>
+    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III (Sep–Dec · Wks 36–52)</button>
     <span style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
   </div>
   <div class="panel" style="padding:0;overflow:auto;">
@@ -1516,19 +1516,36 @@ function refreshRatios(){
 
 // ==================== YEAR VIEW ====================
 function buildYearWeeks(){
+  // 52 Tue-Mon weeks starting Tue 12/30/2025 (Week 1) ending Mon 12/28/2026 (Week 52).
+  // Month label follows CUTCO's official 2026 Close Out Dates spec — hardcoded because
+  // CUTCO's month boundaries don't follow any simple "majority of days" or "Monday's month"
+  // rule. The cross-month edges (wks 5, 22, 31, 35, 44, 52) are intentional per CUTCO.
   const weeks=[];
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];
-  let weekNum=1,date=new Date('2026-01-06'); // First Tuesday of 2026
-  // Pre-populate 52 weeks starting from Jan 1
-  const startDate=new Date('2026-01-01');
-  let d=new Date(startDate);
-  for(let i=0;i<52;i++){
-    const start=new Date(d);
-    const end=new Date(d);end.setDate(end.getDate()+6);
-    const label=`${months[start.getMonth()]} ${start.getDate()}–${end.getDate()<=daysInMonth[end.getMonth()-1]||end.getMonth()===start.getMonth()?end.getDate():end.getDate()} ${end.getMonth()!==start.getMonth()?months[end.getMonth()]:''}`;
-    const monthLabel=months[start.getMonth()];
-    weeks.push({wk:i+1,startDate:new Date(start),endDate:new Date(end),label:label.trim(),month:monthLabel,monthNum:start.getMonth()});
+  // Map week# → 0-indexed month per CUTCO 2026 close-out chart
+  const monthByWeek = {};
+  const ranges = [
+    [1,5,0],   [6,9,1],   [10,13,2], [14,17,3],
+    [18,22,4], [23,26,5], [27,30,6], [31,35,7],
+    [36,39,8], [40,43,9], [44,47,10],[48,52,11]
+  ];
+  ranges.forEach(([a,b,m]) => { for(let w=a; w<=b; w++) monthByWeek[w] = m; });
+
+  let d = new Date(2025, 11, 30); // Tue Dec 30, 2025
+  for(let i=0; i<52; i++){
+    const start = new Date(d);
+    const end = new Date(d); end.setDate(end.getDate()+6);
+    const wk = i+1;
+    const label = `${months[start.getMonth()]} ${start.getDate()}–${end.getMonth()!==start.getMonth()?months[end.getMonth()]+' ':''}${end.getDate()}`;
+    const monthIdx = monthByWeek[wk];
+    weeks.push({
+      wk,
+      startDate: new Date(start),
+      endDate: new Date(end),
+      label: label.trim(),
+      month: months[monthIdx],
+      monthNum: monthIdx
+    });
     d.setDate(d.getDate()+7);
   }
   return weeks;
@@ -1561,8 +1578,8 @@ function refreshYearView(){
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
-  // Helpers for campaign rollups
-  const campOf = wk => wk<=17?'CI':wk<=34?'CII':'CIII';
+  // Helpers for campaign rollups (CUTCO 2026 official: CI=1-17, CII=18-35, CIII=36-52)
+  const campOf = wk => wk<=17?'CI':wk<=35?'CII':'CIII';
 
   let lastMonth='', lastCamp=null;
   const rows=yearWeeks.map(yw=>{
@@ -1640,9 +1657,9 @@ function refreshYearView(){
   };
   document.getElementById('year-totals').innerHTML =
     `<div style="font-size:11px;color:var(--text2);margin-bottom:10px;letter-spacing:.5px;font-weight:700;">PROGRESS VS PLAN</div>`
-    + renderTotalsBlock('Campaign I (Wks 1–17)', [1,17])
-    + renderTotalsBlock('Campaign II (Wks 18–34)', [18,34])
-    + renderTotalsBlock('Campaign III (Wks 35–52)', [35,52])
+    + renderTotalsBlock('Campaign I (Jan–Apr · Wks 1–17)', [1,17])
+    + renderTotalsBlock('Campaign II (May–Aug · Wks 18–35)', [18,35])
+    + renderTotalsBlock('Campaign III (Sep–Dec · Wks 36–52)', [36,52])
     + renderTotalsBlock('YTD Total', [1,52]);
 }
 
@@ -1679,7 +1696,7 @@ function showPlanCampaign(camp,btn){
 function refreshPlan(){
   const tbody=document.getElementById('plan-tbody');
   if(!tbody) return; // page not in DOM yet
-  const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,34] : [35,52];
+  const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,35] : [36,52];
   const yearWeeks=buildYearWeeks();
   const cats=['ev','scp','se','mkt','biz','fed','demo'];
 
