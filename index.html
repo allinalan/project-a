@@ -161,6 +161,10 @@
   .cpo-cell{font-weight:700;color:var(--blue);}
   .cpo-cell.empty{color:var(--text3);font-weight:400;}
   .month-header td{background:var(--surface3)!important;font-weight:700;font-size:12px;color:var(--blue);padding:6px 10px;}
+  .camp-divider td{background:linear-gradient(90deg,var(--blue),var(--blue2))!important;color:#fff;font-weight:800;font-size:13px;padding:10px 14px;text-align:center;letter-spacing:.5px;border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);}
+  .plan-input{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:6px 8px;border-radius:5px;font-size:12px;font-family:var(--font);text-align:right;}
+  .plan-input:focus{outline:none;border-color:var(--blue);background:var(--blue-light);}
+  .plan-total-cell{font-weight:700;color:var(--blue);background:var(--blue-light);font-size:13px;text-align:right;}
   .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
   .dot-worked{background:var(--green);}
   .dot-vacation{background:var(--gold);}
@@ -208,6 +212,7 @@
     <button class="tab" onclick="showPage('campaign',this)">Campaign</button>
     <button class="tab" onclick="showPage('ratios',this)">Scorecard</button>
     <button class="tab" onclick="showPage('yearview',this)">Year View</button>
+    <button class="tab" onclick="showPage('plan',this)">Plan</button>
     <button class="tab" onclick="showPage('profit',this)">Event Profitability</button>
     <button class="tab" onclick="showPage('enter',this)">Enter Stats</button>
   </div>
@@ -252,9 +257,9 @@
     </div>
   </div>
   <div class="g4">
-    <div class="mc accent"><div class="mlbl">Total CPO (YTD)</div><div class="mval" id="h-cpo">$0</div><div class="msub tm" id="h-cpo-s" onclick="startEditHomeGoal('yr')" style="cursor:pointer;border-bottom:1px dashed var(--text3);display:inline-block;" title="Click to edit goal">0% of $500,000 goal</div><input id="home-goal-yr" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:2px 5px;margin-top:2px;" onblur="saveHomeGoal('yr')" onkeydown="if(event.key==='Enter')saveHomeGoal('yr');if(event.key==='Escape')cancelHomeGoal('yr')"></div>
-    <div class="mc neu"><div class="mlbl">Orders (YTD)</div><div class="mval" id="h-ord">0</div><div class="msub tm" id="h-ord-s">0% of <span id="h-ord-goal-display">759</span> goal</div></div>
-    <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s" onclick="startEditHomeGoal('avg')" style="cursor:pointer;border-bottom:1px dashed var(--text3);display:inline-block;" title="Click to edit goal">Goal: $659</div><input id="home-goal-avg" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:2px 5px;margin-top:2px;" onblur="saveHomeGoal('avg')" onkeydown="if(event.key==='Enter')saveHomeGoal('avg');if(event.key==='Escape')cancelHomeGoal('avg')"></div>
+    <div class="mc accent"><div class="mlbl">Total CPO (YTD)</div><div class="mval" id="h-cpo">$0</div><div class="msub tm" id="h-cpo-s">0% of $500,000 goal</div></div>
+    <div class="mc neu"><div class="mlbl">Orders (YTD)</div><div class="mval" id="h-ord">0</div><div class="msub tm" id="h-ord-s">0% of 759 goal</div></div>
+    <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s">Goal: $659</div></div>
     <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm">~30% of total CPO</div></div>
   </div>
   <div class="g2">
@@ -356,7 +361,7 @@
           <div style="font-size:13px;font-weight:700;color:var(--blue);">Before the Week Starts</div>
         </div>
         <div class="fg">
-          <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16"></div>
+          <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16" oninput="onWeekChange()"></div>
           <div class="fgrp"><label class="flbl">Week Start Date</label><input type="date" class="fin" id="i-dt"></div>
           <div class="fgrp"><label class="flbl">Campaign</label>
             <select class="fin" id="i-camp">
@@ -366,7 +371,14 @@
             </select>
           </div>
           <div class="fgrp"><label class="flbl">My CPO Target ($)</label><input type="number" class="fin" id="i-target" placeholder="e.g. 12000" oninput="updTgt()"></div>
-          <div class="fgrp"><label class="flbl">Days Off Planned</label><input type="number" class="fin" id="i-daysoff" placeholder="0" min="0" max="7"></div>
+          <div class="fgrp">
+            <label class="flbl">Days Off / Vacation</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-bottom:6px;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="i-vac" onchange="toggleVac()" style="width:13px;height:13px;cursor:pointer;flex:0 0 auto;margin:0;">
+              Full vacation week (auto = 7)
+            </label>
+            <input type="number" class="fin" id="i-daysoff" placeholder="0–5" min="0" max="5" oninput="capDaysOff()">
+          </div>
         </div>
         <div class="fgrp" style="margin-top:10px;"><label class="flbl">Week Context / Notes</label><input type="text" class="fin" id="i-tnote" placeholder="e.g. SC push week, out of town event, slow week..."></div>
       </div>
@@ -473,12 +485,6 @@
           <div class="fg">
             <div class="fgrp"><label class="flbl">Event Name</label><input type="text" class="fin" id="p-name" placeholder="e.g. Costco Chandler"></div>
             <div class="fgrp"><label class="flbl">Location / City</label><input type="text" class="fin" id="p-loc" placeholder="e.g. Chandler, AZ"></div>
-            <div class="fgrp"><label class="flbl">Event Type</label>
-              <select class="fin" id="p-event-type">
-                <option value="Traditional">Traditional Event</option>
-                <option value="Service Event">Service Event</option>
-              </select>
-            </div>
             <div class="fgrp"><label class="flbl">Start Date</label><input type="date" class="fin" id="p-dt-start"></div>
             <div class="fgrp"><label class="flbl">End Date</label><input type="date" class="fin" id="p-dt-end"></div>
             <div class="fgrp"><label class="flbl">Campaign</label>
@@ -544,9 +550,9 @@
   <div class="eyebrow">Revenue Breakdown</div>
   <div class="ptitle">Campaign <span>Overview.</span></div>
   <div class="g3">
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign I</div><div class="badge bb">Jan–Apr</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ci-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="ci-goal-display" onclick="startEditGoal('ci')" style="cursor:pointer;border-bottom:1px dashed var(--text3);text-decoration:none;" title="Click to edit">$110,000</span><input id="ci-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:1px 4px;" onblur="saveGoal('ci')" onkeydown="if(event.key==='Enter')saveGoal('ci');if(event.key==='Escape')cancelGoal('ci')"></div><div class="ptrack" style="height:7px;"><div class="pfill fb" id="ci-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ci-p" class="tb">0%</span><span id="ci-g" class="tm">Gap: $110,000</span></div></div>
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign II</div><div class="badge bgy">May–Aug</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="cii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="cii-goal-display" onclick="startEditGoal('cii')" style="cursor:pointer;border-bottom:1px dashed var(--text3);" title="Click to edit">$230,000</span><input id="cii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:1px 4px;" onblur="saveGoal('cii')" onkeydown="if(event.key==='Enter')saveGoal('cii');if(event.key==='Escape')cancelGoal('cii')"></div><div class="ptrack" style="height:7px;"><div class="pfill fb2" id="cii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="cii-p" class="tb">0%</span><span id="cii-g" class="tm">Gap: $230,000</span></div></div>
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy">Sep–Dec</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ciii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="ciii-goal-display" onclick="startEditGoal('ciii')" style="cursor:pointer;border-bottom:1px dashed var(--text3);" title="Click to edit">$160,000</span><input id="ciii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:1px 4px;" onblur="saveGoal('ciii')" onkeydown="if(event.key==='Enter')saveGoal('ciii');if(event.key==='Escape')cancelGoal('ciii')"></div><div class="ptrack" style="height:7px;"><div class="pfill fgr" id="ciii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div></div>
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign I</div><div class="badge bb">Jan–Apr</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ci-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $110,000</div><div class="ptrack" style="height:7px;"><div class="pfill fb" id="ci-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ci-p" class="tb">0%</span><span id="ci-g" class="tm">Gap: $110,000</span></div></div>
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign II</div><div class="badge bgy">May–Aug</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="cii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $230,000</div><div class="ptrack" style="height:7px;"><div class="pfill fb2" id="cii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="cii-p" class="tb">0%</span><span id="cii-g" class="tm">Gap: $230,000</span></div></div>
+    <div class="panel"><div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy">Sep–Dec</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ciii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of $160,000</div><div class="ptrack" style="height:7px;"><div class="pfill fgr" id="ciii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div></div>
   </div>
   <div class="panel" style="margin-bottom:13px;">
     <div class="phead"><div class="ptit2">Revenue by CPO (YTD)</div><div class="badge bb">vs 2026 Goal</div></div>
@@ -560,10 +566,9 @@
     <div class="cr hdr"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div>
     <div id="yoy-rows"></div>
   </div>
-
   <div class="panel" style="margin-top:16px;">
     <div class="phead"><div class="ptit2">Campaign over Campaign</div><div class="badge bgy">2025 vs 2026</div></div>
-    <div id="coc-rows"></div>
+    <div class="cr hdr" style="grid-template-columns:1.4fr 1fr 1fr 1fr;font-size:11px;" id="coc-header"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div><div id="coc-rows"></div>
   </div>
 </div>
 
@@ -726,20 +731,53 @@
       <thead>
         <tr>
           <th style="width:90px;">Dates</th>
-          <th style="width:80px;">Week</th>
+          <th style="width:70px;">Week</th>
           <th style="width:100px;">Total CPO</th>
-          <th style="width:90px;">Event CPO</th>
-          <th style="width:90px;">SC CPO</th>
-          <th style="width:90px;">SE CPO</th>
-          <th style="width:70px;">Orders</th>
-          <th style="width:60px;">Shifts</th>
-          <th style="width:65px;">Days Off</th>
+          <th style="width:80px;">Orders</th>
+          <th style="width:100px;color:var(--blue);">Proj. CPO</th>
+          <th style="width:80px;color:var(--blue);">Proj. Orders</th>
+          <th style="width:70px;">Days Off</th>
           <th>Notes</th>
         </tr>
       </thead>
       <tbody id="year-tbody"></tbody>
     </table>
   </div>
+  <div id="year-totals" style="margin-top:18px;"></div>
+</div>
+
+<!-- PLAN -->
+<div class="page" id="page-plan">
+  <div class="eyebrow">Forecast & Targets</div>
+  <div class="ptitle">Plan <span>Ahead.</span></div>
+  <div class="year-filters" style="margin-bottom:14px;">
+    <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
+    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I (Jan–Apr · Wks 1–17)</button>
+    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II (May–Aug · Wks 18–35)</button>
+    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III (Sep–Dec · Wks 36–52)</button>
+    <span style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:auto;">
+    <table class="year-table" id="plan-table">
+      <thead>
+        <tr>
+          <th style="width:60px;">Wk</th>
+          <th style="width:90px;">Dates</th>
+          <th style="width:95px;background:var(--blue-light);">Total CPO</th>
+          <th style="width:80px;">Event</th>
+          <th style="width:80px;">Svc Call</th>
+          <th style="width:80px;">Svc Event</th>
+          <th style="width:80px;">Mkt</th>
+          <th style="width:80px;">Biz Gift</th>
+          <th style="width:80px;">Federal</th>
+          <th style="width:80px;">Demo</th>
+          <th style="width:80px;background:var(--blue-light);">Total Ord.</th>
+        </tr>
+      </thead>
+      <tbody id="plan-tbody"></tbody>
+    </table>
+  </div>
+  <div id="plan-totals" style="margin-top:18px;"></div>
 </div>
 
 <!-- PROFITABILITY -->
@@ -829,20 +867,17 @@ let S = {
   ],
   weeklyStreak: 0,
   weeklyLongestStreak: 0,
-  weeks:[],
+  weeks:[{"week":"Jan Wk 1","start_date":"2025-12-30","end_date":"2026-01-05","cpo":0.0,"ord":0,"camp":"CI","dt":"2025-12-30","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":2,"wk":1,"_seb":0,"_sec":0},{"week":"Jan Wk 2","start_date":"2026-01-06","end_date":"2026-01-12","cpo":7058.0,"ord":17,"camp":"CI","dt":"2026-01-06","ev":6816.0,"evOrd":15,"evSh":3,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":242.0,"mktOrd":2,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":1,"wk":2,"_seb":0,"_sec":0},{"week":"Jan Wk 3","start_date":"2026-01-13","end_date":"2026-01-19","cpo":714.0,"ord":1,"camp":"CI","dt":"2026-01-13","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":714.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":3,"_seb":0,"_sec":0},{"week":"Jan Wk 4","start_date":"2026-01-20","end_date":"2026-01-26","cpo":25693.0,"ord":34,"camp":"CI","dt":"2026-01-20","ev":24297.0,"evOrd":33,"evSh":6,"scp":0.0,"sco":0,"scb":3,"scc":2,"se":0.0,"seOrd":0,"mkt":1396.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":6,"wk":4,"_seb":0,"_sec":0},{"week":"Jan Wk 5","start_date":"2026-01-27","end_date":"2026-02-02","cpo":9478.0,"ord":19,"camp":"CI","dt":"2026-01-27","ev":6256.0,"evOrd":11,"evSh":2,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":2216.0,"seOrd":7,"mkt":1006.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":6,"wk":5,"_seb":10,"_sec":10},{"week":"Feb Wk 1","start_date":"2026-02-03","end_date":"2026-02-09","cpo":0.0,"ord":0,"camp":"CI","dt":"2026-02-03","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":6,"_seb":0,"_sec":0},{"week":"Feb Wk 2","start_date":"2026-02-10","end_date":"2026-02-16","cpo":2466.0,"ord":7,"camp":"CI","dt":"2026-02-10","ev":2001.0,"evOrd":5,"evSh":2,"scp":465.0,"sco":2,"scb":4,"scc":4,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":6,"wk":7,"_seb":0,"_sec":0},{"week":"Feb Wk 3","start_date":"2026-02-17","end_date":"2026-02-23","cpo":11489.0,"ord":27,"camp":"CI","dt":"2026-02-17","ev":7925.0,"evOrd":23,"evSh":3,"scp":194.0,"sco":1,"scb":4,"scc":4,"se":0.0,"seOrd":0,"mkt":3370.0,"mktOrd":3,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":2,"wk":8,"_seb":0,"_sec":0},{"week":"Feb Wk 4","start_date":"2026-02-24","end_date":"2026-03-02","cpo":7997.0,"ord":12,"camp":"CI","dt":"2026-02-24","ev":0.0,"evOrd":0,"evSh":0,"scp":2148.0,"sco":2,"scb":2,"scc":2,"se":5343.0,"seOrd":9,"mkt":506.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":9,"_seb":16,"_sec":14},{"week":"Mar Wk 1","start_date":"2026-03-03","end_date":"2026-03-09","cpo":5401.0,"ord":14,"camp":"CI","dt":"2026-03-03","ev":5191.0,"evOrd":12,"evSh":3,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":210.0,"mktOrd":2,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":5,"wk":10,"_seb":3,"_sec":0},{"week":"Mar Wk 2","start_date":"2026-03-10","end_date":"2026-03-16","cpo":2024.0,"ord":4,"camp":"CI","dt":"2026-03-10","ev":97.0,"evOrd":1,"evSh":0,"scp":163.0,"sco":1,"scb":1,"scc":1,"se":1764.0,"seOrd":2,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":3,"wk":11,"_seb":3,"_sec":3},{"week":"Mar Wk 3","start_date":"2026-03-17","end_date":"2026-03-23","cpo":213.0,"ord":2,"camp":"CI","dt":"2026-03-17","ev":185.0,"evOrd":1,"evSh":0,"scp":0.0,"sco":0,"scb":2,"scc":2,"se":0.0,"seOrd":0,"mkt":28.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":4,"wk":12,"_seb":0,"_sec":0},{"week":"Mar Wk 4","start_date":"2026-03-24","end_date":"2026-03-30","cpo":12355.0,"ord":15,"camp":"CI","dt":"2026-03-24","ev":12355.0,"evOrd":15,"evSh":3,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":2,"wk":13,"_seb":1,"_sec":1},{"week":"Apr Wk 1","start_date":"2026-03-31","end_date":"2026-04-06","cpo":2234.0,"ord":6,"camp":"CI","dt":"2026-03-31","ev":0.0,"evOrd":0,"evSh":0,"scp":967.0,"sco":2,"scb":4,"scc":3,"se":1038.0,"seOrd":3,"mkt":229.0,"mktOrd":1,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":14,"_seb":7,"_sec":6},{"week":"Apr Wk 2","start_date":"2026-04-07","end_date":"2026-04-13","cpo":3637.0,"ord":3,"camp":"CI","dt":"2026-04-07","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":3637.0,"mktOrd":3,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":1,"wk":15,"_seb":0,"_sec":0},{"week":"Apr Wk 3","start_date":"2026-04-14","end_date":"2026-04-20","cpo":0.0,"ord":0,"camp":"CI","dt":"2026-04-14","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":16,"_seb":0,"_sec":0},{"week":"Apr Wk 4","start_date":"2026-04-21","end_date":"2026-04-27","cpo":22092.0,"ord":23,"camp":"CI","dt":"2026-04-21","ev":20100.0,"evOrd":18,"evSh":3,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":1992.0,"seOrd":5,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":1,"wk":17,"_seb":5,"_sec":5},{"week":"May Wk 1","start_date":"2026-04-28","end_date":"2026-05-04","cpo":15843.0,"ord":11,"camp":"CII","dt":"2026-04-28","ev":15843.0,"evOrd":11,"evSh":3,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":1,"_skipped":2,"wk":18,"_seb":0,"_sec":0},{"week":"May Wk 2","start_date":"2026-05-05","end_date":"2026-05-11","cpo":0.0,"ord":0,"camp":"CII","dt":"2026-05-05","ev":0.0,"evOrd":0,"evSh":0,"scp":0.0,"sco":0,"scb":0,"scc":0,"se":0.0,"seOrd":0,"mkt":0.0,"mktOrd":0,"biz":0.0,"bizOrd":0,"fed":0,"fedOrd":0,"fedSh":0,"demo":0,"demoOrd":0,"demoBooked":0,"demoComp":0,"target":0,"tnote":"","daysOff":0,"_skipped":0,"wk":19,"_seb":0,"_sec":0}],
   yearNotes:{},
+  projections:{},
   cats:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},
   events:[],
   g:{
     yr:500000,ord:759,scC:237,ci:110000,cii:230000,ciii:160000,
     cr:88,comp:92,avg:659,scAvg:807,
     cats:{ev:175000,sc:155000,se:50000,mkt:50000,biz:60000,fed:0,demo:0},
-    p25:{ev:185335,sc:131615,se:24150,mkt:48174,biz:38297},
-    p25c:{
-      ci: {ev:68294,  sc:12991,  se:19383, mkt:6273,  biz:0},
-      cii:{ev:69857,  sc:107413, se:0,     mkt:21245, biz:0},
-      ciii:{ev:47184, sc:11211,  se:4767,  mkt:20656, biz:38297}
-    }
+    p25:{ev:185335,sc:131615,se:24150,mkt:48174,biz:38297}
+  ,p25c:{ci:{ev:68294,sc:12991,se:19383,mkt:6273,biz:0},cii:{ev:69857,sc:107413,se:0,mkt:21245,biz:0},ciii:{ev:47184,sc:11211,se:4767,mkt:20656,biz:38297}}
   }
 };
 let editIdx=-1;
@@ -924,15 +959,11 @@ function refreshHome(){
   renderDailyOne();
   renderWeeklyStandards();
   document.getElementById('h-cpo').textContent=fm(t.cpo);
-  document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of '+fm(S.g.yr)+' goal';
-  document.getElementById('h-cpo-s').title='Click to edit goal';
+  document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of $500,000 goal';
   document.getElementById('h-ord').textContent=t.ord;
-  document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of '+S.g.ord+' goal';
-  const ordGoalDisp=document.getElementById('h-ord-goal-display');
-  if(ordGoalDisp)ordGoalDisp.textContent=S.g.ord;
+  document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of 759 goal';
   document.getElementById('h-profit').textContent=fm(Math.round(t.cpo*0.30));
-  if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=ok?'↑ Above '+fm(S.g.avg)+' goal':'↓ Below '+fm(S.g.avg)+' goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
-  else{document.getElementById('h-avg-s').textContent='Goal: '+fm(S.g.avg);}
+  if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=ok?'↑ Above $659 goal':'↓ Below $659 goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
   const sp=pct(t.cpo,S.g.yr),op=pct(t.ord,S.g.ord),sp2=pct(t.scc,S.g.scC);
   ['s','o','sc'].forEach((k,i)=>{document.getElementById('pr-'+k).style.width=[sp,op,sp2][i]+'%';});
   document.getElementById('pr-s-l').textContent=fm(t.cpo)+' / $500,000';
@@ -1160,8 +1191,6 @@ function saveStandardsEdit() {
 function refreshCampaign(){
   const t=totals();
   [['ci',t.ci,S.g.ci],['cii',t.cii,S.g.cii],['ciii',t.ciii,S.g.ciii]].forEach(([id,a,g])=>{
-    const disp=document.getElementById(id+'-goal-display');
-    if(disp)disp.textContent=fm(g);
     const p=pct(a,g);
     document.getElementById(id+'-a').textContent=fm(a);
     document.getElementById(id+'-b').style.width=p+'%';
@@ -1199,7 +1228,7 @@ function refreshCampaign(){
       <div style="${cii?'':dim}">${cii?fm(cii):'—'}</div>
       <div style="${ciii?'':dim}">${ciii?fm(ciii):'—'}</div>
       <div style="font-weight:700;">${tot?fm(tot):'—'}</div>
-      <div style="color:var(--text2);cursor:pointer;border-bottom:1px dashed var(--text3);" onclick="startEditCatGoal('${c.k}')" title="Click to edit">${fm(c.g)}</div><input id="cat-goal-input-${c.k}" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--blue);border-radius:4px;padding:1px 4px;" onblur="saveCatGoal('${c.k}')" onkeydown="if(event.key==='Enter')saveCatGoal('${c.k}');if(event.key==='Escape')cancelCatGoal('${c.k}')">
+      <div style="color:var(--text2);">${fm(c.g)}</div>
       <div style="font-weight:700;color:${col};">${p}%</div>
     </div>`;
   }).join('');
@@ -1210,19 +1239,8 @@ function refreshCampaign(){
     return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(p25)}</div><div>${fm(p26)}</div><div style="font-weight:700;color:${yoy===null?'var(--text3)':yoy>=0?'var(--green)':'var(--red)'};">${yoy!==null?(yoy>=0?'+':'')+yoy+'%':'—'}</div></div>`;
   }).join('');
 
-  // Campaign over Campaign — 2025 vs 2026 per campaign
-  const cocEl=document.getElementById('coc-rows');
-  if(cocEl){
-    const byCamp26={ci:{ev:0,sc:0,se:0,mkt:0,biz:0},cii:{ev:0,sc:0,se:0,mkt:0,biz:0},ciii:{ev:0,sc:0,se:0,mkt:0,biz:0}};
-    S.weeks.forEach(w=>{
-      const cp=(w.camp||'CI').toLowerCase();
-      if(!byCamp26[cp])return;
-      byCamp26[cp].ev+=(w.ev||0);
-      byCamp26[cp].sc+=(w.scp||0);
-      byCamp26[cp].se+=(w.se||0);
-      byCamp26[cp].mkt+=(w.mkt||0);
-      byCamp26[cp].biz+=(w.biz||0);
-    });
+  // Campaign over Campaign (2025 vs 2026 per campaign)
+  if(S.g&&S.g.p25c){
     const cocCats=[
       {k:'ev', l:'Events'},
       {k:'sc', l:'Service Calls'},
@@ -1230,39 +1248,20 @@ function refreshCampaign(){
       {k:'mkt',l:'Marketing / Phone'},
       {k:'biz',l:'Biz Gift / Realtor'}
     ];
-    const campLabels=[
-      {id:'ci',  label:'Campaign I',   dates:'Jan–Apr'},
-      {id:'cii', label:'Campaign II',  dates:'May–Aug'},
-      {id:'ciii',label:'Campaign III', dates:'Sep–Dec'}
-    ];
-    cocEl.innerHTML = campLabels.map(camp=>{
-      const p25c = (S.g.p25c&&S.g.p25c[camp.id])||{};
-      const c26  = byCamp26[camp.id]||{};
-      const rows = cocCats.map(c=>{
-        const v25 = p25c[c.k]||0;
-        const v26 = c26[c.k]||0;
-        const chg = v25>0&&v26>0 ? Math.round((v26-v25)/v25*100) : null;
-        const chgColor = chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
-        const chgTxt = chg!==null?(chg>=0?'+':'')+chg+'%':'—';
-        return`<div class="cr" style="grid-template-columns:1.4fr 1fr 1fr 1fr;">
-          <div style="font-weight:600;color:var(--text2);font-size:12px;">${c.l}</div>
-          <div style="font-size:13px;">${v25>0?fm(v25):'—'}</div>
-          <div style="font-size:13px;font-weight:600;">${v26>0?fm(v26):'—'}</div>
-          <div style="font-weight:700;color:${chgColor};font-size:13px;">${chgTxt}</div>
-        </div>`;
+    const cocCamps=[['CI','ci'],['CII','cii'],['CIII','ciii']];
+    let cocHtml='';
+    cocCamps.forEach(([label,key])=>{
+      const p25c=S.g.p25c[key]||{};
+      const p26c=cc[label]||{};
+      const rowsHtml=cocCats.map(c=>{
+        const v25=p25c[c.k]||0,v26=p26c[c.k]||0;
+        const chg=v25>0?Math.round((v26-v25)/v25*100):null;
+        const col=chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
+        return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
       }).join('');
-      return`
-        <div style="margin-bottom:16px;">
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 0 6px;border-bottom:1.5px solid var(--border);">
-            <span style="font-size:13px;font-weight:700;color:var(--text);">${camp.label}</span>
-            <span style="font-size:11px;color:var(--text2);">${camp.dates}</span>
-          </div>
-          <div class="cr hdr" style="grid-template-columns:1.4fr 1fr 1fr 1fr;font-size:11px;padding:6px 0 4px;">
-            <div>Category</div><div>2025</div><div>2026</div><div>Change</div>
-          </div>
-          ${rows}
-        </div>`;
-    }).join('');
+      if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div>${rowsHtml}`;
+    });
+    document.getElementById('coc-rows').innerHTML=cocHtml||'<div style="color:var(--text3);padding:12px 0;">No 2025 data (add p25c to goals)</div>';
   }
 }
 
@@ -1547,19 +1546,36 @@ function refreshRatios(){
 
 // ==================== YEAR VIEW ====================
 function buildYearWeeks(){
+  // 52 Tue-Mon weeks starting Tue 12/30/2025 (Week 1) ending Mon 12/28/2026 (Week 52).
+  // Month label follows CUTCO's official 2026 Close Out Dates spec — hardcoded because
+  // CUTCO's month boundaries don't follow any simple "majority of days" or "Monday's month"
+  // rule. The cross-month edges (wks 5, 22, 31, 35, 44, 52) are intentional per CUTCO.
   const weeks=[];
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];
-  let weekNum=1,date=new Date('2026-01-06'); // First Tuesday of 2026
-  // Pre-populate 52 weeks starting from Jan 1
-  const startDate=new Date('2026-01-01');
-  let d=new Date(startDate);
-  for(let i=0;i<52;i++){
-    const start=new Date(d);
-    const end=new Date(d);end.setDate(end.getDate()+6);
-    const label=`${months[start.getMonth()]} ${start.getDate()}–${end.getDate()<=daysInMonth[end.getMonth()-1]||end.getMonth()===start.getMonth()?end.getDate():end.getDate()} ${end.getMonth()!==start.getMonth()?months[end.getMonth()]:''}`;
-    const monthLabel=months[start.getMonth()];
-    weeks.push({wk:i+1,startDate:new Date(start),endDate:new Date(end),label:label.trim(),month:monthLabel,monthNum:start.getMonth()});
+  // Map week# → 0-indexed month per CUTCO 2026 close-out chart
+  const monthByWeek = {};
+  const ranges = [
+    [1,5,0],   [6,9,1],   [10,13,2], [14,17,3],
+    [18,22,4], [23,26,5], [27,30,6], [31,35,7],
+    [36,39,8], [40,43,9], [44,47,10],[48,52,11]
+  ];
+  ranges.forEach(([a,b,m]) => { for(let w=a; w<=b; w++) monthByWeek[w] = m; });
+
+  let d = new Date(2025, 11, 30); // Tue Dec 30, 2025
+  for(let i=0; i<52; i++){
+    const start = new Date(d);
+    const end = new Date(d); end.setDate(end.getDate()+6);
+    const wk = i+1;
+    const label = `${months[start.getMonth()]} ${start.getDate()}–${end.getMonth()!==start.getMonth()?months[end.getMonth()]+' ':''}${end.getDate()}`;
+    const monthIdx = monthByWeek[wk];
+    weeks.push({
+      wk,
+      startDate: new Date(start),
+      endDate: new Date(end),
+      label: label.trim(),
+      month: months[monthIdx],
+      monthNum: monthIdx
+    });
     d.setDate(d.getDate()+7);
   }
   return weeks;
@@ -1572,60 +1588,216 @@ function refreshYearView(){
   S.weeks.forEach(w=>{weekMap[w.wk]=w;});
   const threshold=parseFloat(document.getElementById('comm-rate')?.value)||45;
 
+  // Backward-compat: infer isVacation for legacy weeks (one-time normalization, idempotent)
+  S.weeks.forEach(w=>{ if(w.isVacation===undefined) w.isVacation=((w.daysOff||0)>=7); });
+
+  // Helper: a week counts as vacation if explicit toggle is on, OR a note keyword matches
+  const noteIsVac=n=>{const t=(n||'').toLowerCase();return t.includes('vacation')||t.includes('honeymoon')||t.includes('off')||t.includes('wedding');};
+
   // Summary cards
-  const workedCount=S.weeks.length;
+  const entriesCount=S.weeks.length;                              // all logged weeks (incl vacation)
+  const workedCount=S.weeks.filter(w=>!w.isVacation).length;      // for avg CPO denominator
   const totalCPO=S.weeks.reduce((s,w)=>s+(w.cpo||0),0);
   const totalDaysOff=S.weeks.reduce((s,w)=>s+(w.daysOff||0),0);
-  const vacationCount=Object.values(S.yearNotes).filter(n=>n.toLowerCase().includes('vacation')||n.toLowerCase().includes('honeymoon')||n.toLowerCase().includes('off')||n.toLowerCase().includes('wedding')).length;
+  const vacationWkSet=new Set(S.weeks.filter(w=>w.isVacation).map(w=>w.wk));
+  Object.entries(S.yearNotes).forEach(([wk,n])=>{ if(noteIsVac(n)) vacationWkSet.add(parseInt(wk)); });
+  const vacationCount=vacationWkSet.size;
   document.getElementById('ys-cards').innerHTML=`
-    <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${workedCount}</div><div class="msub tm">of 52 weeks</div></div>
-    <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${workedCount} weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${entriesCount}</div><div class="msub tm">of 52 weeks</div></div>
+    <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${entriesCount} weeks</div></div>
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
-  let lastMonth='';
+  // Helpers for campaign rollups (CUTCO 2026 official: CI=1-17, CII=18-35, CIII=36-52)
+  const campOf = wk => wk<=17?'CI':wk<=35?'CII':'CIII';
+
+  let lastMonth='', lastCamp=null;
   const rows=yearWeeks.map(yw=>{
     const w=weekMap[yw.wk];
-    const note=S.yearNotes[yw.wk]||'';
-    const isVacation=note.toLowerCase().includes('vacation')||note.toLowerCase().includes('honeymoon')||note.toLowerCase().includes('off')||note.toLowerCase().includes('wedding');
-    const status=w?'worked':(isVacation?'vacation':'no-data');
+    const note=S.yearNotes[yw.wk]||(w&&w.tnote)||'';
+    const isVacation=(w && w.isVacation===true) || noteIsVac(note);
+    const status=isVacation?'vacation':(w?'worked':'no-data');
+    const proj=S.projections[yw.wk];
 
     if(yearFilter==='worked'&&status!=='worked')return'';
     if(yearFilter==='vacation'&&!isVacation)return'';
-    if(yearFilter==='empty'&&(status==='worked'||isVacation))return'';
+    if(yearFilter==='empty'&&status!=='no-data')return'';
+
+    // Campaign divider — emitted when crossing 17→18 and 34→35
+    const camp=campOf(yw.wk);
+    let campDivider='';
+    if(lastCamp && lastCamp!==camp){
+      campDivider=`<tr class="camp-divider"><td colspan="8">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
+    }
+    lastCamp=camp;
 
     let monthRow='';
-    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="8">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
 
-    return monthRow+`<tr class="${status}">
+    return campDivider+monthRow+`<tr class="${status}">
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.ev?fm(w.ev):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.scp?fm(w.scp):'—'}</td>
-      <td style="font-size:12px;color:var(--text2);">${w&&w.se?fm(w.se):'—'}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
-      <td style="font-size:12px;">${w&&w.evSh?w.evSh:'—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj ? fm(proj.cpo||0) : '—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
     </tr>`;
   }).join('');
 
-  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+
+  // Bottom totals — per-campaign + YTD
+  const renderTotalsBlock = (label, range) => {
+    const wks = S.weeks.filter(w => w.wk >= range[0] && w.wk <= range[1]);
+    const projWks = Object.keys(S.projections).filter(k => +k >= range[0] && +k <= range[1]).map(k => S.projections[k]);
+    const actCPO = wks.reduce((s,w) => s + (w.cpo||0), 0);
+    const actOrd = wks.reduce((s,w) => s + (w.ord||0), 0);
+    const projCPO = projWks.reduce((s,p) => s + (parseFloat(p.cpo)||0), 0);
+    const projOrd = projWks.reduce((s,p) => s + (parseInt(p.ord)||0), 0);
+    const varCPO = actCPO - projCPO;
+    const varOrd = actOrd - projOrd;
+    const cpoVarPct = projCPO>0 ? Math.round(varCPO/projCPO*100) : null;
+    const ordVarPct = projOrd>0 ? Math.round(varOrd/projOrd*100) : null;
+    const cpoColor = varCPO >= 0 ? 'var(--green)' : 'var(--red)';
+    const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
+    const cpoSign = varCPO >= 0 ? '+' : '';
+    const ordSign = varOrd >= 0 ? '+' : '';
+    return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:.4px;">${label}</div>
+      <div style="display:grid;grid-template-columns:140px 1fr 1fr 1fr;gap:10px;font-size:12px;align-items:center;">
+        <div style="color:var(--text2);font-weight:600;"></div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Actual</div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Projected</div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Variance</div>
+        <div style="color:var(--text);font-weight:600;">Total CPO</div>
+        <div style="text-align:right;font-weight:600;">${fm(actCPO)}</div>
+        <div style="text-align:right;color:var(--blue);">${projWks.length>0?fm(projCPO):'—'}</div>
+        <div style="text-align:right;color:${cpoColor};font-weight:600;">${projWks.length>0?cpoSign+fm(varCPO)+(cpoVarPct!==null?' ('+cpoSign+cpoVarPct+'%)':''):'—'}</div>
+        <div style="color:var(--text);font-weight:600;">Total Orders</div>
+        <div style="text-align:right;font-weight:600;">${actOrd}</div>
+        <div style="text-align:right;color:var(--blue);">${projWks.length>0?projOrd:'—'}</div>
+        <div style="text-align:right;color:${ordColor};font-weight:600;">${projWks.length>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
+      </div>
+    </div>`;
+  };
+  document.getElementById('year-totals').innerHTML =
+    `<div style="font-size:11px;color:var(--text2);margin-bottom:10px;letter-spacing:.5px;font-weight:700;">PROGRESS VS PLAN</div>`
+    + renderTotalsBlock('Campaign I (Jan–Apr · Wks 1–17)', [1,17])
+    + renderTotalsBlock('Campaign II (May–Aug · Wks 18–35)', [18,35])
+    + renderTotalsBlock('Campaign III (Sep–Dec · Wks 36–52)', [36,52])
+    + renderTotalsBlock('YTD Total', [1,52]);
 }
 
 function saveYearNote(wk,val){
   S.yearNotes[wk]=val;
+  // Keep the week entry's tnote in sync so re-editing in Step 1 reflects inline edits
+  const w=S.weeks.find(x=>x.wk===wk);
+  if(w) w.tnote=val;
 }
 
 function filterYear(f,btn){
   yearFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  // Scope to year-view page so Plan tab buttons aren't affected
+  document.querySelectorAll('#page-yearview .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   refreshYearView();
+}
+
+// ==================== PLAN ====================
+let planCamp='CII'; // default to current-ish campaign
+let saveDebounce=null;
+function debouncedSave(){
+  if(saveDebounce) clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(()=>{ saveToSheets(); }, 1500);
+}
+
+function showPlanCampaign(camp,btn){
+  planCamp=camp;
+  document.querySelectorAll('.plan-camp-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  refreshPlan();
+}
+
+function refreshPlan(){
+  const tbody=document.getElementById('plan-tbody');
+  if(!tbody) return; // page not in DOM yet
+  const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,35] : [36,52];
+  const yearWeeks=buildYearWeeks();
+  const cats=['ev','scp','se','mkt','biz','fed','demo'];
+
+  const rows=[];
+  for(let wk=range[0]; wk<=range[1]; wk++){
+    const yw=yearWeeks[wk-1];
+    if(!yw) continue;
+    const proj=S.projections[wk]||{};
+    const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
+    // Auto-sum total CPO from category fields
+    const totalCPO=cats.reduce((s,c)=>s+(parseFloat(proj[c])||0),0);
+    const cells=cats.map(c=>{
+      const val=proj[c]||'';
+      return `<td><input type="number" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
+    }).join('');
+    rows.push(`<tr>
+      <td style="font-weight:700;">Wk ${wk}</td>
+      <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
+      <td class="plan-total-cell" id="plan-total-${wk}">${S.projections[wk]?fm(totalCPO):'—'}</td>
+      ${cells}
+      <td><input type="number" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
+    </tr>`);
+  }
+  tbody.innerHTML=rows.join('');
+
+  // Plan footer totals
+  const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
+  const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.cpo)||0),0);
+  const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
+  // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
+  const filledWeeks=projWks.length;
+  const range_size = range[1]-range[0]+1;
+  document.getElementById('plan-totals').innerHTML=`<div class="panel" style="padding:14px 18px;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">${planCamp} Campaign Plan Totals</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:13px;">
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED CPO SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?fm(sumCPO):'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED ORDERS SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?sumOrd:'—'}</div></div>
+      <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">WEEKS PLANNED</div><div style="font-size:18px;font-weight:700;color:var(--text);">${filledWeeks} / ${range_size}</div></div>
+    </div>
+  </div>`;
+}
+
+function onProjEdit(input){
+  const wk=parseInt(input.dataset.wk);
+  const cat=input.dataset.cat;
+  const val=input.value;
+  if(!S.projections[wk]) S.projections[wk]={};
+  if(val==='' || val===null){
+    delete S.projections[wk][cat];
+  } else {
+    S.projections[wk][cat] = cat==='ord' ? (parseInt(val)||0) : (parseFloat(val)||0);
+  }
+  // Auto-recompute total CPO from category cells
+  const cats=['ev','scp','se','mkt','biz','fed','demo'];
+  const total = cats.reduce((s,c)=>s+(parseFloat(S.projections[wk][c])||0), 0);
+  // Cleanup: if user has cleared every input field, drop the whole projection entry.
+  // Otherwise keep cpo in sync with the category sum (could be 0 — explicit "planned 0" week).
+  const hasAnyCat = cats.some(c => S.projections[wk][c] !== undefined);
+  const hasOrd = S.projections[wk].ord !== undefined;
+  if (!hasAnyCat && !hasOrd) {
+    delete S.projections[wk];
+  } else {
+    S.projections[wk].cpo = total;
+  }
+  // Update the total cell display
+  const totalCell=document.getElementById('plan-total-'+wk);
+  if(totalCell) totalCell.textContent = S.projections[wk] ? fm(total) : '—';
+  // Persist (debounced) and refresh dependent views
+  debouncedSave();
+  // Year View depends on projections — refresh if visible
+  if(document.getElementById('page-yearview')?.classList.contains('active')) refreshYearView();
 }
 
 function recalcAllEvents() {
@@ -1681,7 +1853,6 @@ function calcProfit(){
 
 function addEvent(){
   const name=document.getElementById('p-name').value;
-  const eventType=document.getElementById('p-event-type').value;
   if(!name){alert('Please enter an event name.');return;}
   const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
   const shifts=parseInt(document.getElementById('p-shifts').value)||0;
@@ -1701,9 +1872,8 @@ function addEvent(){
   const dtDisplay = dtStart && dtEnd ? `${formatDate(dtStart)} – ${formatDate(dtEnd)}` : dtStart ? formatDate(dtStart) : '';
   const loc=document.getElementById('p-loc').value;
   const camp=document.getElementById('p-camp').value;
-  S.events.push({name,loc,camp,eventType,cpo,shifts,ord,comm,hotel,gas,food,tolls,other,totalExp,net,dt:dtStart,dtDisplay});
+  S.events.push({name,loc,camp,cpo,shifts,ord,comm,hotel,gas,food,tolls,other,totalExp,net,dt:dtStart,dtDisplay});
   ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other'].forEach(id=>{document.getElementById(id).value='';});
-  document.getElementById('p-event-type').value='Traditional';;
   document.getElementById('p-comm').value='';document.getElementById('p-total-exp').value='';document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';
   showToast('t3');refreshProfit();
 }
@@ -1755,7 +1925,7 @@ function refreshProfit(){
     return`<div class="prof-event ${hit?'hit':'miss'}">
       <div class="prof-event-header">
         <div>
-          <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&S.events.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''} <span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;background:${e.eventType==='Service Event'?'var(--gold-light)':'var(--blue-light)'};color:${e.eventType==='Service Event'?'var(--gold)':'var(--blue)'};">${e.eventType||'Traditional'}</span></div>
+          <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&S.events.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''}</div>
           <div class="prof-event-meta">${e.loc?e.loc+' · ':''}${e.dtDisplay||e.dt||''}${e.shifts?' · '+e.shifts+' shifts':''} · ${e.camp}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -1785,9 +1955,27 @@ function refreshEntries(){
 }
 
 // ==================== TARGET PANEL ====================
+function onWeekChange(){
+  // When user types a week number in Step 1, prefill target from any existing projection.
+  // Don't overwrite if user already has a value typed in target.
+  const wk=parseInt(document.getElementById('i-wk').value);
+  if(!wk || wk<1 || wk>52) return;
+  const proj=S.projections[wk];
+  const tgtEl=document.getElementById('i-target');
+  if(proj && proj.cpo && (!tgtEl.value || tgtEl.value==='')){
+    tgtEl.value = proj.cpo;
+    updTgt();
+  }
+}
 function updTgt(){
   const tgt=parseFloat(document.getElementById('i-target').value)||0;
   const cpo=parseFloat(document.getElementById('i-cpo').value)||0;
+  // Sync Step 1 target back into projections so Plan tab and Year View stay in lockstep.
+  const wk=parseInt(document.getElementById('i-wk').value);
+  if(wk && wk>=1 && wk<=52 && tgt>0){
+    if(!S.projections[wk]) S.projections[wk]={};
+    S.projections[wk].cpo = tgt;
+  }
   if(tgt>0){
     const p=pct(cpo,tgt),hit=cpo>=tgt;
     document.getElementById('tp-badge').textContent=hit?'Target hit!':p+'% of target';
@@ -1835,6 +2023,13 @@ function editWeek(idx){
   const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||'']];
   map.forEach(([id,val])=>{document.getElementById(id).value=val;});
   document.getElementById('i-camp').value=w.camp;
+  // Restore vacation toggle state (with backward-compat: infer from daysOff if missing)
+  const vacChk=document.getElementById('i-vac');
+  if(vacChk){
+    const inferred = (w.isVacation===undefined) ? ((w.daysOff||0)>=7) : !!w.isVacation;
+    vacChk.checked = inferred;
+    toggleVac();
+  }
   calcAll();calcShifts();
   document.getElementById('edbanner').style.display='flex';document.getElementById('ed-wk-lbl').textContent=w.wk;
   document.getElementById('save-btn').textContent='Update Week →';document.getElementById('save-btn').style.background='var(--blue2)';
@@ -1858,7 +2053,8 @@ function submitStats(){
     fed:parseFloat(g('i-fed').value)||0,fedOrd:parseInt(g('i-fed-ord').value)||0,fedSh:parseInt(g('i-fed-sh').value)||0,
     demo:parseFloat(g('i-demo').value)||0,demoOrd:parseInt(g('i-demo-ord').value)||0,demoBooked:parseInt(g('i-demo-booked').value)||0,demoComp:parseInt(g('i-demo-comp').value)||0,
     target:parseFloat(g('i-target').value)||0,tnote:g('i-tnote').value,
-    daysOff:parseInt(g('i-daysoff').value)||0
+    daysOff: g('i-vac')?.checked ? 7 : Math.min(parseInt(g('i-daysoff').value)||0, 5),
+    isVacation: !!g('i-vac')?.checked
   };
   const rep=g('i-rep')?.value; // field removed, safe no-op
   if(editIdx>=0){
@@ -1869,6 +2065,14 @@ function submitStats(){
   } else {S.weeks.push(entry);showToast('t1');saveToSheets();}
   S.cats.ev+=entry.ev;S.cats.sc+=entry.scp;S.cats.se+=entry.se;S.cats.mkt+=entry.mkt;S.cats.biz+=entry.biz;
   S.cats.fed+=entry.fed||0;S.cats.demo+=entry.demo||0;
+  // Mirror Step 1 notes into yearNotes so they show in Year View.
+  // Only overwrite if Step 1 had content — preserves any prior inline-edit notes.
+  if(entry.tnote && entry.tnote.trim()){
+    S.yearNotes[entry.wk] = entry.tnote;
+  } else if(S.yearNotes[entry.wk]){
+    // Backfill: inline note exists but Step 1 was empty — promote inline note onto the entry too
+    entry.tnote = S.yearNotes[entry.wk];
+  }
   clearForm();refreshAll();
 }
 
@@ -1876,104 +2080,43 @@ function clearForm(){
   ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
+  const vacChk=document.getElementById('i-vac');
+  if(vacChk){ vacChk.checked=false; toggleVac(); }
   calcShifts();
 }
 
-function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshProfit();refreshEntries();}
-
-// ── Home Goal Editing ────────────────────────────────────────
-function startEditHomeGoal(key){
-  const sub = document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
-  const inp = document.getElementById('home-goal-'+key);
-  if(!sub||!inp) return;
-  inp.value = S.g[key];
-  sub.style.display='none';
-  inp.style.display='inline-block';
-  inp.focus(); inp.select();
-}
-function saveHomeGoal(key){
-  const sub = document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
-  const inp = document.getElementById('home-goal-'+key);
-  if(!sub||!inp) return;
-  const val = parseInt(inp.value)||0;
-  if(val>0){
-    S.g[key] = val;
-    // Auto-calc orders from CPO goal and avg order goal
-    if(key==='yr'||key==='avg'){
-      const avgOrd = S.g.avg||659;
-      const yrGoal = S.g.yr||500000;
-      S.g.ord = Math.round(yrGoal / avgOrd);
-    }
+// ==================== VACATION TOGGLE ====================
+function toggleVac(){
+  const chk=document.getElementById('i-vac');
+  const inp=document.getElementById('i-daysoff');
+  if(!chk||!inp) return;
+  if(chk.checked){
+    inp.value='';
+    inp.disabled=true;
+    inp.style.opacity='0.4';
+    inp.style.cursor='not-allowed';
+    inp.placeholder='—';
+  } else {
+    inp.disabled=false;
+    inp.style.opacity='1';
+    inp.style.cursor='';
+    inp.placeholder='0–5';
   }
-  inp.style.display='none';
-  sub.style.display='inline-block';
-  refreshAll();
 }
-function cancelHomeGoal(key){
-  const sub = document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
-  const inp = document.getElementById('home-goal-'+key);
-  if(!sub||!inp) return;
-  inp.style.display='none';
-  sub.style.display='inline-block';
+function capDaysOff(){
+  const inp=document.getElementById('i-daysoff');
+  if(!inp) return;
+  const v=parseInt(inp.value)||0;
+  if(v>5) inp.value=5;
+  if(v<0) inp.value=0;
 }
-// ────────────────────────────────────────────────────────────
 
-// ── Inline Goal Editing ─────────────────────────────────────
-function startEditGoal(camp){
-  const display=document.getElementById(camp+'-goal-display');
-  const input=document.getElementById(camp+'-goal-input');
-  if(!display||!input)return;
-  input.value=S.g[camp];
-  display.style.display='none';
-  input.style.display='inline-block';
-  input.focus();input.select();
-}
-function saveGoal(camp){
-  const display=document.getElementById(camp+'-goal-display');
-  const input=document.getElementById(camp+'-goal-input');
-  if(!display||!input)return;
-  const val=parseInt(input.value)||0;
-  if(val>0){S.g[camp]=val;}
-  input.style.display='none';
-  display.style.display='inline';
-  refreshCampaign();
-}
-function cancelGoal(camp){
-  const display=document.getElementById(camp+'-goal-display');
-  const input=document.getElementById(camp+'-goal-input');
-  if(!display||!input)return;
-  input.style.display='none';
-  display.style.display='inline';
-}
-function startEditCatGoal(k){
-  const input=document.getElementById('cat-goal-input-'+k);
-  if(!input)return;
-  input.value=S.g.cats[k]||0;
-  input.previousElementSibling.style.display='none';
-  input.style.display='inline-block';
-  input.focus();input.select();
-}
-function saveCatGoal(k){
-  const input=document.getElementById('cat-goal-input-'+k);
-  if(!input)return;
-  const val=parseInt(input.value)||0;
-  if(val>=0){S.g.cats[k]=val;}
-  input.style.display='none';
-  if(input.previousElementSibling)input.previousElementSibling.style.display='';
-  refreshCampaign();
-}
-function cancelCatGoal(k){
-  const input=document.getElementById('cat-goal-input-'+k);
-  if(!input)return;
-  input.style.display='none';
-  if(input.previousElementSibling)input.previousElementSibling.style.display='';
-}
-// ────────────────────────────────────────────────────────────
+function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();}
 
-
+// ==================== GOOGLE SHEETS SYNC ====================
 // Paste your Apps Script Web App URL here after setup:
-const SHEETS_URL = '';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwNs30VNs_MOB_wcncimXfF8eUpIqmE5RzNkO3u1pnOKv-B8ABYNmHImIChu_4tIvJ0aw/exec';
 
 function syncStatus(msg, color='var(--text2)'){
   const el = document.getElementById('sync-status');
@@ -1994,6 +2137,7 @@ async function saveToSheets(){
       weeklyLongestStreak: S.weeklyLongestStreak,
       weeks: S.weeks,
       yearNotes: S.yearNotes,
+      projections: S.projections,
       cats: S.cats,
       events: S.events,
       g: S.g
@@ -2029,11 +2173,63 @@ async function loadFromSheets(){
 }
 
 // Auto-load on page open if URL is set
-if(SHEETS_URL){
-  loadFromSheets();
-} else {
+function startEditGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  input.value=S.g[camp];
+  display.style.display='none';
+  input.style.display='inline-block';
+  input.focus();input.select();
+}
+function saveGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  const val=parseInt(input.value)||0;
+  if(val>0){S.g[camp]=val;}
+  input.style.display='none';
+  display.style.display='inline';
+  refreshCampaign();
+}
+function cancelGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  input.style.display='none';
+  display.style.display='inline';
+}
+function startEditHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  inp.value=S.g[key];
+  sub.style.display='none';
+  inp.style.display='inline-block';
+  inp.focus();inp.select();
+}
+function saveHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  const val=parseInt(inp.value)||0;
+  if(val>0){
+    S.g[key]=val;
+    if(key==='yr'||key==='avg'){S.g.ord=Math.round(S.g.yr/S.g.avg);}
+  }
+  inp.style.display='none';
+  sub.style.display='inline-block';
   refreshAll();
 }
+function cancelHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  inp.style.display='none';
+  sub.style.display='inline-block';
+}
+
+refreshAll();
 
 </script>
 </body>
