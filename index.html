@@ -568,7 +568,7 @@
   </div>
   <div class="panel" style="margin-top:16px;">
     <div class="phead"><div class="ptit2">Campaign over Campaign</div><div class="badge bgy">2025 vs 2026</div></div>
-    <div id="coc-rows"></div>
+    <div class="cr hdr" style="grid-template-columns:1.4fr 1fr 1fr 1fr;font-size:11px;" id="coc-header"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div><div id="coc-rows"></div>
   </div>
 </div>
 
@@ -1255,11 +1255,10 @@ function refreshCampaign(){
       const p26c=cc[label]||{};
       const rowsHtml=cocCats.map(c=>{
         const v25=p25c[c.k]||0,v26=p26c[c.k]||0;
-        if(!v25&&!v26)return '';
         const chg=v25>0?Math.round((v26-v25)/v25*100):null;
         const col=chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
         return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
-      }).filter(Boolean).join('');
+      }).join('');
       if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div>${rowsHtml}`;
     });
     document.getElementById('coc-rows').innerHTML=cocHtml||'<div style="color:var(--text3);padding:12px 0;">No 2025 data (add p25c to goals)</div>';
@@ -2174,6 +2173,62 @@ async function loadFromSheets(){
 }
 
 // Auto-load on page open if URL is set
+function startEditGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  input.value=S.g[camp];
+  display.style.display='none';
+  input.style.display='inline-block';
+  input.focus();input.select();
+}
+function saveGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  const val=parseInt(input.value)||0;
+  if(val>0){S.g[camp]=val;}
+  input.style.display='none';
+  display.style.display='inline';
+  refreshCampaign();
+}
+function cancelGoal(camp){
+  const display=document.getElementById(camp+'-goal-display');
+  const input=document.getElementById(camp+'-goal-input');
+  if(!display||!input)return;
+  input.style.display='none';
+  display.style.display='inline';
+}
+function startEditHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  inp.value=S.g[key];
+  sub.style.display='none';
+  inp.style.display='inline-block';
+  inp.focus();inp.select();
+}
+function saveHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  const val=parseInt(inp.value)||0;
+  if(val>0){
+    S.g[key]=val;
+    if(key==='yr'||key==='avg'){S.g.ord=Math.round(S.g.yr/S.g.avg);}
+  }
+  inp.style.display='none';
+  sub.style.display='inline-block';
+  refreshAll();
+}
+function cancelHomeGoal(key){
+  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  const inp=document.getElementById('home-goal-'+key);
+  if(!sub||!inp)return;
+  inp.style.display='none';
+  sub.style.display='inline-block';
+}
+
 refreshAll();
 
 </script>
