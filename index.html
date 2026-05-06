@@ -1196,6 +1196,8 @@ function refreshCampaign(){
     document.getElementById(id+'-b').style.width=p+'%';
     document.getElementById(id+'-p').textContent=p+'%';
     document.getElementById(id+'-g').textContent='Gap: '+fm(Math.max(0,g-a));
+    var disp=document.getElementById(id+'-goal-display');
+    if(disp)disp.textContent=fm(g);
   });
 
   // Per-campaign category breakdown from weekly entries
