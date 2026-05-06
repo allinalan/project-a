@@ -1700,6 +1700,7 @@ function saveYearNote(wk,val){
   // Keep the week entry's tnote in sync so re-editing in Step 1 reflects inline edits
   const w=S.weeks.find(x=>x.wk===wk);
   if(w) w.tnote=val;
+  saveGoalsToLocal();
 }
 
 function filterYear(f,btn){
@@ -2116,11 +2117,23 @@ function capDaysOff(){
 function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function saveGoalsToLocal(){
   try{
+    var weekData={};
+    S.weeks.forEach(function(w){
+      if(w.tnote||w.daysOff||w.isVacation){
+        weekData[w.wk]={
+          tnote:w.tnote||'',
+          daysOff:w.daysOff||0,
+          isVacation:w.isVacation||false
+        };
+      }
+    });
     localStorage.setItem('cc_goals', JSON.stringify({
       yr:S.g.yr, ord:S.g.ord, avg:S.g.avg,
       ci:S.g.ci, cii:S.g.cii, ciii:S.g.ciii,
       cats:S.g.cats
     }));
+    localStorage.setItem('cc_week_notes', JSON.stringify(weekData));
+    localStorage.setItem('cc_year_notes', JSON.stringify(S.yearNotes||{}));
   }catch(e){}
 }
 
@@ -2137,6 +2150,21 @@ function loadGoalsFromLocal(){
       if(g.ciii)S.g.ciii=g.ciii;
       if(g.cats)Object.assign(S.g.cats,g.cats);
     }
+  }catch(e){}
+  try{
+    var wn=localStorage.getItem('cc_week_notes');
+    if(wn){
+      var weekData=JSON.parse(wn);
+      S.weeks.forEach(function(w){
+        if(weekData[w.wk]){
+          w.tnote=weekData[w.wk].tnote||w.tnote||'';
+          w.daysOff=weekData[w.wk].daysOff||w.daysOff||0;
+          w.isVacation=weekData[w.wk].isVacation||w.isVacation||false;
+        }
+      });
+    }
+    var yn=localStorage.getItem('cc_year_notes');
+    if(yn)S.yearNotes=JSON.parse(yn);
   }catch(e){}
 }
 
