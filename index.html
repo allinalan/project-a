@@ -959,11 +959,11 @@ function refreshHome(){
   renderDailyOne();
   renderWeeklyStandards();
   document.getElementById('h-cpo').textContent=fm(t.cpo);
-  document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of $500,000 goal';
+  document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of '+fm(S.g.yr)+' goal';
   document.getElementById('h-ord').textContent=t.ord;
-  document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of 759 goal';
+  document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of '+S.g.ord+' goal';
   document.getElementById('h-profit').textContent=fm(Math.round(t.cpo*0.30));
-  if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=ok?'↑ Above $659 goal':'↓ Below $659 goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
+  if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=(ok?'↑ Above ':'↓ Below ')+fm(S.g.avg)+' goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
   const sp=pct(t.cpo,S.g.yr),op=pct(t.ord,S.g.ord),sp2=pct(t.scc,S.g.scC);
   ['s','o','sc'].forEach((k,i)=>{document.getElementById('pr-'+k).style.width=[sp,op,sp2][i]+'%';});
   document.getElementById('pr-s-l').textContent=fm(t.cpo)+' / $500,000';
@@ -2183,13 +2183,16 @@ function startEditGoal(camp){
   input.focus();input.select();
 }
 function saveGoal(camp){
-  const display=document.getElementById(camp+'-goal-display');
-  const input=document.getElementById(camp+'-goal-input');
-  if(!display||!input)return;
-  const val=parseInt(input.value)||0;
-  if(val>0){S.g[camp]=val;}
-  input.style.display='none';
-  display.style.display='inline';
+  var d=document.getElementById(camp+'-goal-display');
+  var i=document.getElementById(camp+'-goal-input');
+  if(!d||!i)return;
+  var v=parseInt(i.value)||0;
+  if(v>0){
+    S.g[camp]=v;
+    d.textContent=fm(v);
+  }
+  i.style.display='none';
+  d.style.display='inline';
   refreshCampaign();
 }
 function cancelGoal(camp){
@@ -2209,16 +2212,16 @@ function startEditHomeGoal(key){
   inp.focus();inp.select();
 }
 function saveHomeGoal(key){
-  const sub=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
-  const inp=document.getElementById('home-goal-'+key);
-  if(!sub||!inp)return;
-  const val=parseInt(inp.value)||0;
-  if(val>0){
-    S.g[key]=val;
+  var s=document.getElementById(key==='yr'?'h-cpo-s':'h-avg-s');
+  var i=document.getElementById('home-goal-'+key);
+  if(!s||!i)return;
+  var v=parseInt(i.value)||0;
+  if(v>0){
+    S.g[key]=v;
     if(key==='yr'||key==='avg'){S.g.ord=Math.round(S.g.yr/S.g.avg);}
   }
-  inp.style.display='none';
-  sub.style.display='inline-block';
+  i.style.display='none';
+  s.style.display='inline-block';
   refreshAll();
 }
 function cancelHomeGoal(key){
