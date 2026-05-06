@@ -568,7 +568,7 @@
   </div>
   <div class="panel" style="margin-top:16px;">
     <div class="phead"><div class="ptit2">Campaign over Campaign</div><div class="badge bgy">2025 vs 2026</div></div>
-    <div class="cr hdr" style="grid-template-columns:1.4fr 1fr 1fr 1fr;font-size:11px;" id="coc-header"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div><div id="coc-rows"></div>
+    <div class="cr hdr" style="grid-template-columns:1.5fr 1fr 1fr 1fr;font-size:11px;" id="coc-header"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div><div id="coc-rows"></div>
   </div>
 </div>
 
@@ -1257,7 +1257,7 @@ function refreshCampaign(){
         const v25=p25c[c.k]||0,v26=p26c[c.k]||0;
         const chg=v25>0?Math.round((v26-v25)/v25*100):null;
         const col=chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
-        return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
+        return`<div class="cr" style="grid-template-columns:1.5fr 1fr 1fr 1fr;"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
       }).join('');
       if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div>${rowsHtml}`;
     });
@@ -2228,6 +2228,10 @@ function cancelHomeGoal(key){
   inp.style.display='none';
   sub.style.display='inline-block';
 }
+
+function startEditCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;i.value=S.g.cats[k]||0;d.style.display='none';i.style.display='inline-block';i.focus();i.select();}
+function saveCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;var v=parseFloat(i.value)||0;if(v>0)S.g.cats[k]=v;i.style.display='none';d.style.display='inline';refreshCampaign();}
+function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;i.style.display='none';d.style.display='inline';}
 
 refreshAll();
 
