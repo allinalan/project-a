@@ -2112,6 +2112,32 @@ function capDaysOff(){
 }
 
 function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function saveGoalsToLocal(){
+  try{
+    localStorage.setItem('cc_goals', JSON.stringify({
+      yr:S.g.yr, ord:S.g.ord, avg:S.g.avg,
+      ci:S.g.ci, cii:S.g.cii, ciii:S.g.ciii,
+      cats:S.g.cats
+    }));
+  }catch(e){}
+}
+
+function loadGoalsFromLocal(){
+  try{
+    var saved=localStorage.getItem('cc_goals');
+    if(saved){
+      var g=JSON.parse(saved);
+      if(g.yr)S.g.yr=g.yr;
+      if(g.ord)S.g.ord=g.ord;
+      if(g.avg)S.g.avg=g.avg;
+      if(g.ci)S.g.ci=g.ci;
+      if(g.cii)S.g.cii=g.cii;
+      if(g.ciii)S.g.ciii=g.ciii;
+      if(g.cats)Object.assign(S.g.cats,g.cats);
+    }
+  }catch(e){}
+}
+
 function refreshAll(){
   S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0};
   S.weeks.forEach(function(w){
@@ -2201,6 +2227,7 @@ function saveGoal(camp){
   var v=parseInt(i.value)||0;
   if(v>0){
     S.g[camp]=v;
+    saveGoalsToLocal();
     d.textContent=fm(v);
   }
   i.style.display='none';
@@ -2230,6 +2257,7 @@ function saveHomeGoal(key){
   var v=parseInt(i.value)||0;
   if(v>0){
     S.g[key]=v;
+    saveGoalsToLocal();
     if(key==='yr'||key==='avg'){S.g.ord=Math.round(S.g.yr/S.g.avg);}
   }
   i.style.display='none';
@@ -2245,9 +2273,10 @@ function cancelHomeGoal(key){
 }
 
 function startEditCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;i.value=S.g.cats[k]||0;d.style.display='none';i.style.display='inline-block';i.focus();i.select();}
-function saveCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;var v=parseFloat(i.value)||0;if(v>0)S.g.cats[k]=v;i.style.display='none';d.style.display='inline';refreshCampaign();}
+function saveCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;var v=parseFloat(i.value)||0;if(v>0){S.g.cats[k]=v;saveGoalsToLocal();}i.style.display='none';d.style.display='inline';refreshCampaign();}
 function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;i.style.display='none';d.style.display='inline';}
 
+loadGoalsFromLocal();
 refreshAll();
 
 </script>
