@@ -1642,7 +1642,7 @@ function refreshYearView(){
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
-      <td style="font-size:12px;color:var(--blue);">${proj ? fm(proj.cpo||0) : '—'}</td>
+      <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
@@ -1657,7 +1657,7 @@ function refreshYearView(){
     const projWks = Object.keys(S.projections).filter(k => +k >= range[0] && +k <= range[1]).map(k => S.projections[k]);
     const actCPO = wks.reduce((s,w) => s + (w.cpo||0), 0);
     const actOrd = wks.reduce((s,w) => s + (w.ord||0), 0);
-    const projCPO = projWks.reduce((s,p) => s + (parseFloat(p.cpo)||0), 0);
+    const projCPO = projWks.reduce((s,p) => s + (parseFloat(p.ev)||0)+(parseFloat(p.sc)||0)+(parseFloat(p.se)||0)+(parseFloat(p.mkt)||0)+(parseFloat(p.biz)||0)+(parseFloat(p.fed)||0)+(parseFloat(p.demo)||0), 0);
     const projOrd = projWks.reduce((s,p) => s + (parseInt(p.ord)||0), 0);
     const varCPO = actCPO - projCPO;
     const varOrd = actOrd - projOrd;
@@ -1754,7 +1754,7 @@ function refreshPlan(){
 
   // Plan footer totals
   const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
-  const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.cpo)||0),0);
+  const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.ev)||0)+(parseFloat(p.sc)||0)+(parseFloat(p.se)||0)+(parseFloat(p.mkt)||0)+(parseFloat(p.biz)||0)+(parseFloat(p.fed)||0)+(parseFloat(p.demo)||0),0);
   const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
   // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
   const filledWeeks=projWks.length;
@@ -2112,7 +2112,19 @@ function capDaysOff(){
 }
 
 function showToast(id){const t=document.getElementById(id);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function refreshAll(){refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();}
+function refreshAll(){
+  S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0};
+  S.weeks.forEach(function(w){
+    S.cats.ev+=(w.ev||0);
+    S.cats.sc+=(w.scp||0);
+    S.cats.se+=(w.se||0);
+    S.cats.mkt+=(w.mkt||0);
+    S.cats.biz+=(w.biz||0);
+    S.cats.fed+=(w.fed||0);
+    S.cats.demo+=(w.demo||0);
+  });
+  refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();
+}
 
 // ==================== GOOGLE SHEETS SYNC ====================
 // Paste your Apps Script Web App URL here after setup:
