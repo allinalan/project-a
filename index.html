@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project A — Rep HUB</title>
+<title>Command Center — CSP Autopilot</title>
 <style>
   :root {
     --bg:#f0f4f9;--surface:#fff;--surface2:#f5f8fc;--surface3:#e8eef6;
@@ -206,7 +206,7 @@
 <body>
 
 <nav>
-  <div class="logo">Project <span>A.</span></div>
+  <div class="logo">Command <span>Center.</span></div>
   <div class="tabs">
     <button class="tab active" onclick="showPage('home',this)">Home</button>
     <button class="tab" onclick="showPage('campaign',this)">Campaign</button>
@@ -566,6 +566,10 @@
     <div class="cr hdr"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div>
     <div id="yoy-rows"></div>
   </div>
+  <div class="panel" style="margin-top:16px;">
+    <div class="phead"><div class="ptit2">Campaign over Campaign</div><div class="badge bgy">2025 vs 2026</div></div>
+    <div id="coc-rows"></div>
+  </div>
 </div>
 
 <!-- RATIOS -->
@@ -873,6 +877,7 @@ let S = {
     cr:88,comp:92,avg:659,scAvg:807,
     cats:{ev:175000,sc:155000,se:50000,mkt:50000,biz:60000,fed:0,demo:0},
     p25:{ev:185335,sc:131615,se:24150,mkt:48174,biz:38297}
+  ,p25c:{ci:{ev:68294,sc:12991,se:19383,mkt:6273,biz:0},cii:{ev:69857,sc:107413,se:0,mkt:21245,biz:0},ciii:{ev:47184,sc:11211,se:4767,mkt:20656,biz:38297}}
   }
 };
 let editIdx=-1;
@@ -1233,6 +1238,32 @@ function refreshCampaign(){
     const yoy=p26>0&&p25>0?Math.round((p26-p25)/p25*100):null;
     return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(p25)}</div><div>${fm(p26)}</div><div style="font-weight:700;color:${yoy===null?'var(--text3)':yoy>=0?'var(--green)':'var(--red)'};">${yoy!==null?(yoy>=0?'+':'')+yoy+'%':'—'}</div></div>`;
   }).join('');
+
+  // Campaign over Campaign (2025 vs 2026 per campaign)
+  if(S.g&&S.g.p25c){
+    const cocCats=[
+      {k:'ev', l:'Events'},
+      {k:'sc', l:'Service Calls'},
+      {k:'se', l:'Service Events'},
+      {k:'mkt',l:'Marketing / Phone'},
+      {k:'biz',l:'Biz Gift / Realtor'}
+    ];
+    const cocCamps=[['CI','ci'],['CII','cii'],['CIII','ciii']];
+    let cocHtml='';
+    cocCamps.forEach(([label,key])=>{
+      const p25c=S.g.p25c[key]||{};
+      const p26c=cc[label]||{};
+      const rowsHtml=cocCats.map(c=>{
+        const v25=p25c[c.k]||0,v26=p26c[c.k]||0;
+        if(!v25&&!v26)return '';
+        const chg=v25>0?Math.round((v26-v25)/v25*100):null;
+        const col=chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
+        return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
+      }).filter(Boolean).join('');
+      if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div>${rowsHtml}`;
+    });
+    document.getElementById('coc-rows').innerHTML=cocHtml||'<div style="color:var(--text3);padding:12px 0;">No 2025 data (add p25c to goals)</div>';
+  }
 }
 
 // ==================== RATIOS ====================
