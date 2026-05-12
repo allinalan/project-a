@@ -520,6 +520,22 @@
           </div>
         </div>
 
+        <div class="fs">
+          <div class="fsl" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Additional Charges <span style="font-size:11px;color:var(--text2);font-weight:400;">— anything not covered above</span></span>
+            <button type="button" onclick="addManualCharge()" style="background:var(--blue);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);">+ Add Charge</button>
+          </div>
+          <div id="p-manual-charges" style="display:flex;flex-direction:column;gap:6px;"></div>
+          <div id="p-manual-charges-empty" style="font-size:11px;color:var(--text3);text-align:center;padding:8px 0;">No additional charges. Click "+ Add Charge" to add one.</div>
+        </div>
+
+        <div class="fs"><div class="fsl">Cash Orders <span style="font-size:11px;color:var(--text2);font-weight:400;">— straight cash, product handed out on-site (does NOT count toward CPO/Orders)</span></div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Cash Orders (#)</label><input type="number" class="fin" id="p-cash-count" placeholder="0" min="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Cash Revenue ($)</label><input type="number" class="fin" id="p-cash-rev" placeholder="0" min="0" oninput="calcProfit()"></div>
+          </div>
+        </div>
+
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:13px;font-weight:700;">Net Profit</span>
@@ -528,7 +544,14 @@
           <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="p-net-note">Enter CPO and expenses to calculate.</div>
         </div>
 
-        <button class="bp" style="background:var(--blue);" onclick="addEvent()">Add Event to Profitability →</button>
+        <div id="event-edit-banner" style="display:none;background:var(--blue-light);border:1.5px solid var(--blue);border-radius:8px;padding:9px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;">
+          <div style="font-size:12px;color:var(--blue);font-weight:600;">Editing: <span id="event-edit-name"></span></div>
+          <button type="button" onclick="cancelEventEdit()" style="background:transparent;border:1px solid var(--blue);color:var(--blue);font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;cursor:pointer;font-family:var(--font);">Cancel Edit</button>
+        </div>
+        <div style="display:flex;gap:9px;">
+          <button class="bp" id="event-save-btn" style="background:var(--blue);" onclick="saveEvent()">Add Event to Profitability →</button>
+          <button class="bs" type="button" onclick="clearEventForm()" style="display:none;" id="event-clear-btn">Clear</button>
+        </div>
       </div>
 
     </div>
@@ -1821,7 +1844,8 @@ function recalcAllEvents() {
   const rate = (parseFloat(document.getElementById('comm-rate').value)||45) / 100;
   S.events.forEach(e => {
     e.comm = Math.round((e.cpo||0) * rate);
-    e.net = e.comm - (e.totalExp||0);
+    // Backward-compat: cashRevenue || 0 for events created before this field existed
+    e.net = e.comm + (e.cashRevenue||0) - (e.totalExp||0);
   });
   refreshProfit();
 }
@@ -1856,10 +1880,15 @@ function calcProfit(){
   const food=parseFloat(document.getElementById('p-food').value)||0;
   const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
   const other=parseFloat(document.getElementById('p-other').value)||0;
-  const totalExp=booth+hotel+gas+food+tolls+other;
+  // Sum manual charges from the working state array
+  const manualSum = (formManualCharges||[]).reduce((s,c)=>s+(parseFloat(c.amount)||0),0);
+  const cashRev = parseFloat(document.getElementById('p-cash-rev')?.value)||0;
+  const totalExp=booth+hotel+gas+food+tolls+other+manualSum;
   document.getElementById('p-total-exp').value=totalExp>0?fm(totalExp):'';
-  const net=comm-totalExp;
-  if(cpo>0){
+  const net=comm + cashRev - totalExp;
+  // Show preview if there's ANY meaningful input (cpo, cash, or expenses)
+  const hasInput = cpo>0 || cashRev>0 || totalExp>0;
+  if(hasInput){
     const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
     const ok=net>=threshold;
     document.getElementById('p-net-preview').textContent=fm(net);
@@ -1868,12 +1897,34 @@ function calcProfit(){
   } else {document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';}
 }
 
-function addEvent(){
-  const name=document.getElementById('p-name').value;
-  if(!name){alert('Please enter an event name.');return;}
+// ==================== EVENT EDIT STATE ====================
+let editEventIdx = -1;           // -1 = adding, else = editing this index
+let formManualCharges = [];      // working draft of charges in the form
+
+function renderManualCharges(){
+  const container = document.getElementById('p-manual-charges');
+  const emptyMsg = document.getElementById('p-manual-charges-empty');
+  if(!container) return;
+  if(formManualCharges.length === 0){
+    container.innerHTML = '';
+    if(emptyMsg) emptyMsg.style.display = 'block';
+    return;
+  }
+  if(emptyMsg) emptyMsg.style.display = 'none';
+  container.innerHTML = formManualCharges.map((c,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 130px 30px;gap:8px;align-items:center;">
+      <input type="text" class="fin" placeholder="What was it for? (e.g. Samples)" value="${(c.label||'').replace(/"/g,'&quot;')}" oninput="updateCharge(${i},'label',this.value)">
+      <input type="number" class="fin" placeholder="Amount $" value="${c.amount||''}" oninput="updateCharge(${i},'amount',this.value); calcProfit()">
+      <button type="button" onclick="removeManualCharge(${i})" style="background:transparent;border:1px solid var(--border);color:var(--red);font-size:14px;font-weight:700;padding:5px 0;border-radius:5px;cursor:pointer;font-family:var(--font);">×</button>
+    </div>
+  `).join('');
+}
+function addManualCharge(){ formManualCharges.push({label:'',amount:''}); renderManualCharges(); calcProfit(); }
+function removeManualCharge(idx){ formManualCharges.splice(idx,1); renderManualCharges(); calcProfit(); }
+function updateCharge(idx, field, val){ if(formManualCharges[idx]) formManualCharges[idx][field] = val; }
+
+function readEventFromForm(){
   const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
-  const shifts=parseInt(document.getElementById('p-shifts').value)||0;
-  const ord=parseInt(document.getElementById('p-ord').value)||0;
   const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
   const comm=Math.round(cpo*rate);
   const costTotal=parseFloat(document.getElementById('p-cost-total').value)||0;
@@ -1882,20 +1933,118 @@ function addEvent(){
   const food=parseFloat(document.getElementById('p-food').value)||0;
   const tolls=parseFloat(document.getElementById('p-tolls').value)||0;
   const other=parseFloat(document.getElementById('p-other').value)||0;
-  const totalExp=costTotal+hotel+gas+food+tolls+other;
-  const net=comm-totalExp;
+  // Filter out empty charge rows on save
+  const manualCharges = formManualCharges
+    .map(c => ({label:(c.label||'').trim(), amount:parseFloat(c.amount)||0}))
+    .filter(c => c.label || c.amount > 0);
+  const manualSum = manualCharges.reduce((s,c)=>s+c.amount,0);
+  const totalExp = costTotal+hotel+gas+food+tolls+other+manualSum;
+  const cashOrders = parseInt(document.getElementById('p-cash-count').value)||0;
+  const cashRevenue = parseFloat(document.getElementById('p-cash-rev').value)||0;
+  const net = comm + cashRevenue - totalExp;
   const dtStart = document.getElementById('p-dt-start').value;
   const dtEnd = document.getElementById('p-dt-end').value;
   const dtDisplay = dtStart && dtEnd ? `${formatDate(dtStart)} – ${formatDate(dtEnd)}` : dtStart ? formatDate(dtStart) : '';
-  const loc=document.getElementById('p-loc').value;
-  const camp=document.getElementById('p-camp').value;
-  S.events.push({name,loc,camp,cpo,shifts,ord,comm,hotel,gas,food,tolls,other,totalExp,net,dt:dtStart,dtDisplay});
-  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other'].forEach(id=>{document.getElementById(id).value='';});
-  document.getElementById('p-comm').value='';document.getElementById('p-total-exp').value='';document.getElementById('p-net-preview').textContent='—';document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';
-  showToast('t3');refreshProfit();
+  return {
+    name: document.getElementById('p-name').value,
+    loc: document.getElementById('p-loc').value,
+    camp: document.getElementById('p-camp').value,
+    cpo,
+    shifts: parseInt(document.getElementById('p-shifts').value)||0,
+    ord: parseInt(document.getElementById('p-ord').value)||0,
+    comm,
+    hotel, gas, food, tolls, other,
+    totalExp, net,
+    dt: dtStart, dtDisplay,
+    manualCharges,
+    cashOrders,
+    cashRevenue
+  };
 }
 
-function deleteEvent(idx){S.events.splice(idx,1);refreshProfit();}
+function saveEvent(){
+  const name = document.getElementById('p-name').value;
+  if(!name){ alert('Please enter an event name.'); return; }
+  const entry = readEventFromForm();
+  if(editEventIdx >= 0){
+    S.events[editEventIdx] = entry;
+    editEventIdx = -1;
+    document.getElementById('event-edit-banner').style.display = 'none';
+    document.getElementById('event-save-btn').textContent = 'Add Event to Profitability →';
+    document.getElementById('event-clear-btn').style.display = 'none';
+    showToast('t2'); // reuse "Updated" toast
+  } else {
+    S.events.push(entry);
+    showToast('t3'); // existing "Event added" toast
+  }
+  clearEventForm();
+  refreshProfit();
+}
+
+// Keep addEvent as alias so any legacy callers don't break
+function addEvent(){ saveEvent(); }
+
+function editEvent(idx){
+  const e = S.events[idx];
+  if(!e) return;
+  editEventIdx = idx;
+  // Populate basic fields
+  const set = (id,val) => { const el = document.getElementById(id); if(el) el.value = val ?? ''; };
+  set('p-name', e.name);
+  set('p-loc', e.loc);
+  set('p-dt-start', e.dt);
+  set('p-dt-end', ''); // not stored individually — leave blank, user can re-enter if needed
+  set('p-camp', e.camp);
+  set('p-cpo', e.cpo);
+  set('p-shifts', e.shifts);
+  set('p-ord', e.ord);
+  set('p-cost-total', ''); // booth wasn't stored separately on old events; user can re-enter
+  set('p-hotel', e.hotel);
+  set('p-gas', e.gas);
+  set('p-food', e.food);
+  set('p-tolls', e.tolls);
+  set('p-other', e.other);
+  set('p-cash-count', e.cashOrders||0);
+  set('p-cash-rev', e.cashRevenue||0);
+  // Load manual charges
+  formManualCharges = (e.manualCharges||[]).map(c => ({label:c.label, amount:c.amount}));
+  renderManualCharges();
+  // Update banner + buttons
+  document.getElementById('event-edit-banner').style.display = 'flex';
+  document.getElementById('event-edit-name').textContent = e.name;
+  document.getElementById('event-save-btn').textContent = 'Update Event →';
+  document.getElementById('event-clear-btn').style.display = 'inline-block';
+  // Refresh net preview
+  calcProfit();
+  // Scroll user to the form
+  document.getElementById('p-name')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function cancelEventEdit(){
+  editEventIdx = -1;
+  document.getElementById('event-edit-banner').style.display = 'none';
+  document.getElementById('event-save-btn').textContent = 'Add Event to Profitability →';
+  document.getElementById('event-clear-btn').style.display = 'none';
+  clearEventForm();
+}
+
+function clearEventForm(){
+  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other','p-cash-count','p-cash-rev'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('p-comm').value='';
+  document.getElementById('p-total-exp').value='';
+  document.getElementById('p-net-preview').textContent='—';
+  document.getElementById('p-net-note').textContent='Enter CPO and expenses to calculate.';
+  formManualCharges = [];
+  renderManualCharges();
+}
+
+function deleteEvent(idx){
+  if(editEventIdx === idx) cancelEventEdit(); // can't edit deleted event
+  S.events.splice(idx,1);
+  refreshProfit();
+}
 
 function refreshProfit(){
   const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
@@ -1939,6 +2088,15 @@ function refreshProfit(){
     const pillText=hit?'↑ Above threshold':close?'↗ Close':'↓ Below threshold';
     const isBest=S.events.length>1&&e.name===best.name&&e.dt===best.dt;
     const isWorst=S.events.length>1&&e.name===worst.name&&e.dt===worst.dt;
+    const cashOrdersN = e.cashOrders || 0;
+    const cashRev = e.cashRevenue || 0;
+    const manual = e.manualCharges || [];
+    const cashLine = (cashOrdersN > 0 || cashRev > 0)
+      ? `<div style="font-size:11px;color:var(--text2);margin-top:8px;">Cash: <strong style="color:var(--green);">${fm(cashRev)}</strong> from ${cashOrdersN} order${cashOrdersN===1?'':'s'} <span style="color:var(--text3);">(off-book — not in CPO)</span></div>`
+      : '';
+    const manualLine = manual.length > 0
+      ? `<div style="font-size:11px;color:var(--text2);margin-top:6px;">Additional charges: ${manual.map(c => `<span style="color:var(--text);">${c.label||'Misc'}</span> <span style="color:var(--red);">-${fm(c.amount)}</span>`).join(' · ')}</div>`
+      : '';
     return`<div class="prof-event ${hit?'hit':'miss'}">
       <div class="prof-event-header">
         <div>
@@ -1947,6 +2105,7 @@ function refreshProfit(){
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="profit-pill ${pillClass}">${pillText}</span>
+          <button class="bedit" onclick="editEvent(${e._idx})">edit</button>
           <button class="bdel" onclick="deleteEvent(${e._idx})">del</button>
         </div>
       </div>
@@ -1956,6 +2115,8 @@ function refreshProfit(){
         <div class="prof-stat"><div class="prof-stat-lbl">Expenses</div><div class="prof-stat-val tr">-${fm(e.totalExp)}</div></div>
         <div class="prof-stat"><div class="prof-stat-lbl">Net Profit</div><div class="prof-stat-val" style="color:${hit?'var(--green)':'var(--red)'};">${fm(e.net)}</div></div>
       </div>
+      ${cashLine}
+      ${manualLine}
       ${e.shifts>0?`<div style="font-size:11px;color:var(--text2);margin-top:8px;">Profit per shift: <strong style="color:${e.net/e.shifts>=500?'var(--green)':'var(--text)'};">${fm(Math.round(e.net/e.shifts))}</strong></div>`:''}
     </div>`;
   }).join('');
