@@ -475,7 +475,7 @@
       </div>
 
       <!-- STEP 3: EVENT PROFITABILITY -->
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:14px;">
+      <div id="step3-event-form" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:14px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
           <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 3</div>
           <div style="font-size:13px;font-weight:700;color:var(--text);">Log Event Profitability <span style="font-size:12px;color:var(--text2);font-weight:400;">(optional — only if you worked an event)</span></div>
@@ -1988,6 +1988,9 @@ function editEvent(idx){
   const e = S.events[idx];
   if(!e) return;
   editEventIdx = idx;
+  // Switch to the Enter Stats page — the event form lives there, not on the Profit page
+  const enterBtn = [...document.querySelectorAll('.tab')].find(b => b.getAttribute('onclick')?.includes("'enter'"));
+  if(enterBtn) showPage('enter', enterBtn);
   // Populate basic fields
   const set = (id,val) => { const el = document.getElementById(id); if(el) el.value = val ?? ''; };
   set('p-name', e.name);
@@ -2016,8 +2019,11 @@ function editEvent(idx){
   document.getElementById('event-clear-btn').style.display = 'inline-block';
   // Refresh net preview
   calcProfit();
-  // Scroll user to the form
-  document.getElementById('p-name')?.scrollIntoView({behavior:'smooth',block:'center'});
+  // Scroll user to the form (target the Step 3 wrapper so the whole event form is visible)
+  // Use setTimeout so the page-switch has applied before scrolling
+  setTimeout(() => {
+    document.getElementById('step3-event-form')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 100);
 }
 
 function cancelEventEdit(){
