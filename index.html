@@ -172,7 +172,7 @@
   .year-filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
   .filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);transition:all .15s;}
   .filter-btn.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700;}
-  .year-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+  .year-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
 
   /* ===== PROFITABILITY ===== */
   .prof-event{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--blue);}
@@ -378,6 +378,10 @@
               Full vacation week (auto = 7)
             </label>
             <input type="number" class="fin" id="i-daysoff" placeholder="0–5" min="0" max="5" oninput="capDaysOff()">
+          </div>
+          <div class="fgrp">
+            <label class="flbl">Working Days <span style="font-size:11px;color:var(--text2);font-weight:400;">— booth + service events + appts</span></label>
+            <input type="number" class="fin" id="i-workdays" placeholder="0–7" min="0" max="7" oninput="capWorkDays()">
           </div>
         </div>
         <div class="fgrp" style="margin-top:10px;"><label class="flbl">Week Context / Notes</label><input type="text" class="fin" id="i-tnote" placeholder="e.g. SC push week, out of town event, slow week..."></div>
@@ -624,6 +628,33 @@
     </div>
   </div>
 
+  <!-- PRODUCTIVITY -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">Productivity</div><div class="badge bb" id="prod-badge">CPO per day</div></div>
+    <div class="g4" style="margin-bottom:0;">
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;border-left:3px solid var(--green);">
+        <div class="mlbl">CPO per Working Day</div>
+        <div style="font-size:19px;font-weight:700;color:var(--green);" id="prod-cpo-per-day">—</div>
+        <div class="msub tm" id="prod-cpo-per-day-sub">Enter working days in Step 1</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;">
+        <div class="mlbl">Total Working Days</div>
+        <div style="font-size:19px;font-weight:700;color:var(--text);" id="prod-total-workdays">—</div>
+        <div class="msub tm" id="prod-total-workdays-sub">YTD</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;">
+        <div class="mlbl">Avg Working Days / Week</div>
+        <div style="font-size:19px;font-weight:700;color:var(--text);" id="prod-avg-workdays">—</div>
+        <div class="msub tm" id="prod-avg-workdays-sub">across tracked weeks</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:7px;padding:11px 13px;">
+        <div class="mlbl">Weeks With Data</div>
+        <div style="font-size:19px;font-weight:700;color:var(--text);" id="prod-weeks-with-workdays">—</div>
+        <div class="msub tm" id="prod-weeks-with-workdays-sub">— enter to track</div>
+      </div>
+    </div>
+  </div>
+
   <!-- THE COACH (full width) -->
   <div class="panel" style="margin-bottom:13px;">
     <div class="phead"><div class="ptit2">The Coach</div><div class="badge bb">Insights</div></div>
@@ -760,6 +791,7 @@
           <th style="width:100px;color:var(--blue);">Proj. CPO</th>
           <th style="width:80px;color:var(--blue);">Proj. Orders</th>
           <th style="width:70px;">Days Off</th>
+          <th style="width:75px;">Work Days</th>
           <th>Notes</th>
         </tr>
       </thead>
@@ -1312,6 +1344,23 @@ function refreshRatios(){
   document.getElementById('rv-sales').textContent = fm(t.cpo);
   document.getElementById('rd-sales').textContent = pct(t.cpo,S.g.yr)+'% of $500,000 goal';
 
+  // ---- PRODUCTIVITY PANEL: CPO per Working Day ----
+  // Only counts weeks where workDays is explicitly set (legacy weeks excluded so the ratio is honest)
+  const wkWithWD = S.weeks.filter(w => w.workDays !== undefined && w.workDays > 0);
+  const totalWD = wkWithWD.reduce((s,w)=>s+(w.workDays||0),0);
+  const cpoFromWDWeeks = wkWithWD.reduce((s,w)=>s+(w.cpo||0),0);
+  const cpoPerWorkDay = totalWD > 0 ? Math.round(cpoFromWDWeeks/totalWD) : null;
+  const avgWDPerWeek = wkWithWD.length > 0 ? (totalWD/wkWithWD.length).toFixed(1) : null;
+  const setText = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  setText('prod-cpo-per-day', cpoPerWorkDay !== null ? fm(cpoPerWorkDay) : '—');
+  setText('prod-cpo-per-day-sub', cpoPerWorkDay !== null ? `from ${fm(cpoFromWDWeeks)} ÷ ${totalWD} days` : 'Enter working days in Step 1');
+  setText('prod-total-workdays', totalWD > 0 ? totalWD : '—');
+  setText('prod-total-workdays-sub', totalWD > 0 ? `across ${wkWithWD.length} tracked wk${wkWithWD.length===1?'':'s'}` : 'YTD');
+  setText('prod-avg-workdays', avgWDPerWeek !== null ? avgWDPerWeek : '—');
+  setText('prod-avg-workdays-sub', wkWithWD.length > 0 ? `tracked: ${wkWithWD.length} wk${wkWithWD.length===1?'':'s'}` : 'across tracked weeks');
+  setText('prod-weeks-with-workdays', wkWithWD.length > 0 ? wkWithWD.length : '—');
+  setText('prod-weeks-with-workdays-sub', wkWithWD.length > 0 ? `of ${S.weeks.length} logged` : '— enter to track');
+
   // Avg Order
   document.getElementById('rv-avg').textContent = t.avg!==null?fm(t.avg):'—';
   document.getElementById('rd-avg').textContent = t.avg!==null?(t.avg>=S.g.avg?'↑ Above $659 goal':'↓ Below $659 goal'):'Goal: $659';
@@ -1638,6 +1687,10 @@ function refreshYearView(){
   const workedCount=S.weeks.filter(w=>!w.isVacation).length;      // for avg CPO denominator
   const totalCPO=S.weeks.reduce((s,w)=>s+(w.cpo||0),0);
   const totalDaysOff=S.weeks.reduce((s,w)=>s+(w.daysOff||0),0);
+  // Working days: only count weeks where workDays is explicitly set
+  const wkWithWorkDays = S.weeks.filter(w => w.workDays !== undefined);
+  const totalWorkDays = wkWithWorkDays.reduce((s,w) => s + (w.workDays||0), 0);
+  const avgWorkDays = wkWithWorkDays.length > 0 ? (totalWorkDays / wkWithWorkDays.length) : null;
   const vacationWkSet=new Set(S.weeks.filter(w=>w.isVacation).map(w=>w.wk));
   Object.entries(S.yearNotes).forEach(([wk,n])=>{ if(noteIsVac(n)) vacationWkSet.add(parseInt(wk)); });
   const vacationCount=vacationWkSet.size;
@@ -1645,6 +1698,7 @@ function refreshYearView(){
     <div class="mc neu"><div class="mlbl">Weeks Tracked</div><div class="mval">${entriesCount}</div><div class="msub tm">of 52 weeks</div></div>
     <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${entriesCount} weeks</div></div>
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
+    <div class="mc neu" style="border-left:3px solid var(--green);"><div class="mlbl">Avg Working Days</div><div class="mval" style="color:var(--green);">${avgWorkDays !== null ? avgWorkDays.toFixed(1) : '—'}</div><div class="msub tm">${wkWithWorkDays.length>0 ? totalWorkDays+' days across '+wkWithWorkDays.length+' wks' : 'no data yet'}</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
   // Helpers for campaign rollups (CUTCO 2026 official: CI=1-17, CII=18-35, CIII=36-52)
@@ -1666,12 +1720,12 @@ function refreshYearView(){
     const camp=campOf(yw.wk);
     let campDivider='';
     if(lastCamp && lastCamp!==camp){
-      campDivider=`<tr class="camp-divider"><td colspan="8">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
+      campDivider=`<tr class="camp-divider"><td colspan="9">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
     }
     lastCamp=camp;
 
     let monthRow='';
-    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="8">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
@@ -1684,11 +1738,12 @@ function refreshYearView(){
       <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
+      <td style="font-size:12px;color:${w&&w.workDays!==undefined?'var(--green)':'var(--text3)'};font-weight:${w&&w.workDays!==undefined?'600':'400'};">${w&&w.workDays!==undefined?w.workDays:'—'}</td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
     </tr>`;
   }).join('');
 
-  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
 
   // Bottom totals — per-campaign + YTD
   const renderTotalsBlock = (label, range) => {
@@ -2204,8 +2259,8 @@ function calcDemos(){
 // ==================== EDIT WEEK ====================
 function editWeek(idx){
   const w=S.weeks[idx];editIdx=idx;
-  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||'']];
-  map.forEach(([id,val])=>{document.getElementById(id).value=val;});
+  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||''],['i-workdays', w.workDays !== undefined ? w.workDays : '']];
+  map.forEach(([id,val])=>{const el=document.getElementById(id);if(el) el.value=val;});
   document.getElementById('i-camp').value=w.camp;
   // Restore vacation toggle state (with backward-compat: infer from daysOff if missing)
   const vacChk=document.getElementById('i-vac');
@@ -2238,7 +2293,11 @@ function submitStats(){
     demo:parseFloat(g('i-demo').value)||0,demoOrd:parseInt(g('i-demo-ord').value)||0,demoBooked:parseInt(g('i-demo-booked').value)||0,demoComp:parseInt(g('i-demo-comp').value)||0,
     target:parseFloat(g('i-target').value)||0,tnote:g('i-tnote').value,
     daysOff: g('i-vac')?.checked ? 7 : Math.min(parseInt(g('i-daysoff').value)||0, 5),
-    isVacation: !!g('i-vac')?.checked
+    isVacation: !!g('i-vac')?.checked,
+    // Working days: only stored if user explicitly entered a value (preserves "blank" state for legacy weeks)
+    workDays: g('i-workdays')?.value !== '' && g('i-workdays')?.value !== null && g('i-workdays')?.value !== undefined
+      ? Math.max(0, Math.min(parseInt(g('i-workdays').value)||0, 7))
+      : undefined
   };
   const rep=g('i-rep')?.value; // field removed, safe no-op
   if(editIdx>=0){
@@ -2261,7 +2320,7 @@ function submitStats(){
 }
 
 function clearForm(){
-  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff'].forEach(id=>{
+  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff','i-workdays'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
   const vacChk=document.getElementById('i-vac');
@@ -2292,6 +2351,14 @@ function capDaysOff(){
   if(!inp) return;
   const v=parseInt(inp.value)||0;
   if(v>5) inp.value=5;
+  if(v<0) inp.value=0;
+}
+function capWorkDays(){
+  const inp=document.getElementById('i-workdays');
+  if(!inp) return;
+  if(inp.value==='') return; // allow blank — means "not set"
+  const v=parseInt(inp.value)||0;
+  if(v>7) inp.value=7;
   if(v<0) inp.value=0;
 }
 
