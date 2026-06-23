@@ -2556,8 +2556,24 @@ function startEditCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp
 function saveCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;var v=parseFloat(i.value)||0;if(v>0){S.g.cats[k]=v;saveGoalsToLocal();}i.style.display='none';d.style.display='inline';refreshCampaign();}
 function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-d');var i=document.getElementById('cg-'+k+'-'+camp+'-i');if(!d||!i)return;i.style.display='none';d.style.display='inline';}
 
-loadGoalsFromLocal();
-refreshAll();
+// ---- Data loader: fetch data.json, fall back to embedded data if it fails ----
+(async function bootHub(){
+  try {
+    const resp = await fetch('data.json', { cache: 'no-store' });
+    if (resp.ok) {
+      const fetched = await resp.json();
+      Object.keys(S).forEach(k => delete S[k]);
+      Object.assign(S, fetched);
+      console.log('HUB: data loaded from data.json (' + (S.weeks ? S.weeks.length : 0) + ' weeks)');
+    } else {
+      console.warn('HUB: data.json fetch failed (HTTP ' + resp.status + ') — using embedded fallback data');
+    }
+  } catch (err) {
+    console.warn('HUB: data.json fetch error — using embedded fallback data:', err && err.message);
+  }
+  loadGoalsFromLocal();
+  refreshAll();
+})();
 
 </script>
 </body>
