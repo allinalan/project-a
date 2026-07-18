@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Command Center — CSP Autopilot</title>
+<title>Command Center — All in Alan</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 <style>
   :root {
     --bg:#f0f4f9;--surface:#fff;--surface2:#f5f8fc;--surface3:#e8eef6;
@@ -15,8 +16,8 @@
     --amber:#e67e22;--amber-light:#fef3e2;
     --gray-light:#f8f9fa;
     --accent:#b8ff2e;--accent-dark:#8ac700;--accent-dim:rgba(184,255,46,0.12);--accent-border:rgba(184,255,46,0.35);
-    --text:#1a2332;--text2:#5a6b7e;--text3:#b0bec8;
-    --font:Arial,Helvetica,sans-serif;
+    --text:#1a2332;--text2:#5a6b7e;--text3:#8296a8;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;}
@@ -200,7 +201,39 @@
   .toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:7px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;}
   .toast.show{transform:translateY(0);opacity:1;}
   .toast.blue{background:var(--blue);}
-  @media(max-width:700px){.g3,.g4{grid-template-columns:1fr 1fr;}.g2,.g2e{grid-template-columns:1fr;}.fg,.fg3,.fg4{grid-template-columns:1fr;}nav{padding:0 10px;}.page{padding:12px;}}
+  /* ===== TREND CHART ===== */
+  .trend-wrap{position:relative;}
+  .trend-tip{position:absolute;pointer-events:none;background:var(--text);color:#fff;font-size:11px;line-height:1.5;padding:7px 10px;border-radius:6px;box-shadow:0 4px 14px rgba(10,20,40,.25);display:none;z-index:50;white-space:nowrap;}
+  .trend-legend{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--text2);font-weight:600;margin-top:8px;flex-wrap:wrap;}
+  .trend-legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;}
+  .trend-legend .swline{display:inline-block;width:14px;height:0;border-top:2px dashed var(--text2);margin-right:5px;vertical-align:3px;}
+  /* ===== PACE STRIP ===== */
+  .pace-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .pace-itm{background:var(--surface2);border-radius:7px;padding:9px 11px;}
+  .pace-itm .mlbl{margin-bottom:4px;}
+  .pace-val{font-size:17px;font-weight:700;line-height:1.1;}
+  .pace-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+  /* ===== SC FUNNEL ===== */
+  .funnel-row{display:grid;grid-template-columns:110px 1fr 90px;gap:9px;align-items:center;margin-bottom:7px;font-size:12px;}
+  .funnel-row:last-child{margin-bottom:0;}
+  .funnel-lbl{color:var(--text2);font-weight:600;}
+  .funnel-track{background:var(--surface3);border-radius:4px;height:14px;overflow:hidden;}
+  .funnel-fill{height:14px;border-radius:4px;background:var(--blue);}
+  .funnel-num{font-weight:700;text-align:right;}
+  /* ===== ROI TABLE ===== */
+  .roi-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .roi-table th{text-align:left;font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:2px solid var(--border);white-space:nowrap;}
+  .roi-table td{padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .roi-table tr:last-child td{border-bottom:none;}
+  .roi-verdict{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;display:inline-block;}
+  @media(max-width:900px){
+    nav{flex-wrap:wrap;height:auto;padding:8px 10px;row-gap:6px;}
+    .tabs{order:3;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{white-space:nowrap;flex:0 0 auto;}
+    .nav-r{margin-left:auto;}
+  }
+  @media(max-width:700px){.g3,.g4{grid-template-columns:1fr 1fr;}.g2,.g2e{grid-template-columns:1fr;}.fg,.fg3,.fg4{grid-template-columns:1fr;}.page{padding:12px;}.year-summary{grid-template-columns:1fr 1fr;}.pace-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
@@ -221,6 +254,7 @@
       <span id="sync-status" style="font-size:11px;font-weight:600;color:var(--text2);">Not synced</span>
       <button onclick="loadFromSheets()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↓ Load</button>
       <button onclick="saveToSheets()" style="background:var(--blue);border:none;color:#fff;font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↑ Save</button>
+      <button onclick="exportBackup()" title="Download a dated backup copy of all your data" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">⬇ Backup</button>
     </div>
     <div class="streak-badge" id="streakEl">Day 0 streak</div>
     <div class="av" id="avEl">AH</div>
@@ -260,7 +294,7 @@
     <div class="mc accent"><div class="mlbl">Total CPO (YTD)</div><div class="mval" id="h-cpo">$0</div><div class="msub tm" id="h-cpo-s" onclick="startEditHomeGoal('yr')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit goal">0% of $500,000 goal</div><input id="home-goal-yr" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveHomeGoal('yr')" onkeydown="if(event.key==='Enter')saveHomeGoal('yr');if(event.key==='Escape')cancelHomeGoal('yr');"></div>
     <div class="mc neu"><div class="mlbl">Orders (YTD)</div><div class="mval" id="h-ord">0</div><div class="msub tm" id="h-ord-s">0% of 759 goal</div></div>
     <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s" onclick="startEditHomeGoal('avg')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit goal">Goal: $659</div><input id="home-goal-avg" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveHomeGoal('avg')" onkeydown="if(event.key==='Enter')saveHomeGoal('avg');if(event.key==='Escape')cancelHomeGoal('avg');"></div>
-    <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm">~30% of total CPO</div></div>
+    <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm" id="h-profit-s">commission − event expenses</div></div>
   </div>
   <div class="g2">
     <div class="panel">
@@ -269,9 +303,11 @@
       <div class="prow"><div class="pmeta"><span class="plbl">Orders</span><span class="pnum" id="pr-o-l">0 / 759</span></div><div class="ptrack"><div class="pfill fb2" id="pr-o" style="width:0%"></div></div></div>
       <div class="prow"><div class="pmeta"><span class="plbl">SC Completed</span><span class="pnum" id="pr-sc-l">0 / 237</span></div><div class="ptrack"><div class="pfill fgr" id="pr-sc" style="width:0%"></div></div></div>
       <div class="div"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><div class="mlbl">Year complete</div><div style="font-size:19px;font-weight:700;color:var(--accent-dark);" id="h-pct">0%</div></div>
-        <div style="text-align:right;"><div class="mlbl">Projected</div><div style="font-size:19px;font-weight:700;color:var(--gold);" id="h-proj">$—</div></div>
+      <div class="pace-grid">
+        <div class="pace-itm"><div class="mlbl">Goal Progress</div><div class="pace-val" style="color:var(--accent-dark);" id="h-pct">0%</div><div class="pace-sub" id="h-pct-sub">of $500K</div></div>
+        <div class="pace-itm"><div class="mlbl">Year Elapsed</div><div class="pace-val" id="h-elapsed">—</div><div class="pace-sub" id="h-elapsed-sub">Wk — of 52</div></div>
+        <div class="pace-itm"><div class="mlbl">Needed / Wk</div><div class="pace-val" id="h-needed">$—</div><div class="pace-sub" id="h-needed-sub">to hit goal</div></div>
+        <div class="pace-itm"><div class="mlbl">Projected</div><div class="pace-val" style="color:var(--gold);" id="h-proj">$—</div><div class="pace-sub" id="h-proj-sub">at current pace</div></div>
       </div>
     </div>
     <!-- RIGHT COL: DAILY ONE THING + WEEKLY STANDARDS -->
@@ -322,6 +358,20 @@
 
     </div>
   </div>
+  <!-- WEEKLY CPO TREND -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">Weekly CPO Trend</div><div class="badge bb" id="trend-badge">2026</div></div>
+    <div class="trend-wrap" id="trend-wrap">
+      <canvas id="trend-chart" style="width:100%;height:190px;display:block;"></canvas>
+      <div class="trend-tip" id="trend-tip"></div>
+    </div>
+    <div class="trend-legend">
+      <span><span class="sw" style="background:var(--blue);"></span>Actual CPO</span>
+      <span><span class="sw" style="background:var(--gold);"></span>Vacation week</span>
+      <span><span class="swline"></span>Planned CPO</span>
+    </div>
+  </div>
+
   <div class="g2e">
     <!-- CPO BREAKDOWN CHART -->
     <div class="panel">
@@ -590,7 +640,7 @@
   </div>
   <div class="panel">
     <div class="phead"><div class="ptit2">Year over Year</div><div class="badge bgy">2025 vs 2026</div></div>
-    <div class="cr hdr"><div>Category</div><div>2025</div><div>2026</div><div>Change</div></div>
+    <div class="cr hdr"><div>Category</div><div>2025 pace</div><div>2026 YTD</div><div>Change</div></div>
     <div id="yoy-rows"></div>
   </div>
   <div class="panel" style="margin-top:16px;">
@@ -699,6 +749,10 @@
           <div style="font-size:11px;color:var(--text2);">Goal: 92%</div>
         </div>
       </div>
+      <div class="div"></div>
+      <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;">Appointment Funnel</div>
+      <div id="sc-funnel"></div>
+      <div id="sc-pace" style="margin-top:11px;"></div>
     </div>
 
     <!-- Service Events -->
@@ -780,7 +834,7 @@
     <button class="filter-btn" onclick="filterYear('empty',this)">No Data</button>
     <span style="font-size:11px;color:var(--text2);margin-left:auto;">Click any Notes cell to add a note</span>
   </div>
-  <div class="panel" style="padding:0;overflow:hidden;">
+  <div class="panel" style="padding:0;overflow-x:auto;">
     <table class="year-table" id="year-table">
       <thead>
         <tr>
@@ -854,6 +908,16 @@
 
   <div class="g4" id="prof-summary"></div>
 
+  <div class="panel" style="margin-bottom:13px;padding:0;overflow-x:auto;">
+    <div class="phead" style="padding:14px 18px 0;margin-bottom:8px;"><div class="ptit2">Event ROI Ranking</div><div class="badge bb">For next year's schedule</div></div>
+    <div id="roi-table-wrap" style="padding:0 18px 14px;"></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:13px;" id="recon-panel" >
+    <div class="phead"><div class="ptit2">Weekly Stats vs Event Log</div><div class="badge bgy">Reconciliation</div></div>
+    <div id="recon-body"></div>
+  </div>
+
   <div style="display:flex;flex-direction:column;gap:10px;">
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
       <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
@@ -916,7 +980,21 @@ let yearFilter='all';
 let profSort={key:'net',dir:'desc'};
 const fm=n=>'$'+Math.round(n).toLocaleString();
 const pct=(a,b)=>b>0?Math.min(100,Math.round(a/b*100)):0;
+const pctRaw=(a,b)=>b>0?Math.round(a/b*100):0;
 const d1=n=>Math.round(n*10)/10;
+const plural=(n,word)=>n+' '+word+(n===1?'':'s');
+// CUTCO 2026 week number for today (weeks are Tue–Mon starting Tue 12/30/2025), clamped 1–52
+function weeksElapsed(){
+  const start=new Date(2025,11,30);
+  const days=Math.floor((Date.now()-start.getTime())/86400000);
+  return Math.max(1,Math.min(52,Math.floor(days/7)+1));
+}
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dateStrDaysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function commRate(){ return (parseFloat(document.getElementById('comm-rate')?.value)||45)/100; }
+// Sum a projection entry's category cells into its total CPO
+const PROJ_CATS=['ev','sc','se','mkt','biz','fed','demo'];
+const projTotal=p=>PROJ_CATS.reduce((s,c)=>s+(parseFloat(p[c])||0),0);
 function formatDate(str){
   if(!str)return'';
   const [y,m,d]=str.split('-');
@@ -993,16 +1071,39 @@ function refreshHome(){
   document.getElementById('h-cpo-s').textContent=pct(t.cpo,S.g.yr)+'% of '+fm(S.g.yr)+' goal';
   document.getElementById('h-ord').textContent=t.ord;
   document.getElementById('h-ord-s').textContent=pct(t.ord,S.g.ord)+'% of '+S.g.ord+' goal';
-  document.getElementById('h-profit').textContent=fm(Math.round(t.cpo*0.30));
+  // Est. profit = commission on all CPO minus logged event expenses (honest, not a flat guess)
+  const rateNow=commRate();
+  const evExpTotal=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
+  document.getElementById('h-profit').textContent=fm(Math.max(0,Math.round(t.cpo*rateNow-evExpTotal)));
+  const hps=document.getElementById('h-profit-s');
+  if(hps) hps.textContent=Math.round(rateNow*100)+'% comm − '+fm(evExpTotal)+' event expenses';
   if(t.avg!==null){const ok=t.avg>=S.g.avg;document.getElementById('h-avg').textContent=fm(t.avg);document.getElementById('mc-avg').className='mc '+(ok?'pos':'neg');document.getElementById('h-avg-s').textContent=(ok?'↑ Above ':'↓ Below ')+fm(S.g.avg)+' goal';document.getElementById('h-avg-s').className='msub '+(ok?'tg':'tr');}
   const sp=pct(t.cpo,S.g.yr),op=pct(t.ord,S.g.ord),sp2=pct(t.scc,S.g.scC);
   ['s','o','sc'].forEach((k,i)=>{document.getElementById('pr-'+k).style.width=[sp,op,sp2][i]+'%';});
-  document.getElementById('pr-s-l').textContent=fm(t.cpo)+' / $500,000';
-  document.getElementById('pr-o-l').textContent=t.ord+' / 759';
-  document.getElementById('pr-sc-l').textContent=t.scc+' / 237';
+  document.getElementById('pr-s-l').textContent=fm(t.cpo)+' / '+fm(S.g.yr);
+  document.getElementById('pr-o-l').textContent=t.ord+' / '+S.g.ord;
+  document.getElementById('pr-sc-l').textContent=t.scc+' / '+S.g.scC;
+
+  // ---- PACE STRIP: goal progress vs time elapsed, honestly side by side ----
+  const wkE=weeksElapsed();
+  const wksLeft=Math.max(1,52-wkE+1);
+  const workedWks=S.weeks.filter(w=>(w.cpo||0)>0);
+  const recentWks=workedWks.slice(-4);
+  const recentPace=recentWks.length>0?Math.round(recentWks.reduce((s,w)=>s+w.cpo,0)/recentWks.length):0;
+  const avgPace=workedWks.length>0?Math.round(t.cpo/workedWks.length):0;
+  const neededWk=Math.max(0,Math.round((S.g.yr-t.cpo)/wksLeft));
+  const proj=t.cpo+avgPace*wksLeft;
   document.getElementById('h-pct').textContent=sp+'%';
-  const proj=S.weeks.length>0?Math.round(t.cpo/S.weeks.length*52):0;
+  document.getElementById('h-pct-sub').textContent='of '+fm(S.g.yr);
+  const elP=Math.round(wkE/52*100);
+  const elEl=document.getElementById('h-elapsed');
+  elEl.textContent=elP+'%';
+  elEl.style.color=sp>=elP?'var(--green)':'var(--red)';
+  document.getElementById('h-elapsed-sub').textContent='Wk '+wkE+' of 52 · '+(sp>=elP?'ahead of':'behind')+' pace';
+  document.getElementById('h-needed').textContent=t.cpo>=S.g.yr?'Done ✓':fm(neededWk);
+  document.getElementById('h-needed-sub').textContent='recent pace '+(recentPace>0?fm(recentPace):'—')+'/wk';
   document.getElementById('h-proj').textContent=proj>0?fm(proj):'$—';
+  document.getElementById('h-proj-sub').textContent='at '+fm(avgPace)+'/worked wk';
   // Last Week (most recent entry)
   const last = S.weeks[S.weeks.length-1];
   if(last){
@@ -1014,15 +1115,15 @@ function refreshHome(){
       <div class="si"><div class="sil">SC Completed</div><div class="siv">${last.scc}</div></div>`;
   }
 
-  // CPO Donut Chart
+  // CPO Donut Chart — fixed categorical hue order (CVD-validated), never re-cycled
   const chartCats = [
-    {label:'Events',       val:S.cats.ev||0,   color:'#1a5faa'},
-    {label:'Service Calls',val:S.cats.sc||0,   color:'#b8ff2e'},
-    {label:'Service Events',val:S.cats.se||0,  color:'#1a7a4a'},
-    {label:'Federal',      val:S.cats.fed||0,  color:'#7c3aed'},
-    {label:'Demos',        val:S.cats.demo||0, color:'#0891b2'},
-    {label:'Marketing',    val:S.cats.mkt||0,  color:'#c47d0e'},
-    {label:'Biz Gift',     val:S.cats.biz||0,  color:'#c0392b'}
+    {label:'Events',        val:S.cats.ev||0,   color:'#1a5faa'},
+    {label:'Service Calls', val:S.cats.sc||0,   color:'#c47d0e'},
+    {label:'Service Events',val:S.cats.se||0,   color:'#1a7a4a'},
+    {label:'Federal',       val:S.cats.fed||0,  color:'#9b2c8f'},
+    {label:'Demos',         val:S.cats.demo||0, color:'#0891b2'},
+    {label:'Marketing',     val:S.cats.mkt||0,  color:'#7c3aed'},
+    {label:'Biz Gift',      val:S.cats.biz||0,  color:'#c0392b'}
   ].filter(c=>c.val>0);
   const totalCPO = chartCats.reduce((s,c)=>s+c.val,0);
   const canvas = document.getElementById('donut-chart');
@@ -1033,7 +1134,11 @@ function refreshHome(){
   } else {
     document.getElementById('chart-empty').style.display='none';
     document.getElementById('chart-wrap').style.display='flex';
+    const dpr=window.devicePixelRatio||1;
+    canvas.width=140*dpr; canvas.height=140*dpr;
+    canvas.style.width='140px'; canvas.style.height='140px';
     const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.clearRect(0,0,140,140);
     const cx=70,cy=70,r=58,inner=36;
     let angle=-Math.PI/2;
@@ -1045,19 +1150,23 @@ function refreshHome(){
       ctx.closePath();
       ctx.fillStyle=c.color;
       ctx.fill();
+      // 2px surface gap between adjacent slices
+      ctx.strokeStyle='#fff';
+      ctx.lineWidth=2;
+      ctx.stroke();
       angle+=slice;
     });
     // Donut hole
     ctx.beginPath();
     ctx.arc(cx,cy,inner,0,Math.PI*2);
-    ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--surface')||'#fff';
+    ctx.fillStyle='#fff';
     ctx.fill();
     // Center text
     ctx.fillStyle='#1a2332';
-    ctx.font='bold 11px Arial';
+    ctx.font='bold 11px '+FONT_STACK;
     ctx.textAlign='center';
     ctx.fillText('Total',cx,cy-4);
-    ctx.font='bold 12px Arial';
+    ctx.font='bold 12px '+FONT_STACK;
     ctx.fillStyle='#1a5faa';
     ctx.fillText(fm(totalCPO),cx,cy+10);
     // Legend
@@ -1070,9 +1179,133 @@ function refreshHome(){
       </div>`;
     }).join('');
   }
+  renderTrendChart();
   renderDailyOne();
   renderWeeklyStandards();
 }
+
+// ==================== WEEKLY CPO TREND CHART ====================
+const FONT_STACK="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+let trendBars=[]; // hit-test cache for tooltip
+
+function renderTrendChart(){
+  const canvas=document.getElementById('trend-chart');
+  const wrap=document.getElementById('trend-wrap');
+  if(!canvas||!wrap) return;
+  const wkE=weeksElapsed();
+  const yearWeeks=buildYearWeeks();
+  const weekMap={}; S.weeks.forEach(w=>{weekMap[w.wk]=w;});
+  const n=Math.max(wkE,Math.max(0,...S.weeks.map(w=>w.wk)));
+  const data=[];
+  for(let wk=1;wk<=n;wk++){
+    const w=weekMap[wk];
+    const p=S.projections[wk];
+    data.push({wk, label:yearWeeks[wk-1]?yearWeeks[wk-1].label:'Wk '+wk,
+      cpo:w?(w.cpo||0):null, ord:w?(w.ord||0):null,
+      vac:!!(w&&w.isVacation), plan:p?projTotal(p):null});
+  }
+  const cssW=wrap.clientWidth||800, cssH=190;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=cssW*dpr; canvas.height=cssH*dpr;
+  canvas.style.height=cssH+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const padL=44,padR=6,padT=10,padB=22;
+  const plotW=cssW-padL-padR, plotH=cssH-padT-padB;
+  const maxVal=Math.max(1000,...data.map(d=>d.cpo||0),...data.map(d=>d.plan||0));
+  // nice ceiling
+  const step=maxVal>20000?10000:maxVal>8000?5000:2000;
+  const yMax=Math.ceil(maxVal/step)*step;
+  const y=v=>padT+plotH-(v/yMax)*plotH;
+  const slot=plotW/data.length;
+  const barW=Math.max(3,Math.min(18,slot-2));
+  // gridlines + y labels (recessive)
+  ctx.font='10px '+FONT_STACK;
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let v=0;v<=yMax;v+=step){
+    ctx.strokeStyle='#e8eef6'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(padL,y(v)); ctx.lineTo(cssW-padR,y(v)); ctx.stroke();
+    ctx.fillStyle='#8296a8';
+    ctx.fillText(v>=1000?'$'+(v/1000)+'k':'$'+v,padL-6,y(v));
+  }
+  // month labels on first week of each month
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  let lastMonth='';
+  trendBars=[];
+  data.forEach((d,i)=>{
+    const x=padL+i*slot+(slot-barW)/2;
+    const yw=yearWeeks[d.wk-1];
+    const m=yw?yw.month:'';
+    if(m && m!==lastMonth){
+      ctx.fillStyle='#8296a8';
+      ctx.fillText(m,padL+i*slot+slot/2,cssH-8);
+      lastMonth=m;
+    }
+    if(d.cpo!==null && d.cpo>0){
+      const h=Math.max(2,(d.cpo/yMax)*plotH);
+      ctx.fillStyle=d.vac?'#c47d0e':'#1a5faa';
+      // rounded top (4px), flat baseline
+      const rr=Math.min(4,barW/2,h);
+      ctx.beginPath();
+      ctx.moveTo(x,padT+plotH);
+      ctx.lineTo(x,y(d.cpo)+rr);
+      ctx.arcTo(x,y(d.cpo),x+rr,y(d.cpo),rr);
+      ctx.lineTo(x+barW-rr,y(d.cpo));
+      ctx.arcTo(x+barW,y(d.cpo),x+barW,y(d.cpo)+rr,rr);
+      ctx.lineTo(x+barW,padT+plotH);
+      ctx.closePath();
+      ctx.fill();
+    } else if(d.cpo===0 && d.wk<=wkE && weekMap[d.wk]){
+      // logged zero week — small baseline tick so it reads as "logged, zero"
+      ctx.fillStyle=d.vac?'#c47d0e':'#c5d5e8';
+      ctx.fillRect(x,padT+plotH-2,barW,2);
+    }
+    // planned CPO — dashed goal-post at plan height
+    if(d.plan!==null && d.plan>0){
+      ctx.strokeStyle='#5a6b7e'; ctx.lineWidth=2; ctx.setLineDash([3,2]);
+      ctx.beginPath();
+      ctx.moveTo(x-1,y(d.plan)); ctx.lineTo(x+barW+1,y(d.plan)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    trendBars.push({x0:padL+i*slot,x1:padL+(i+1)*slot,d});
+  });
+  // "today" marker after current week
+  const tx=padL+Math.min(wkE,data.length)*slot;
+  ctx.strokeStyle='#c5d5e8'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(tx,padT); ctx.lineTo(tx,padT+plotH); ctx.stroke();
+  ctx.setLineDash([]);
+  const badge=document.getElementById('trend-badge');
+  if(badge){
+    const best=data.reduce((b,d)=>(d.cpo||0)>(b.cpo||0)?d:b,{cpo:0});
+    badge.textContent=best.cpo>0?('Best: Wk '+best.wk+' · '+fm(best.cpo)):'2026';
+  }
+}
+
+// hover tooltip for the trend chart
+(function(){
+  document.addEventListener('mousemove',e=>{
+    const wrap=document.getElementById('trend-wrap');
+    const tip=document.getElementById('trend-tip');
+    if(!wrap||!tip) return;
+    const r=wrap.getBoundingClientRect();
+    const inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+    if(!inside){ tip.style.display='none'; return; }
+    const x=e.clientX-r.left;
+    const hit=trendBars.find(b=>x>=b.x0&&x<b.x1);
+    if(!hit){ tip.style.display='none'; return; }
+    const d=hit.d;
+    tip.innerHTML='<strong>Wk '+d.wk+'</strong> · '+d.label+(d.vac?' · Vacation':'')+'<br>'+
+      'CPO: <strong>'+(d.cpo!==null?fm(d.cpo):'not logged')+'</strong>'+
+      (d.ord!==null&&d.cpo>0?' · '+plural(d.ord,'order'):'')+
+      (d.plan!==null&&d.plan>0?'<br>Plan: '+fm(d.plan)+(d.cpo!==null?' ('+(d.cpo>=d.plan?'+':'')+fm(d.cpo-d.plan).replace('$-','-$')+')':''):'');
+    tip.style.display='block';
+    const tw=tip.offsetWidth;
+    tip.style.left=Math.max(0,Math.min(r.width-tw,x-tw/2))+'px';
+    tip.style.top='6px';
+  });
+  window.addEventListener('resize',()=>{ if(document.getElementById('page-home')?.classList.contains('active')) renderTrendChart(); });
+})();
 
 // ==================== DAILY ONE THING ====================
 function renderDailyOne() {
@@ -1112,11 +1345,39 @@ function renderDailyOne() {
 function completeDailyOne() {
   if(S.dailyOne.done) return;
   S.dailyOne.done = true;
+  S.dailyOne.lastDone = todayStr();
   S.dailyStreak++;
   if(S.dailyStreak > S.dailyLongestStreak) S.dailyLongestStreak = S.dailyStreak;
   document.getElementById('streakEl').textContent = 'Day ' + S.dailyStreak + ' streak';
   renderDailyOne();
   showToast('t1');
+}
+
+// ==================== STREAK ROLLOVER ====================
+// Date-stamped resets so streaks behave without manual babysitting:
+// a new day re-arms the Daily One Thing (and breaks the streak if a day was missed);
+// a new CUTCO week re-arms the Weekly Standards (and breaks the streak if unclaimed).
+function rolloverStreaks(){
+  const today = todayStr();
+  if(S.dailyOne){
+    if(S.dailyOne.lastDone){
+      if(S.dailyOne.lastDone !== today){
+        S.dailyOne.done = false;
+        if(S.dailyOne.lastDone < dateStrDaysAgo(1)) S.dailyStreak = 0;
+      }
+    } else if(S.dailyOne.done){
+      // Legacy data with no date stamp: re-arm for today without judging the streak
+      S.dailyOne.done = false;
+    }
+  }
+  const cur = weeksElapsed();
+  if(S.weeklyResetWk !== cur){
+    if(S.weeklyResetWk !== undefined){
+      if(S.weeklyClaimedWk !== S.weeklyResetWk) S.weeklyStreak = 0;
+      (S.weeklyStandards||[]).forEach(s=>{ if(s && typeof s === 'object') s.done = false; });
+    }
+    S.weeklyResetWk = cur;
+  }
 }
 
 function openDailyEdit() {
@@ -1156,13 +1417,14 @@ function renderWeeklyStandards() {
       </div>`).join('');
 
   const claimWrap = document.getElementById('weekly-claim-wrap');
-  if(allDone && !S.weeklyStandards._claimed) {
+  const claimedThisWeek = S.weeklyClaimedWk === weeksElapsed();
+  if(allDone && !claimedThisWeek) {
     claimWrap.innerHTML = `
       <div style="background:var(--green-light);border:1px solid #b8dfc9;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
         <div style="font-size:12px;font-weight:700;color:var(--green);">All standards hit this week!</div>
         <button class="bp" onclick="claimWeeklyStreak()" style="padding:5px 14px;font-size:12px;background:var(--green);">Claim Week ✓</button>
       </div>`;
-  } else if(S.weeklyStandards._claimed) {
+  } else if(claimedThisWeek) {
     claimWrap.innerHTML = `<div style="font-size:12px;color:var(--green);font-weight:700;text-align:center;">✓ Week claimed — ${ws} week streak!</div>`;
   } else {
     claimWrap.innerHTML = `<div style="font-size:11px;color:var(--text2);text-align:center;">${doneCount} of ${S.weeklyStandards.length} standards done this week</div>`;
@@ -1177,14 +1439,14 @@ function toggleStandard(i) {
 function claimWeeklyStreak() {
   S.weeklyStreak++;
   if(S.weeklyStreak > S.weeklyLongestStreak) S.weeklyLongestStreak = S.weeklyStreak;
-  S.weeklyStandards._claimed = true;
+  S.weeklyClaimedWk = weeksElapsed();  // persists via save payload (array props don't serialize)
   renderWeeklyStandards();
 }
 
 function resetWeeklyStandards() {
   S.weeklyStandards = S.weeklyStandards.filter(s => typeof s === 'object' && s.text);
   S.weeklyStandards.forEach(s => s.done = false);
-  S.weeklyStandards._claimed = false;
+  S.weeklyClaimedWk = undefined;
   renderWeeklyStandards();
 }
 
@@ -1222,11 +1484,21 @@ function saveStandardsEdit() {
 function refreshCampaign(){
   const t=totals();
   [['ci',t.ci,S.g.ci],['cii',t.cii,S.g.cii],['ciii',t.ciii,S.g.ciii]].forEach(([id,a,g])=>{
-    const p=pct(a,g);
+    const p=pctRaw(a,g);
     document.getElementById(id+'-a').textContent=fm(a);
-    document.getElementById(id+'-b').style.width=p+'%';
-    document.getElementById(id+'-p').textContent=p+'%';
-    document.getElementById(id+'-g').textContent='Gap: '+fm(Math.max(0,g-a));
+    document.getElementById(id+'-b').style.width=Math.min(100,p)+'%';
+    const pEl=document.getElementById(id+'-p');
+    pEl.textContent=p+'%';
+    const gEl=document.getElementById(id+'-g');
+    if(g>0&&a>=g){
+      pEl.className='tg';
+      gEl.textContent='+'+fm(a-g)+' over goal ✓';
+      gEl.className='tg';
+    } else {
+      pEl.className='tb';
+      gEl.textContent='Gap: '+fm(Math.max(0,g-a));
+      gEl.className='tm';
+    }
     var disp=document.getElementById(id+'-goal-display');
     if(disp)disp.textContent=fm(g);
   });
@@ -1266,11 +1538,17 @@ function refreshCampaign(){
     </div>`;
   }).join('');
 
+  // YoY compares 2026 YTD against 2025 *pro-rated to the same point in the year* —
+  // comparing 7 months of 2026 to 12 months of 2025 would paint everything red.
+  const wkE=weeksElapsed();
+  const yrFrac=wkE/52;
   document.getElementById('yoy-rows').innerHTML=cats.map(c=>{
-    const p25=S.g.p25[c.k]||0, p26=S.cats[c.k]||0;
-    const yoy=p26>0&&p25>0?Math.round((p26-p25)/p25*100):null;
-    return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(p25)}</div><div>${fm(p26)}</div><div style="font-weight:700;color:${yoy===null?'var(--text3)':yoy>=0?'var(--green)':'var(--red)'};">${yoy!==null?(yoy>=0?'+':'')+yoy+'%':'—'}</div></div>`;
-  }).join('');
+    const p25full=S.g.p25[c.k]||0, p26=S.cats[c.k]||0;
+    const p25pace=Math.round(p25full*yrFrac);
+    const yoy=p26>0&&p25pace>0?Math.round((p26-p25pace)/p25pace*100):null;
+    return`<div class="cr"><div style="font-weight:600;">${c.l}</div><div>${fm(p25pace)}<div style="font-size:10px;color:var(--text3);">full yr: ${fm(p25full)}</div></div><div>${fm(p26)}</div><div style="font-weight:700;color:${yoy===null?'var(--text3)':yoy>=0?'var(--green)':'var(--red)'};">${yoy!==null?(yoy>=0?'+':'')+yoy+'%':'—'}</div></div>`;
+  }).join('')
+  +`<div style="font-size:11px;color:var(--text2);margin-top:9px;">2025 pro-rated through Wk ${wkE} (${Math.round(yrFrac*100)}% of the year) for a fair same-point comparison.</div>`;
 
   // Campaign over Campaign (2025 vs 2026 per campaign)
   if(S.g&&S.g.p25c){
@@ -1281,18 +1559,28 @@ function refreshCampaign(){
       {k:'mkt',l:'Marketing / Phone'},
       {k:'biz',l:'Biz Gift / Realtor'}
     ];
+    // Each campaign compared only over its elapsed fraction:
+    // finished campaigns → full comparison; in-progress → pro-rated; not started → no red wall.
+    const campRanges={ci:[1,17],cii:[18,35],ciii:[36,52]};
     const cocCamps=[['CI','ci'],['CII','cii'],['CIII','ciii']];
     let cocHtml='';
     cocCamps.forEach(([label,key])=>{
+      const [c0,c1]=campRanges[key];
+      const frac=Math.max(0,Math.min(1,(wkE-c0+1)/(c1-c0+1)));
+      if(frac===0){
+        cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div><div style="font-size:12px;color:var(--text3);padding:6px 0 10px;">Not started yet — begins Wk ${c0}.</div>`;
+        return;
+      }
       const p25c=S.g.p25c[key]||{};
       const p26c=cc[label]||{};
+      const note=frac<1?` <span style="font-size:10px;color:var(--text3);text-transform:none;letter-spacing:0;">· 2025 pro-rated to ${Math.round(frac*100)}% elapsed</span>`:'';
       const rowsHtml=cocCats.map(c=>{
-        const v25=p25c[c.k]||0,v26=p26c[c.k]||0;
+        const v25=Math.round((p25c[c.k]||0)*frac),v26=p26c[c.k]||0;
         const chg=v25>0?Math.round((v26-v25)/v25*100):null;
         const col=chg===null?'var(--text3)':chg>=0?'var(--green)':'var(--red)';
         return`<div class="cr" style="grid-template-columns:1.5fr 1fr 1fr 1fr;"><div style="font-weight:600;">${c.l}</div><div>${fm(v25)}</div><div>${fm(v26)}</div><div style="font-weight:700;color:${col};">${chg!==null?(chg>=0?'+':'')+chg+'%':'—'}</div></div>`;
       }).join('');
-      if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}</div>${rowsHtml}`;
+      if(rowsHtml) cocHtml+=`<div style="margin:8px 0 2px;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">${label}${note}</div>${rowsHtml}`;
     });
     document.getElementById('coc-rows').innerHTML=cocHtml||'<div style="color:var(--text3);padding:12px 0;">No 2025 data (add p25c to goals)</div>';
   }
@@ -1304,7 +1592,7 @@ function refreshRatios(){
   // ---- TOP 4 CARDS ----
   // Total Sales
   document.getElementById('rv-sales').textContent = fm(t.cpo);
-  document.getElementById('rd-sales').textContent = pct(t.cpo,S.g.yr)+'% of $500,000 goal';
+  document.getElementById('rd-sales').textContent = pct(t.cpo,S.g.yr)+'% of '+fm(S.g.yr)+' goal';
 
   // ---- PRODUCTIVITY PANEL: CPO per Working Day ----
   // Only counts weeks where workDays is explicitly set (legacy weeks excluded so the ratio is honest)
@@ -1438,15 +1726,24 @@ function refreshRatios(){
   ]);
   scoreBadge('demo-score-badge', demoScore);
 
-  // Overall = average of category scores that have data
-  const allScores = [evScore, scScore, seScore, mktScore, bizScore, fedScore, demoScore].filter(s => s !== null);
-  const healthScore = allScores.length > 0 ? Math.round(allScores.reduce((s,v)=>s+v,0)/allScores.length) : null;
-  const hasData = healthScore !== null;
+  // Overall health = blend of average and WEAKEST category, so one red category
+  // can't hide behind strong ones (a plain capped average always reads "Healthy").
+  const namedScores = [
+    {n:'Events',score:evScore},{n:'Service Calls',score:scScore},{n:'Service Events',score:seScore},
+    {n:'Marketing',score:mktScore},{n:'Biz Gift',score:bizScore},{n:'Federal',score:fedScore},{n:'Demos',score:demoScore}
+  ].filter(s => s.score !== null);
+  const hasData = namedScores.length > 0;
+  let healthScore=null, weakest=null;
+  if(hasData){
+    const avgS = namedScores.reduce((s,v)=>s+v.score,0)/namedScores.length;
+    weakest = namedScores.reduce((m,v)=>v.score<m.score?v:m,namedScores[0]);
+    healthScore = Math.round((avgS+weakest.score)/2);
+  }
   const healthColor = !hasData?'var(--text)':healthScore>=80?'var(--green)':healthScore>=60?'var(--gold)':'var(--red)';
   const healthLabel = !hasData?'No data yet':healthScore>=80?'Healthy':healthScore>=60?'Needs attention':'At risk';
   document.getElementById('rv-health').textContent = hasData?healthScore+'/100':'—';
   document.getElementById('rv-health').style.color = healthColor;
-  document.getElementById('rd-health').textContent = healthLabel;
+  document.getElementById('rd-health').textContent = hasData?healthLabel+' · weakest: '+weakest.n+' ('+weakest.score+')':healthLabel;
   document.getElementById('rd-health').style.color = healthColor;
 
   // Closing Ratio
@@ -1536,6 +1833,37 @@ function refreshRatios(){
       }
     }
 
+    // SC STRATEGIC GAP — SC has an annual plan; flag when YTD is far off plan pace
+    const scGoalYr = (S.g.cats && S.g.cats.sc) || 0;
+    if(scGoalYr > 0) {
+      const wkE2 = weeksElapsed();
+      const scPaceTarget = Math.round(scGoalYr * wkE2 / 52);
+      const scPct = scPaceTarget > 0 ? Math.round(scCPO / scPaceTarget * 100) : null;
+      if(scPct !== null && scPct < 50) {
+        ins.push({type:'warn', w:0, title:'Service Calls are your biggest gap to plan', text:`${fm(scCPO)} SC revenue YTD vs ${fm(scPaceTarget)} plan pace through Wk ${wkE2} (${scPct}% of pace, annual plan ${fm(scGoalYr)}). This is the largest at-risk category in your plan — your SC-heavy weeks later this year need to actually happen.`});
+      } else if(scPct !== null && scPct < 85) {
+        ins.push({type:'info', title:'Service Calls slightly behind plan', text:`${fm(scCPO)} vs ${fm(scPaceTarget)} plan pace through Wk ${wkE2}. Closeable with a couple of strong SC weeks.`});
+      }
+    }
+
+    // CURRENT CAMPAIGN PACE — what it takes per remaining week
+    const wkE3 = weeksElapsed();
+    if(wkE3 >= 18 && wkE3 <= 35 && S.g.cii > 0) {
+      const ciiLeft = Math.max(1, 35 - wkE3 + 1);
+      const ciiGap = S.g.cii - t.cii;
+      if(ciiGap > 0) {
+        const ciiNeed = Math.round(ciiGap / ciiLeft);
+        const ciiPaceNow = t.cii > 0 ? Math.round(t.cii / Math.max(1, wkE3 - 18 + 1)) : 0;
+        if(ciiNeed > ciiPaceNow * 2) {
+          ins.push({type:'warn', w:0, title:'Campaign II needs a bigger week-rate', text:`${fm(ciiGap)} to go in ${ciiLeft} remaining weeks = ${fm(ciiNeed)}/wk needed. Your CII pace so far is ${fm(ciiPaceNow)}/wk. Either the back-half plan delivers big, or it's time to restructure the goal.`});
+        } else {
+          ins.push({type:'info', title:'Campaign II pace check', text:`${fm(ciiGap)} to go in ${ciiLeft} weeks = ${fm(ciiNeed)}/wk needed vs ${fm(ciiPaceNow)}/wk current pace.`});
+        }
+      } else {
+        ins.push({type:'ok', title:'Campaign II goal hit', text:`${fm(t.cii)} — above your ${fm(S.g.cii)} goal with ${Math.max(0,35-wkE3+1)} weeks still on the clock.`});
+      }
+    }
+
     // EVENT SHIFT AVERAGE — only if notable
     if(t.shiftAvg !== null && t.evSh >= 5) {
       if(t.shiftAvg >= 2781) {
@@ -1545,10 +1873,10 @@ function refreshRatios(){
       }
     }
 
-    // Cap at 3 most important insights
+    // Cap at 4 most important insights — strategic items (w:0) outrank tactical ones
     const priority = ['warn','ok','info'];
-    const sorted = ins.sort((a,b) => priority.indexOf(a.type) - priority.indexOf(b.type));
-    const top3 = sorted.slice(0,3);
+    const sorted = ins.sort((a,b) => (priority.indexOf(a.type) - priority.indexOf(b.type)) || ((a.w??1) - (b.w??1)));
+    const top3 = sorted.slice(0,4);
 
     document.getElementById('coach').innerHTML = top3.length===0
       ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;">No significant gaps detected. Keep entering stats.</div>'
@@ -1592,6 +1920,42 @@ function refreshRatios(){
   document.getElementById('demo-stat-avg').textContent = demoAvg?fm(demoAvg):'—';
   const dcrEl = document.getElementById('demo-stat-cr');
   dcrEl.innerHTML = demoCR!==null ? `${demoCR}%<br><span style="font-size:11px;color:${demoCR>=88?'var(--green)':'var(--red)'};">${demoCR>=88?'↑ Above':'↓ Below'} 88%</span>` : '—<br><span style="font-size:11px;color:var(--text2);">Goal: 88%</span>';
+
+  // ---- SC APPOINTMENT FUNNEL + PLAN PACE ----
+  const funnelEl = document.getElementById('sc-funnel');
+  if(funnelEl){
+    if(scBooked === 0){
+      funnelEl.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0;">No SC appointments logged yet.</div>';
+    } else {
+      const stages = [
+        {lbl:'Booked',    n:scBooked, base:scBooked, note:''},
+        {lbl:'Completed', n:scComp,   base:scBooked, note:scCompR!==null?scCompR+'% of booked':''},
+        {lbl:'Closed',    n:scOrd,    base:scBooked, note:scCR!==null?scCR+'% of completed':''}
+      ];
+      funnelEl.innerHTML = stages.map(s=>{
+        const w = s.base>0?Math.round(s.n/s.base*100):0;
+        return `<div class="funnel-row">
+          <div class="funnel-lbl">${s.lbl}</div>
+          <div class="funnel-track"><div class="funnel-fill" style="width:${w}%;"></div></div>
+          <div class="funnel-num">${s.n}${s.note?` <span style="font-weight:400;color:var(--text2);font-size:11px;">· ${s.note}</span>`:''}</div>
+        </div>`;
+      }).join('') + `<div style="font-size:11px;color:var(--text2);margin-top:7px;">Each closed appt averages <strong style="color:var(--text);">${scAvgOrd?fm(scAvgOrd):'—'}</strong> · goal ${fm(S.g.scAvg||807)}</div>`;
+    }
+  }
+  const scPaceEl = document.getElementById('sc-pace');
+  if(scPaceEl){
+    const scGoal = (S.g.cats && S.g.cats.sc) || 0;
+    if(scGoal > 0){
+      const wkEf = weeksElapsed();
+      const paceTarget = Math.round(scGoal * wkEf / 52);
+      const pacePct = paceTarget>0?Math.round(scCPO/paceTarget*100):0;
+      const col = pacePct>=85?'var(--green)':pacePct>=50?'var(--gold)':'var(--red)';
+      scPaceEl.innerHTML = `<div style="background:var(--surface2);border-left:3px solid ${col};border-radius:0 7px 7px 0;padding:9px 12px;">
+        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">SC Plan Pace</div>
+        <div style="font-size:13px;"><strong style="color:${col};">${fm(scCPO)}</strong> <span style="color:var(--text2);">of ${fm(paceTarget)} plan pace through Wk ${wkEf} (${pacePct}%) · annual plan ${fm(scGoal)}</span></div>
+      </div>`;
+    } else { scPaceEl.innerHTML=''; }
+  }
 }
 
 // ==================== YEAR VIEW ====================
@@ -1708,13 +2072,20 @@ function refreshYearView(){
   document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
 
   // Bottom totals — per-campaign + YTD
+  // Variance compares actuals against the plan for ELAPSED weeks only — holding a
+  // mid-campaign week to the full-campaign plan would always read as a huge miss.
+  const wkNow=weeksElapsed();
   const renderTotalsBlock = (label, range) => {
     const wks = S.weeks.filter(w => w.wk >= range[0] && w.wk <= range[1]);
-    const projWks = Object.keys(S.projections).filter(k => +k >= range[0] && +k <= range[1]).map(k => S.projections[k]);
+    const projKeys = Object.keys(S.projections).filter(k => +k >= range[0] && +k <= range[1]);
+    const projWksAll = projKeys.map(k => S.projections[k]);
+    const projWks = projKeys.filter(k => +k <= wkNow).map(k => S.projections[k]);
     const actCPO = wks.reduce((s,w) => s + (w.cpo||0), 0);
     const actOrd = wks.reduce((s,w) => s + (w.ord||0), 0);
-    const projCPO = projWks.reduce((s,p) => s + (parseFloat(p.ev)||0)+(parseFloat(p.sc)||0)+(parseFloat(p.se)||0)+(parseFloat(p.mkt)||0)+(parseFloat(p.biz)||0)+(parseFloat(p.fed)||0)+(parseFloat(p.demo)||0), 0);
+    const projCPO = projWks.reduce((s,p) => s + projTotal(p), 0);
     const projOrd = projWks.reduce((s,p) => s + (parseInt(p.ord)||0), 0);
+    const fullCPO = projWksAll.reduce((s,p) => s + projTotal(p), 0);
+    const fullOrd = projWksAll.reduce((s,p) => s + (parseInt(p.ord)||0), 0);
     const varCPO = actCPO - projCPO;
     const varOrd = actOrd - projOrd;
     const cpoVarPct = projCPO>0 ? Math.round(varCPO/projCPO*100) : null;
@@ -1723,12 +2094,14 @@ function refreshYearView(){
     const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
     const cpoSign = varCPO >= 0 ? '+' : '';
     const ordSign = varOrd >= 0 ? '+' : '';
+    const planNote = projWksAll.length>projWks.length
+      ? `<span style="font-size:11px;color:var(--text2);font-weight:400;"> · vs plan through Wk ${Math.min(wkNow,range[1])} — full-campaign plan: ${fm(fullCPO)} / ${fullOrd} ord</span>` : '';
     return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
-      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:.4px;">${label}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:.4px;">${label}${planNote}</div>
       <div style="display:grid;grid-template-columns:140px 1fr 1fr 1fr;gap:10px;font-size:12px;align-items:center;">
         <div style="color:var(--text2);font-weight:600;"></div>
         <div style="color:var(--text2);font-weight:600;text-align:right;">Actual</div>
-        <div style="color:var(--text2);font-weight:600;text-align:right;">Projected</div>
+        <div style="color:var(--text2);font-weight:600;text-align:right;">Plan to date</div>
         <div style="color:var(--text2);font-weight:600;text-align:right;">Variance</div>
         <div style="color:var(--text);font-weight:600;">Total CPO</div>
         <div style="text-align:right;font-weight:600;">${fm(actCPO)}</div>
@@ -1785,7 +2158,9 @@ function refreshPlan(){
   if(!tbody) return; // page not in DOM yet
   const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,35] : [36,52];
   const yearWeeks=buildYearWeeks();
-  const cats=['ev','scp','se','mkt','biz','fed','demo'];
+  // NOTE: projections store Service Calls under 'sc' (matching Year View + totals).
+  // This table previously read/wrote 'scp', which hid SC plans and dropped them on edit.
+  const cats=PROJ_CATS;
 
   const rows=[];
   for(let wk=range[0]; wk<=range[1]; wk++){
@@ -1794,7 +2169,7 @@ function refreshPlan(){
     const proj=S.projections[wk]||{};
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     // Auto-sum total CPO from category fields
-    const totalCPO=cats.reduce((s,c)=>s+(parseFloat(proj[c])||0),0);
+    const totalCPO=projTotal(proj);
     const cells=cats.map(c=>{
       const val=proj[c]||'';
       return `<td><input type="number" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
@@ -1811,7 +2186,7 @@ function refreshPlan(){
 
   // Plan footer totals
   const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
-  const sumCPO=projWks.reduce((s,p)=>s+(parseFloat(p.ev)||0)+(parseFloat(p.sc)||0)+(parseFloat(p.se)||0)+(parseFloat(p.mkt)||0)+(parseFloat(p.biz)||0)+(parseFloat(p.fed)||0)+(parseFloat(p.demo)||0),0);
+  const sumCPO=projWks.reduce((s,p)=>s+projTotal(p),0);
   const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
   // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
   const filledWeeks=projWks.length;
@@ -1836,9 +2211,9 @@ function onProjEdit(input){
   } else {
     S.projections[wk][cat] = cat==='ord' ? (parseInt(val)||0) : (parseFloat(val)||0);
   }
-  // Auto-recompute total CPO from category cells
-  const cats=['ev','scp','se','mkt','biz','fed','demo'];
-  const total = cats.reduce((s,c)=>s+(parseFloat(S.projections[wk][c])||0), 0);
+  // Auto-recompute total CPO from category cells ('sc' key — same as Year View reads)
+  const cats=PROJ_CATS;
+  const total = projTotal(S.projections[wk]);
   // Cleanup: if user has cleared every input field, drop the whole projection entry.
   // Otherwise keep cpo in sync with the category sum (could be 0 — explicit "planned 0" week).
   const hasAnyCat = cats.some(c => S.projections[wk][c] !== undefined);
@@ -1970,9 +2345,10 @@ function readEventFromForm(){
     shifts: parseInt(document.getElementById('p-shifts').value)||0,
     ord: parseInt(document.getElementById('p-ord').value)||0,
     comm,
+    booth: costTotal,
     hotel, gas, food, tolls, other,
     totalExp, net,
-    dt: dtStart, dtDisplay,
+    dt: dtStart, dtEnd, dtDisplay,
     manualCharges,
     cashOrders,
     cashRevenue
@@ -1984,6 +2360,9 @@ function saveEvent(){
   if(!name){ alert('Please enter an event name.'); return; }
   const entry = readEventFromForm();
   if(editEventIdx >= 0){
+    // Keep the original pretty date range if the user didn't re-enter an end date
+    const old = S.events[editEventIdx];
+    if(!entry.dtEnd && old && old.dt === entry.dt && old.dtDisplay) entry.dtDisplay = old.dtDisplay;
     S.events[editEventIdx] = entry;
     editEventIdx = -1;
     document.getElementById('event-edit-banner').style.display = 'none';
@@ -2013,12 +2392,19 @@ function editEvent(idx){
   set('p-name', e.name);
   set('p-loc', e.loc);
   set('p-dt-start', e.dt);
-  set('p-dt-end', ''); // not stored individually — leave blank, user can re-enter if needed
+  set('p-dt-end', e.dtEnd || '');
   set('p-camp', e.camp);
   set('p-cpo', e.cpo);
   set('p-shifts', e.shifts);
   set('p-ord', e.ord);
-  set('p-cost-total', ''); // booth wasn't stored separately on old events; user can re-enter
+  // Booth cost: use stored value; for legacy events derive it from totalExp minus the
+  // itemized expenses, so re-saving an old event can never silently zero its expenses.
+  let boothVal = e.booth;
+  if(boothVal === undefined){
+    const manualSumLegacy = (e.manualCharges||[]).reduce((s,c)=>s+(parseFloat(c.amount)||0),0);
+    boothVal = Math.max(0, Math.round(((e.totalExp||0)-(e.hotel||0)-(e.gas||0)-(e.food||0)-(e.tolls||0)-(e.other||0)-manualSumLegacy)*100)/100);
+  }
+  set('p-cost-total', boothVal || '');
   set('p-hotel', e.hotel);
   set('p-gas', e.gas);
   set('p-food', e.food);
@@ -2064,6 +2450,9 @@ function clearEventForm(){
 }
 
 function deleteEvent(idx){
+  const e=S.events[idx];
+  if(!e) return;
+  if(!confirm('Delete event "'+(e.name||'Untitled')+'" ('+(e.dtDisplay||e.dt||'no date')+')?\n\nThis permanently removes it and its profit numbers.')) return;
   if(editEventIdx === idx) cancelEventEdit(); // can't edit deleted event
   S.events.splice(idx,1);
   refreshProfit();
@@ -2115,8 +2504,9 @@ function refreshProfit(){
     const cashRev = e.cashRevenue || 0;
     const manual = e.manualCharges || [];
     const cashLine = (cashOrdersN > 0 || cashRev > 0)
-      ? `<div style="font-size:11px;color:var(--text2);margin-top:8px;">Cash: <strong style="color:var(--green);">${fm(cashRev)}</strong> from ${cashOrdersN} order${cashOrdersN===1?'':'s'} <span style="color:var(--text3);">(off-book — not in CPO)</span></div>`
+      ? `<div style="font-size:11px;color:var(--text2);margin-top:8px;">Cash: <strong style="color:var(--green);">${fm(cashRev)}</strong>${cashOrdersN>0?' from '+plural(cashOrdersN,'order'):''} <span style="color:var(--text3);">(off-book — not in CPO)</span></div>`
       : '';
+    const expRatio = e.comm > 0 ? Math.round((e.totalExp||0)/e.comm*100) : null;
     const manualLine = manual.length > 0
       ? `<div style="font-size:11px;color:var(--text2);margin-top:6px;">Additional charges: ${manual.map(c => `<span style="color:var(--text);">${c.label||'Misc'}</span> <span style="color:var(--red);">-${fm(c.amount)}</span>`).join(' · ')}</div>`
       : '';
@@ -2124,7 +2514,7 @@ function refreshProfit(){
       <div class="prof-event-header">
         <div>
           <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&S.events.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''}</div>
-          <div class="prof-event-meta">${e.loc?e.loc+' · ':''}${e.dtDisplay||e.dt||''}${e.shifts?' · '+e.shifts+' shifts':''} · ${e.camp}</div>
+          <div class="prof-event-meta">${e.loc?e.loc+' · ':''}${e.dtDisplay||e.dt||''}${e.shifts?' · '+plural(e.shifts,'shift'):''} · ${e.camp}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="profit-pill ${pillClass}">${pillText}</span>
@@ -2140,9 +2530,65 @@ function refreshProfit(){
       </div>
       ${cashLine}
       ${manualLine}
-      ${e.shifts>0?`<div style="font-size:11px;color:var(--text2);margin-top:8px;">Profit per shift: <strong style="color:${e.net/e.shifts>=500?'var(--green)':'var(--text)'};">${fm(Math.round(e.net/e.shifts))}</strong></div>`:''}
+      <div style="font-size:11px;color:var(--text2);margin-top:8px;">
+        ${e.shifts>0?`Profit per shift: <strong style="color:${e.net/e.shifts>=500?'var(--green)':'var(--text)'};">${fm(Math.round(e.net/e.shifts))}</strong>`:''}
+        ${expRatio!==null?`${e.shifts>0?' · ':''}Expenses ate <strong style="color:${expRatio<=40?'var(--green)':expRatio<=60?'var(--gold)':'var(--red)'};">${expRatio}%</strong> of commission`:''}
+      </div>
     </div>`;
   }).join('');
+
+  renderRoiTable(threshold);
+  renderReconciliation();
+}
+
+// ==================== EVENT ROI RANKING ====================
+function renderRoiTable(threshold){
+  const wrap=document.getElementById('roi-table-wrap');
+  if(!wrap) return;
+  if(S.events.length===0){ wrap.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:14px 0;">Log events to build your ROI ranking.</div>'; return; }
+  const rows=S.events.map(e=>{
+    const perShift=e.shifts>0?Math.round((e.net||0)/e.shifts):null;
+    const expRatio=e.comm>0?Math.round((e.totalExp||0)/e.comm*100):null;
+    let verdict, vStyle;
+    if((e.net||0)>=threshold && (expRatio===null||expRatio<=40)){ verdict='Book again'; vStyle='background:var(--green-light);color:var(--green);'; }
+    else if((e.net||0)<threshold*0.5 || (expRatio!==null&&expRatio>60)){ verdict='Skip / renegotiate'; vStyle='background:var(--red-light);color:var(--red);'; }
+    else { verdict='Review'; vStyle='background:var(--gold-light);color:var(--gold);'; }
+    return {e,perShift,expRatio,verdict,vStyle};
+  }).sort((a,b)=>(b.perShift??-1e9)-(a.perShift??-1e9));
+  wrap.innerHTML=`<table class="roi-table">
+    <thead><tr><th>Event</th><th style="text-align:right;">Net</th><th style="text-align:right;">Shifts</th><th style="text-align:right;">Net / Shift</th><th style="text-align:right;">Exp % of Comm</th><th>Verdict</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td style="font-weight:600;max-width:260px;overflow:hidden;text-overflow:ellipsis;">${r.e.name}<span style="color:var(--text3);font-weight:400;"> · ${r.e.camp}</span></td>
+      <td style="text-align:right;font-weight:700;color:${(r.e.net||0)>=threshold?'var(--green)':'var(--red)'};">${fm(r.e.net||0)}</td>
+      <td style="text-align:right;">${r.e.shifts||'—'}</td>
+      <td style="text-align:right;font-weight:700;">${r.perShift!==null?fm(r.perShift):'—'}</td>
+      <td style="text-align:right;color:${r.expRatio===null?'var(--text3)':r.expRatio<=40?'var(--green)':r.expRatio<=60?'var(--gold)':'var(--red)'};font-weight:600;">${r.expRatio!==null?r.expRatio+'%':'—'}</td>
+      <td><span class="roi-verdict" style="${r.vStyle}">${r.verdict}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>
+  <div style="font-size:11px;color:var(--text2);margin-top:9px;">Ranked by net profit per shift. "Book again" = net ≥ $${threshold.toLocaleString()} and expenses ≤ 40% of commission · "Skip / renegotiate" = net under half threshold or expenses over 60%.</div>`;
+}
+
+// ==================== WEEKLY STATS vs EVENT LOG RECONCILIATION ====================
+function renderReconciliation(){
+  const body=document.getElementById('recon-body');
+  if(!body) return;
+  if(S.events.length===0 && S.weeks.length===0){ body.innerHTML='<div style="font-size:12px;color:var(--text3);">No data yet.</div>'; return; }
+  const wkEv=S.weeks.reduce((s,w)=>s+(w.ev||0),0);
+  const wkSe=S.weeks.reduce((s,w)=>s+(w.se||0),0);
+  const logTrad=S.events.filter(e=>(e.eventType||'Traditional')!=='Service Event').reduce((s,e)=>s+(e.cpo||0),0);
+  const logSe=S.events.filter(e=>e.eventType==='Service Event').reduce((s,e)=>s+(e.cpo||0),0);
+  const line=(label,weekly,logged)=>{
+    const diff=weekly-logged;
+    const ok=Math.abs(diff)<1;
+    return `<div class="ins ${ok?'ok':'info'}" style="margin-bottom:7px;">
+      <div class="ins-ic">${ok?'✓':'→'}</div>
+      <div><div class="ins-tit">${label}: ${ok?'fully reconciled':fm(Math.abs(diff))+(diff>0?' not itemized in the event log':' in event log beyond weekly stats')}</div>
+      <div class="ins-desc">Weekly stats: ${fm(weekly)} · Event log: ${fm(logged)}${ok?'':diff>0?' — likely events not logged in Step 3, or an entry typo.':' — an event may be double-logged or a weekly entry is missing.'}</div></div>
+    </div>`;
+  };
+  body.innerHTML=line('Traditional events',wkEv,logTrad)+line('Service events',wkSe,logSe)
+    +`<div style="font-size:11px;color:var(--text2);margin-top:4px;">Catch entry slips the week they happen: these two sources are entered separately and should agree.</div>`;
 }
 
 // ==================== ENTRIES ====================
@@ -2150,7 +2596,7 @@ function refreshEntries(){
   document.getElementById('e-count').textContent=S.weeks.length+' weeks';
   document.getElementById('e-list').innerHTML=S.weeks.length===0?'<div style="font-size:12px;color:var(--text3);text-align:center;padding:18px 0;">No entries yet</div>':S.weeks.map((w,i)=>{
     const vt=w.target>0?(w.cpo>=w.target?`<span style="font-size:11px;color:var(--green);font-weight:700;">↑ Hit</span>`:`<span style="font-size:11px;color:var(--red);font-weight:700;">↓ Missed</span>`):'';
-    return`<div class="erow"><div><div style="font-size:12px;font-weight:700;">Week ${w.wk} ${vt}</div><div style="font-size:11px;color:var(--text2);">${w.dt} · ${w.camp}${w.tnote?' · '+w.tnote:''}</div></div><div style="display:flex;align-items:center;gap:7px;"><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--blue);">${fm(w.cpo)}</div><div style="font-size:11px;color:var(--text2);">${w.ord} orders</div></div><div style="display:flex;flex-direction:column;gap:3px;"><button class="bedit" onclick="editWeek(${i})">edit</button><button class="bdel" onclick="deleteWeek(${i})">del</button></div></div></div>`;
+    return`<div class="erow"><div><div style="font-size:12px;font-weight:700;">Week ${w.wk} ${vt}</div><div style="font-size:11px;color:var(--text2);">${w.dt} · ${w.camp}${w.tnote?' · '+w.tnote:''}</div></div><div style="display:flex;align-items:center;gap:7px;"><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--blue);">${fm(w.cpo)}</div><div style="font-size:11px;color:var(--text2);">${plural(w.ord,'order')}</div></div><div style="display:flex;flex-direction:column;gap:3px;"><button class="bedit" onclick="editWeek(${i})">edit</button><button class="bdel" onclick="deleteWeek(${i})">del</button></div></div></div>`;
   }).join('');
   updTgt();
 }
@@ -2237,7 +2683,15 @@ function editWeek(idx){
   window.scrollTo(0,0);
 }
 function cancelEdit(){editIdx=-1;clearForm();document.getElementById('edbanner').style.display='none';document.getElementById('save-btn').textContent='Save Week →';document.getElementById('save-btn').style.background='var(--blue)';}
-function deleteWeek(idx){const w=S.weeks[idx];S.cats.ev-=w.ev||0;S.cats.sc-=w.scp||0;S.cats.se-=w.se||0;S.cats.mkt-=w.mkt||0;S.cats.biz-=w.biz||0;S.cats.fed-=w.fed||0;S.cats.demo-=w.demo||0;S.weeks.splice(idx,1);if(editIdx===idx)cancelEdit();refreshAll();}
+function deleteWeek(idx){
+  const w=S.weeks[idx];
+  if(!w) return;
+  if(!confirm('Delete Week '+w.wk+' ('+fm(w.cpo||0)+' CPO, '+plural(w.ord||0,'order')+')?\n\nThis permanently removes the week from your stats.')) return;
+  S.cats.ev-=w.ev||0;S.cats.sc-=w.scp||0;S.cats.se-=w.se||0;S.cats.mkt-=w.mkt||0;S.cats.biz-=w.biz||0;S.cats.fed-=w.fed||0;S.cats.demo-=w.demo||0;
+  S.weeks.splice(idx,1);
+  if(editIdx===idx)cancelEdit();
+  refreshAll();
+}
 
 // ==================== SUBMIT ====================
 function submitStats(){
@@ -2379,6 +2833,8 @@ function loadGoalsFromLocal(){
 }
 
 function refreshAll(){
+  // Normalize legacy weeks before any view renders (trend chart needs isVacation)
+  S.weeks.forEach(w=>{ if(w.isVacation===undefined) w.isVacation=((w.daysOff||0)>=7); });
   S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0};
   S.weeks.forEach(function(w){
     S.cats.ev+=(w.ev||0);
@@ -2413,6 +2869,8 @@ async function saveToSheets(){
       weeklyStandards: S.weeklyStandards,
       weeklyStreak: S.weeklyStreak,
       weeklyLongestStreak: S.weeklyLongestStreak,
+      weeklyClaimedWk: S.weeklyClaimedWk,
+      weeklyResetWk: S.weeklyResetWk,
       weeks: S.weeks,
       yearNotes: S.yearNotes,
       projections: S.projections,
@@ -2420,15 +2878,47 @@ async function saveToSheets(){
       events: S.events,
       g: S.g
     });
-    const res = await fetch(SHEETS_URL, {
+    await fetch(SHEETS_URL, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: payload,
       mode:'no-cors'
     });
-    syncStatus('Saved ✓ ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--green)');
+    // no-cors makes the POST response unreadable, so "saved" alone would be a guess.
+    // Read the data back and compare the numbers that matter before claiming success.
+    syncStatus('Verifying...', 'var(--blue)');
+    try {
+      const check = await fetch(SHEETS_URL + '?action=load&t=' + Date.now(), { method:'GET' });
+      const remote = await check.json();
+      const localCPO = S.weeks.reduce((s,w)=>s+(w.cpo||0),0);
+      const remoteCPO = (remote.weeks||[]).reduce((s,w)=>s+(w.cpo||0),0);
+      if(remote && (remote.weeks||[]).length === S.weeks.length && Math.round(remoteCPO) === Math.round(localCPO)){
+        syncStatus('Saved ✓ verified ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--green)');
+      } else {
+        syncStatus('Saved? — verify mismatch, use ↓ Load to check', 'var(--gold)');
+      }
+    } catch(ve){
+      syncStatus('Saved (unverified) ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--gold)');
+    }
   } catch(e){
     syncStatus('Save failed — check connection', 'var(--red)');
+  }
+}
+
+// ==================== LOCAL BACKUP ====================
+function exportBackup(){
+  try {
+    const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'command-center-backup-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+    syncStatus('Backup downloaded ✓', 'var(--green)');
+  } catch(e){
+    syncStatus('Backup failed', 'var(--red)');
   }
 }
 
@@ -2526,12 +3016,21 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
       Object.assign(S, fetched);
       console.log('HUB: data loaded from data.json (' + (S.weeks ? S.weeks.length : 0) + ' weeks)');
     } else {
-      console.warn('HUB: data.json fetch failed (HTTP ' + resp.status + ') — using embedded fallback data');
+      console.warn('HUB: data.json fetch failed (HTTP ' + resp.status + ')');
     }
   } catch (err) {
-    console.warn('HUB: data.json fetch error — using embedded fallback data:', err && err.message);
+    console.warn('HUB: data.json fetch error:', err && err.message);
+  }
+  if(!S.weeks){
+    // No data could be loaded (e.g. opened as a file:// without a server) — say so
+    // clearly instead of rendering a broken all-zero dashboard.
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div style="background:var(--red-light);color:var(--red);font-weight:700;font-size:13px;padding:12px 20px;text-align:center;">'+
+      'Could not load data.json — your stats are NOT shown. Open this page from GitHub Pages or a local web server, then reload.</div>');
+    return;
   }
   loadGoalsFromLocal();
+  rolloverStreaks();
   refreshAll();
 })();
 
