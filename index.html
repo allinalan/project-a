@@ -226,14 +226,73 @@
   .roi-table td{padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap;}
   .roi-table tr:last-child td{border-bottom:none;}
   .roi-verdict{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;display:inline-block;}
-  @media(max-width:900px){
+  /* ===== BOTTOM APP NAV (mobile) ===== */
+  .bnav{display:none;}
+  .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+  /* Tablet: wrap the top nav, keep scrollable tabs */
+  @media(max-width:900px) and (min-width:701px){
     nav{flex-wrap:wrap;height:auto;padding:8px 10px;row-gap:6px;}
     .tabs{order:3;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;}
     .tabs::-webkit-scrollbar{display:none;}
     .tab{white-space:nowrap;flex:0 0 auto;}
     .nav-r{margin-left:auto;}
   }
-  @media(max-width:700px){.g3,.g4{grid-template-columns:1fr 1fr;}.g2,.g2e{grid-template-columns:1fr;}.fg,.fg3,.fg4{grid-template-columns:1fr;}.page{padding:12px;}.year-summary{grid-template-columns:1fr 1fr;}.pace-grid{grid-template-columns:1fr 1fr;}}
+
+  /* Phone: app-style layout — compact top bar, fixed bottom tab bar */
+  @media(max-width:700px){
+    body{padding-bottom:calc(66px + env(safe-area-inset-bottom));}
+    nav{padding:0 12px;height:48px;}
+    .logo{font-size:14px;}
+    .tabs{display:none;}
+    #sync-status{display:none;}
+    .av{display:none;}
+    .streak-badge{font-size:10px;padding:3px 8px;}
+    .bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -2px 12px rgba(26,95,170,.10);padding:5px 2px calc(5px + env(safe-area-inset-bottom));justify-content:space-around;}
+    .bnav-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;font-family:var(--font);color:var(--text2);font-size:9px;font-weight:600;padding:4px 0;cursor:pointer;border-radius:8px;}
+    .bnav-item .bi{font-size:18px;line-height:1;}
+    .bnav-item.active{color:var(--blue);}
+    .bnav-item.active .bi{transform:scale(1.12);}
+    .bnav-item:active{background:var(--blue-light);}
+
+    .page{padding:12px;}
+    .ptitle{font-size:18px;margin-bottom:14px;}
+    .g3,.g4{grid-template-columns:1fr 1fr;}
+    .g2,.g2e{grid-template-columns:1fr;}
+    .fg,.fg3,.fg4{grid-template-columns:1fr;}
+    .year-summary{grid-template-columns:1fr 1fr;}
+    .pace-grid{grid-template-columns:1fr 1fr;}
+    .prof-grid{grid-template-columns:1fr 1fr;}
+    .mc.hero{padding:16px 14px 13px;}
+    .mc.hero .mval{font-size:26px;letter-spacing:-1px;}
+    .mval{font-size:21px;}
+
+    /* iOS zooms into inputs under 16px — keep form text at 16px on phones */
+    .fin,.plan-input,.week-note-input,.settings-fin,select.fin{font-size:16px;}
+    /* Bigger touch targets */
+    .bedit,.bdel{padding:8px 12px;font-size:12px;}
+    .bp{padding:12px 24px;}
+    .bs{padding:11px 16px;}
+    .qck{width:22px;height:22px;}
+    .filter-btn{padding:8px 14px;}
+
+    /* Wide tables: sticky first column while the rest scrolls */
+    .year-table th:first-child,.year-table td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:2px 0 6px rgba(26,95,170,.07);}
+    .year-table th:first-child{background:var(--blue);z-index:3;}
+    .year-table tr.vacation td:first-child{background:#fffbf0;}
+    .year-table tr.month-header td:first-child,.year-table tr.camp-divider td:first-child{position:static;box-shadow:none;}
+    .scrollx>*{min-width:640px;}
+
+    .settings-row{flex-wrap:wrap;row-gap:8px;}
+    .settings-row>div[style*="width:1px"]{display:none;}
+    .mo{width:calc(100vw - 32px);max-width:400px;}
+    .toast{left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom));text-align:center;}
+    .trend-legend{gap:10px;}
+    #chart-wrap{flex-direction:column;align-items:center;gap:12px;}
+    .prof-event-header{flex-wrap:wrap;gap:8px;}
+    .rank-cpo{font-size:17px;}
+    .rank-name{font-size:14px;}
+  }
 </style>
 </head>
 <body>
@@ -241,13 +300,13 @@
 <nav>
   <div class="logo">Command <span>Center.</span></div>
   <div class="tabs">
-    <button class="tab active" onclick="showPage('home',this)">Home</button>
-    <button class="tab" onclick="showPage('campaign',this)">Campaign</button>
-    <button class="tab" onclick="showPage('ratios',this)">Scorecard</button>
-    <button class="tab" onclick="showPage('yearview',this)">Year View</button>
-    <button class="tab" onclick="showPage('plan',this)">Plan</button>
-    <button class="tab" onclick="showPage('profit',this)">Event Profitability</button>
-    <button class="tab" onclick="showPage('enter',this)">Enter Stats</button>
+    <button class="tab active" data-page="home" onclick="showPage('home',this)">Home</button>
+    <button class="tab" data-page="campaign" onclick="showPage('campaign',this)">Campaign</button>
+    <button class="tab" data-page="ratios" onclick="showPage('ratios',this)">Scorecard</button>
+    <button class="tab" data-page="yearview" onclick="showPage('yearview',this)">Year View</button>
+    <button class="tab" data-page="plan" onclick="showPage('plan',this)">Plan</button>
+    <button class="tab" data-page="profit" onclick="showPage('profit',this)">Event Profitability</button>
+    <button class="tab" data-page="enter" onclick="showPage('enter',this)">Enter Stats</button>
   </div>
   <div class="nav-r">
     <div style="display:flex;align-items:center;gap:8px;">
@@ -633,10 +692,12 @@
   </div>
   <div class="panel" style="margin-bottom:13px;">
     <div class="phead"><div class="ptit2">Revenue by CPO (YTD)</div><div class="badge bb">vs 2026 Goal</div></div>
+    <div class="scrollx"><div>
     <div class="cr-ext hdr" style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">
       <div>Category</div><div>CI</div><div>CII</div><div>CIII</div><div>Total</div><div>Goal</div><div>Done</div>
     </div>
     <div id="cat-rows"></div>
+    </div></div>
   </div>
   <div class="panel">
     <div class="phead"><div class="ptit2">Year over Year</div><div class="badge bgy">2025 vs 2026</div></div>
@@ -968,6 +1029,17 @@
   </div>
 </div>
 
+<!-- BOTTOM APP NAV (phones) -->
+<div class="bnav">
+  <button class="bnav-item active" data-page="home" onclick="showPage('home',this)"><span class="bi">🏠</span>Home</button>
+  <button class="bnav-item" data-page="campaign" onclick="showPage('campaign',this)"><span class="bi">🎯</span>Campaign</button>
+  <button class="bnav-item" data-page="ratios" onclick="showPage('ratios',this)"><span class="bi">📊</span>Score</button>
+  <button class="bnav-item" data-page="yearview" onclick="showPage('yearview',this)"><span class="bi">📅</span>Year</button>
+  <button class="bnav-item" data-page="plan" onclick="showPage('plan',this)"><span class="bi">📝</span>Plan</button>
+  <button class="bnav-item" data-page="profit" onclick="showPage('profit',this)"><span class="bi">💰</span>Profit</button>
+  <button class="bnav-item" data-page="enter" onclick="showPage('enter',this)"><span class="bi">➕</span>Enter</button>
+</div>
+
 <div class="toast" id="t1">Week saved!</div>
 <div class="toast blue" id="t2">Week updated!</div>
 <div class="toast" id="t3">Event added!</div>
@@ -1004,9 +1076,12 @@ function formatDate(str){
 // ==================== NAV ====================
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab,.bnav-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(btn)btn.classList.add('active');
+  // Keep top tabs and the mobile bottom bar in sync regardless of which was tapped
+  document.querySelectorAll('.tab[data-page="'+id+'"],.bnav-item[data-page="'+id+'"]').forEach(b=>b.classList.add('active'));
+  if(btn && !btn.dataset.page)btn.classList.add('active');
+  window.scrollTo(0,0);
   refreshAll();
 }
 
@@ -1282,18 +1357,18 @@ function renderTrendChart(){
   }
 }
 
-// hover tooltip for the trend chart
+// hover + touch tooltip for the trend chart
 (function(){
-  document.addEventListener('mousemove',e=>{
+  function showTipAt(clientX, clientY, requireInside){
     const wrap=document.getElementById('trend-wrap');
     const tip=document.getElementById('trend-tip');
-    if(!wrap||!tip) return;
+    if(!wrap||!tip) return false;
     const r=wrap.getBoundingClientRect();
-    const inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
-    if(!inside){ tip.style.display='none'; return; }
-    const x=e.clientX-r.left;
+    const inside=clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom;
+    if(requireInside&&!inside){ tip.style.display='none'; return false; }
+    const x=clientX-r.left;
     const hit=trendBars.find(b=>x>=b.x0&&x<b.x1);
-    if(!hit){ tip.style.display='none'; return; }
+    if(!hit){ tip.style.display='none'; return false; }
     const d=hit.d;
     tip.innerHTML='<strong>Wk '+d.wk+'</strong> · '+d.label+(d.vac?' · Vacation':'')+'<br>'+
       'CPO: <strong>'+(d.cpo!==null?fm(d.cpo):'not logged')+'</strong>'+
@@ -1303,7 +1378,25 @@ function renderTrendChart(){
     const tw=tip.offsetWidth;
     tip.style.left=Math.max(0,Math.min(r.width-tw,x-tw/2))+'px';
     tip.style.top='6px';
-  });
+    return true;
+  }
+  document.addEventListener('mousemove',e=>showTipAt(e.clientX,e.clientY,true));
+  // Touch: tap or drag across the chart to inspect weeks; tap elsewhere dismisses
+  const wrapTouch=e=>{
+    const wrap=document.getElementById('trend-wrap');
+    if(!wrap) return;
+    const t=e.touches[0];
+    if(!t) return;
+    const r=wrap.getBoundingClientRect();
+    if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom){
+      if(showTipAt(t.clientX,t.clientY,false)) e.preventDefault();
+    } else {
+      const tip=document.getElementById('trend-tip');
+      if(tip) tip.style.display='none';
+    }
+  };
+  document.addEventListener('touchstart',wrapTouch,{passive:false});
+  document.addEventListener('touchmove',wrapTouch,{passive:false});
   window.addEventListener('resize',()=>{ if(document.getElementById('page-home')?.classList.contains('active')) renderTrendChart(); });
 })();
 
@@ -2172,14 +2265,14 @@ function refreshPlan(){
     const totalCPO=projTotal(proj);
     const cells=cats.map(c=>{
       const val=proj[c]||'';
-      return `<td><input type="number" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
+      return `<td><input type="number" inputmode="decimal" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
     }).join('');
     rows.push(`<tr>
       <td style="font-weight:700;">Wk ${wk}</td>
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td class="plan-total-cell" id="plan-total-${wk}">${S.projections[wk]?fm(totalCPO):'—'}</td>
       ${cells}
-      <td><input type="number" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
+      <td><input type="number" inputmode="numeric" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
     </tr>`);
   }
   tbody.innerHTML=rows.join('');
@@ -3032,6 +3125,9 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
   loadGoalsFromLocal();
   rolloverStreaks();
   refreshAll();
+  // Mobile keyboards: numeric pad for number fields (static ones; dynamic inputs
+  // in the Plan table get inputmode from refreshPlan's markup)
+  document.querySelectorAll('input[type="number"]').forEach(i=>i.setAttribute('inputmode','decimal'));
 })();
 
 </script>
