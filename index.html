@@ -19,7 +19,8 @@
     --text:#1a2332;--text2:#5a6b7e;--text3:#8296a8;
     --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(26,95,170,.12);}
+  button,input,select{touch-action:manipulation;}
   body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;}
   nav{background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(26,95,170,.2);}
   .logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#7ec8f5;}
@@ -255,9 +256,12 @@
     .bnav-item.active .bi{transform:scale(1.12);}
     .bnav-item:active{background:var(--blue-light);}
 
+    .desktop-hint{display:none;}
+    .pill-detail{display:none;}
     .page{padding:12px;}
     .ptitle{font-size:18px;margin-bottom:14px;}
-    .g3,.g4{grid-template-columns:1fr 1fr;}
+    .g3{grid-template-columns:1fr;}
+    .g4{grid-template-columns:1fr 1fr;}
     .g2,.g2e{grid-template-columns:1fr;}
     .fg,.fg3,.fg4{grid-template-columns:1fr;}
     .year-summary{grid-template-columns:1fr 1fr;}
@@ -275,6 +279,10 @@
     .bs{padding:11px 16px;}
     .qck{width:22px;height:22px;}
     .filter-btn{padding:8px 14px;}
+    button.badge{padding:9px 14px;border-radius:14px;}
+    #daily-check-btn{padding:12px 20px !important;font-size:13px !important;}
+    .nav-r button{white-space:nowrap;padding:10px 12px !important;}
+    .year-filters{flex-wrap:wrap;}
 
     /* Wide tables: sticky first column while the rest scrolls */
     .year-table th:first-child,.year-table td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:2px 0 6px rgba(26,95,170,.07);}
@@ -282,6 +290,12 @@
     .year-table tr.vacation td:first-child{background:#fffbf0;}
     .year-table tr.month-header td:first-child,.year-table tr.camp-divider td:first-child{position:static;box-shadow:none;}
     .scrollx>*{min-width:640px;}
+    /* Plan table: sticky Wk column, inputs wide enough for 5-digit plans */
+    #plan-table th:first-child,#plan-table td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:2px 0 6px rgba(26,95,170,.07);}
+    #plan-table th:first-child{background:var(--blue);z-index:3;}
+    .plan-input{min-width:78px;padding:9px 6px;}
+    .plan-total-cell{min-width:86px;}
+    .scallout{gap:6px;padding:10px 8px;}
 
     .settings-row{flex-wrap:wrap;row-gap:8px;}
     .settings-row>div[style*="width:1px"]{display:none;}
@@ -893,7 +907,7 @@
     <button class="filter-btn" onclick="filterYear('worked',this)">Worked</button>
     <button class="filter-btn" onclick="filterYear('vacation',this)">Vacation / Off</button>
     <button class="filter-btn" onclick="filterYear('empty',this)">No Data</button>
-    <span style="font-size:11px;color:var(--text2);margin-left:auto;">Click any Notes cell to add a note</span>
+    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Click any Notes cell to add a note</span>
   </div>
   <div class="panel" style="padding:0;overflow-x:auto;">
     <table class="year-table" id="year-table">
@@ -922,10 +936,10 @@
   <div class="ptitle">Plan <span>Ahead.</span></div>
   <div class="year-filters" style="margin-bottom:14px;">
     <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
-    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I (Jan–Apr · Wks 1–17)</button>
-    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II (May–Aug · Wks 18–35)</button>
-    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III (Sep–Dec · Wks 36–52)</button>
-    <span style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
+    <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I<span class="pill-detail"> (Jan–Apr · Wks 1–17)</span></button>
+    <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II<span class="pill-detail"> (May–Aug · Wks 18–35)</span></button>
+    <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III<span class="pill-detail"> (Sep–Dec · Wks 36–52)</span></button>
+    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
   </div>
   <div class="panel" style="padding:0;overflow:auto;">
     <table class="year-table" id="plan-table">
@@ -1082,7 +1096,23 @@ function showPage(id,btn){
   document.querySelectorAll('.tab[data-page="'+id+'"],.bnav-item[data-page="'+id+'"]').forEach(b=>b.classList.add('active'));
   if(btn && !btn.dataset.page)btn.classList.add('active');
   window.scrollTo(0,0);
-  refreshAll();
+  // Only rebuild the page being shown — a full refreshAll on every tab tap
+  // rebuilds all 7 screens and makes each tap visibly laggy on phones.
+  refreshPage(id);
+}
+
+function refreshPage(id){
+  prepData();
+  switch(id){
+    case 'home':     refreshHome(); break;
+    case 'campaign': refreshCampaign(); break;
+    case 'ratios':   refreshRatios(); break;
+    case 'yearview': refreshYearView(); break;
+    case 'plan':     refreshPlan(); break;
+    case 'profit':   refreshProfit(); break;
+    case 'enter':    refreshEntries(); break;
+    default:         refreshAll();
+  }
 }
 
 // ==================== TOTALS ====================
@@ -1381,22 +1411,40 @@ function renderTrendChart(){
     return true;
   }
   document.addEventListener('mousemove',e=>showTipAt(e.clientX,e.clientY,true));
-  // Touch: tap or drag across the chart to inspect weeks; tap elsewhere dismisses
-  const wrapTouch=e=>{
+  // Touch: tap shows a week; a HORIZONTAL drag scrubs across weeks. A vertical
+  // swipe is always left to the browser so the page keeps scrolling normally —
+  // claiming vertical gestures here made the whole Home screen feel stuck.
+  let tGesture=null;
+  const hideTip=()=>{ const tip=document.getElementById('trend-tip'); if(tip) tip.style.display='none'; };
+  document.addEventListener('touchstart',e=>{
     const wrap=document.getElementById('trend-wrap');
-    if(!wrap) return;
     const t=e.touches[0];
-    if(!t) return;
+    if(!wrap||!t){ tGesture=null; return; }
     const r=wrap.getBoundingClientRect();
     if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom){
-      if(showTipAt(t.clientX,t.clientY,false)) e.preventDefault();
+      tGesture={x:t.clientX,y:t.clientY,dir:null};
+      showTipAt(t.clientX,t.clientY,false);
     } else {
-      const tip=document.getElementById('trend-tip');
-      if(tip) tip.style.display='none';
+      tGesture=null;
+      hideTip();
     }
-  };
-  document.addEventListener('touchstart',wrapTouch,{passive:false});
-  document.addEventListener('touchmove',wrapTouch,{passive:false});
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!tGesture) return;
+    const t=e.touches[0];
+    if(!t) return;
+    if(!tGesture.dir){
+      const dx=Math.abs(t.clientX-tGesture.x), dy=Math.abs(t.clientY-tGesture.y);
+      if(dx<6&&dy<6) return; // not decided yet
+      tGesture.dir=dx>dy?'h':'v';
+      if(tGesture.dir==='v') hideTip(); // vertical = scrolling, get out of the way
+    }
+    if(tGesture.dir==='h'){
+      showTipAt(t.clientX,t.clientY,false);
+      if(e.cancelable) e.preventDefault(); // horizontal scrub claims the gesture
+    }
+  },{passive:false});
+  document.addEventListener('touchend',()=>{ tGesture=null; },{passive:true});
   window.addEventListener('resize',()=>{ if(document.getElementById('page-home')?.classList.contains('active')) renderTrendChart(); });
 })();
 
@@ -1502,8 +1550,8 @@ function renderWeeklyStandards() {
   document.getElementById('weekly-standards-list').innerHTML = S.weeklyStandards.length === 0
     ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0;">No standards set. Click edit to add some.</div>'
     : S.weeklyStandards.map((s,i) => `
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);" class="${i===S.weeklyStandards.length-1?'':''}">
-        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${s.done?'var(--blue)':'var(--border2)'};background:${s.done?'var(--blue)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;" onclick="toggleStandard(${i})">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleStandard(${i})">
+        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${s.done?'var(--blue)':'var(--border2)'};background:${s.done?'var(--blue)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           ${s.done?'<span style="color:#fff;font-size:10px;font-weight:700;">✓</span>':''}
         </div>
         <div style="font-size:13px;flex:1;${s.done?'text-decoration:line-through;color:var(--text3);':'color:var(--text);'}">${s.text}</div>
@@ -2925,8 +2973,8 @@ function loadGoalsFromLocal(){
   }catch(e){}
 }
 
-function refreshAll(){
-  // Normalize legacy weeks before any view renders (trend chart needs isVacation)
+// Normalize legacy weeks + rebuild category totals — cheap, runs before any render
+function prepData(){
   S.weeks.forEach(w=>{ if(w.isVacation===undefined) w.isVacation=((w.daysOff||0)>=7); });
   S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0};
   S.weeks.forEach(function(w){
@@ -2938,6 +2986,10 @@ function refreshAll(){
     S.cats.fed+=(w.fed||0);
     S.cats.demo+=(w.demo||0);
   });
+}
+
+function refreshAll(){
+  prepData();
   refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();
 }
 
