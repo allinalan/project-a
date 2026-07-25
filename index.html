@@ -184,7 +184,7 @@
   .year-filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
   .filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);transition:all .15s;}
   .filter-btn.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700;}
-  .year-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+  .year-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px;}
 
   /* ===== PROFITABILITY ===== */
   .prof-event{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--blue);}
@@ -2169,6 +2169,12 @@ function refreshYearView(){
   const wkWithWorkDays = S.weeks.filter(w => w.workDays !== undefined);
   const totalWorkDays = wkWithWorkDays.reduce((s,w) => s + (w.workDays||0), 0);
   const avgWorkDays = wkWithWorkDays.length > 0 ? (totalWorkDays / wkWithWorkDays.length) : null;
+  // In-field production rate — same formula as the Scorecard's Productivity panel:
+  // only weeks with a positive Work Days entry count, so untracked weeks can't skew it
+  const fieldWks = S.weeks.filter(w => w.workDays !== undefined && w.workDays > 0);
+  const fieldDays = fieldWks.reduce((s,w) => s + w.workDays, 0);
+  const fieldCPO = fieldWks.reduce((s,w) => s + (w.cpo||0), 0);
+  const cpoPerFieldDay = fieldDays > 0 ? Math.round(fieldCPO/fieldDays) : null;
   const vacationWkSet=new Set(S.weeks.filter(w=>w.isVacation).map(w=>w.wk));
   Object.entries(S.yearNotes).forEach(([wk,n])=>{ if(noteIsVac(n)) vacationWkSet.add(parseInt(wk)); });
   const vacationCount=vacationWkSet.size;
@@ -2177,6 +2183,7 @@ function refreshYearView(){
     <div class="mc neu"><div class="mlbl">Total CPO</div><div class="mval">${fm(totalCPO)}</div><div class="msub tm">across ${entriesCount} weeks</div></div>
     <div class="mc gold"><div class="mlbl">Days Off (YTD)</div><div class="mval">${totalDaysOff}</div><div class="msub tm">across all weeks</div></div>
     <div class="mc neu" style="border-left:3px solid var(--green);"><div class="mlbl">Avg Working Days</div><div class="mval" style="color:var(--green);">${avgWorkDays !== null ? avgWorkDays.toFixed(1) : '—'}</div><div class="msub tm">${wkWithWorkDays.length>0 ? totalWorkDays+' days across '+wkWithWorkDays.length+' wks' : 'no data yet'}</div></div>
+    <div class="mc accent"><div class="mlbl">Avg CPO / Working Day</div><div class="mval" style="color:var(--accent-dark);">${cpoPerFieldDay !== null ? fm(cpoPerFieldDay) : '—'}</div><div class="msub tm">${cpoPerFieldDay !== null ? fm(fieldCPO)+' ÷ '+fieldDays+' field days' : 'enter working days to track'}</div></div>
     <div class="mc neu"><div class="mlbl">Avg Weekly CPO</div><div class="mval">${workedCount>0?fm(Math.round(totalCPO/workedCount)):'—'}</div><div class="msub tm">worked weeks only</div></div>`;
 
   // Helpers for campaign rollups (CUTCO 2026 official: CI=1-17, CII=18-35, CIII=36-52)
