@@ -166,6 +166,10 @@
   .week-note-input{background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:3px 4px;font-family:var(--font);font-size:12px;color:var(--text);width:100%;outline:none;min-width:140px;}
   .week-note-input:focus{border-bottom-color:var(--blue);background:var(--blue-light);}
   .week-note-input::placeholder{color:var(--text3);}
+  .inline-num{background:transparent;border:none;border-bottom:1px dashed var(--border2);width:44px;text-align:center;font-family:var(--font);font-size:12px;font-weight:600;outline:none;padding:3px 2px;}
+  .inline-num:focus{border-bottom-color:var(--blue);background:var(--blue-light);}
+  .inline-num::placeholder{color:var(--text3);font-weight:400;}
+  .inline-num:disabled{border-bottom-color:transparent;}
   .cpo-cell{font-weight:700;color:var(--blue);}
   .cpo-cell.empty{color:var(--text3);font-weight:400;}
   .month-header td{background:var(--surface3)!important;font-weight:700;font-size:12px;color:var(--blue);padding:6px 10px;}
@@ -278,7 +282,8 @@
     .mval{font-size:21px;}
 
     /* iOS zooms into inputs under 16px — keep form text at 16px on phones */
-    .fin,.plan-input,.week-note-input,.settings-fin,select.fin{font-size:16px;}
+    .fin,.plan-input,.week-note-input,.settings-fin,select.fin,.inline-num{font-size:16px;}
+    .inline-num{width:52px;}
     /* Bigger touch targets */
     .bedit,.bdel{padding:8px 12px;font-size:12px;}
     .bp{padding:12px 24px;}
@@ -913,7 +918,7 @@
     <button class="filter-btn" onclick="filterYear('worked',this)">Worked</button>
     <button class="filter-btn" onclick="filterYear('vacation',this)">Vacation / Off</button>
     <button class="filter-btn" onclick="filterYear('empty',this)">No Data</button>
-    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Click any Notes cell to add a note</span>
+    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Notes, Days Off &amp; Work Days are editable right in the table</span>
   </div>
   <div class="panel" style="padding:0;overflow-x:auto;">
     <table class="year-table" id="year-table">
@@ -2210,8 +2215,8 @@ function refreshYearView(){
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
-      <td style="font-size:12px;color:${w&&w.daysOff>0?'var(--gold)':'var(--text3)'};">${w&&w.daysOff>0?w.daysOff:'—'}</td>
-      <td style="font-size:12px;color:${w&&w.workDays!==undefined?'var(--green)':'var(--text3)'};font-weight:${w&&w.workDays!==undefined?'600':'400'};">${w&&w.workDays!==undefined?w.workDays:'—'}</td>
+      <td><input type="number" class="inline-num" inputmode="numeric" min="0" max="7" placeholder="—" value="${w&&w.daysOff>0?w.daysOff:''}" ${w?'':'disabled title="Log this week in Enter Stats first"'} style="color:${w&&w.daysOff>0?'var(--gold)':'var(--text)'};" onchange="saveYearDaysOff(${yw.wk},this.value)"></td>
+      <td><input type="number" class="inline-num" inputmode="numeric" min="0" max="7" placeholder="—" value="${w&&w.workDays!==undefined?w.workDays:''}" ${w?'':'disabled title="Log this week in Enter Stats first"'} style="color:${w&&w.workDays!==undefined?'var(--green)':'var(--text)'};" onchange="saveYearWorkDays(${yw.wk},this.value)"></td>
       <td><input type="text" class="week-note-input" placeholder="Add a note..." value="${note}" onchange="saveYearNote(${yw.wk},this.value)" oninput="saveYearNote(${yw.wk},this.value)"></td>
     </tr>`;
   }).join('');
@@ -2275,6 +2280,31 @@ function saveYearNote(wk,val){
   const w=S.weeks.find(x=>x.wk===wk);
   if(w) w.tnote=val;
   saveGoalsToLocal();
+}
+
+// Inline editing of Days Off / Work Days directly in the Year View table
+function saveYearDaysOff(wk,val){
+  const w=S.weeks.find(x=>x.wk===wk);
+  if(!w) return;
+  let v = val==='' ? 0 : (parseInt(val)||0);
+  v = Math.max(0, Math.min(7, v));
+  w.daysOff = v;
+  w.isVacation = v >= 7;  // 7 = full vacation week, same rule as the Enter Stats toggle
+  saveGoalsToLocal();
+  debouncedSave();
+  refreshYearView();
+}
+function saveYearWorkDays(wk,val){
+  const w=S.weeks.find(x=>x.wk===wk);
+  if(!w) return;
+  if(val===''){ delete w.workDays; }        // blank = "not tracked", same as Enter Stats
+  else {
+    const v=parseInt(val)||0;
+    w.workDays = Math.max(0, Math.min(7, v));
+  }
+  saveGoalsToLocal();
+  debouncedSave();
+  refreshYearView();
 }
 
 function filterYear(f,btn){
@@ -2930,12 +2960,13 @@ function saveGoalsToLocal(){
   try{
     var weekData={};
     S.weeks.forEach(function(w){
-      if(w.tnote||w.daysOff||w.isVacation){
+      if(w.tnote||w.daysOff||w.isVacation||w.workDays!==undefined){
         weekData[w.wk]={
           tnote:w.tnote||'',
           daysOff:w.daysOff||0,
           isVacation:w.isVacation||false
         };
+        if(w.workDays!==undefined) weekData[w.wk].workDays=w.workDays;
       }
     });
     localStorage.setItem('cc_goals', JSON.stringify({
@@ -2971,6 +3002,7 @@ function loadGoalsFromLocal(){
           w.tnote=weekData[w.wk].tnote||w.tnote||'';
           w.daysOff=weekData[w.wk].daysOff||w.daysOff||0;
           w.isVacation=weekData[w.wk].isVacation||w.isVacation||false;
+          if(weekData[w.wk].workDays!==undefined && w.workDays===undefined) w.workDays=weekData[w.wk].workDays;
         }
       });
     }
