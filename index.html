@@ -724,9 +724,16 @@
     <div class="panel"><div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy">Sep–Dec</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ciii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="ciii-goal-display" onclick="startEditGoal('ciii')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$160,000</span><input id="ciii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveGoal('ciii')" onkeydown="if(event.key==='Enter')saveGoal('ciii');if(event.key==='Escape')cancelGoal('ciii');"></div><div class="ptrack" style="height:7px;"><div class="pfill fgr" id="ciii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div></div>
   </div>
   <div class="panel" style="margin-bottom:13px;">
-    <div class="phead"><div class="ptit2">Revenue by CPO (YTD)</div><div class="badge bb">vs 2026 Goal</div></div>
+    <div class="phead" style="flex-wrap:wrap;gap:8px;">
+      <div class="ptit2" id="cat-title">Revenue by CPO (YTD)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="filter-btn active" data-cview="rev" onclick="setCampView('rev',this)">Revenue</button>
+        <button class="filter-btn" data-cview="avg" onclick="setCampView('avg',this)">Avg Order</button>
+        <button class="filter-btn" data-cview="vol" onclick="setCampView('vol',this)">Volume</button>
+      </div>
+    </div>
     <div class="scrollx"><div>
-    <div class="cr-ext hdr" style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">
+    <div class="cr-ext hdr" id="cat-head" style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">
       <div>Category</div><div>CI</div><div>CII</div><div>CIII</div><div>Total</div><div>Goal</div><div>Done</div>
     </div>
     <div id="cat-rows"></div>
@@ -1641,6 +1648,14 @@ function saveStandardsEdit() {
 }
 
 // ==================== CAMPAIGN ====================
+let campView='rev'; // 'rev' | 'avg' | 'vol' — toggle for the category table
+function setCampView(v,btn){
+  campView=v;
+  document.querySelectorAll('[data-cview]').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  refreshCampaign();
+}
+
 function refreshCampaign(){
   const t=totals();
   [['ci',t.ci,S.g.ci],['cii',t.cii,S.g.cii],['ciii',t.ciii,S.g.ciii]].forEach(([id,a,g])=>{
@@ -1663,40 +1678,93 @@ function refreshCampaign(){
     if(disp)disp.textContent=fm(g);
   });
 
-  // Per-campaign category breakdown from weekly entries
-  const cc={CI:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},CII:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0},CIII:{ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0}};
+  // Per-campaign category breakdown from weekly entries — CPO, orders, and activity
+  const zero=()=>({ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0,
+    evOrd:0,evSh:0,sco:0,scc:0,seOrd:0,seComp:0,mktOrd:0,bizOrd:0,fedOrd:0,fedSh:0,demoOrd:0,demoComp:0});
+  const cc={CI:zero(),CII:zero(),CIII:zero()};
   S.weeks.forEach(w=>{
     const c=cc[w.camp]; if(!c) return;
     c.ev+=w.ev||0; c.sc+=w.scp||0; c.se+=w.se||0; c.mkt+=w.mkt||0; c.biz+=w.biz||0;
     c.fed+=w.fed||0; c.demo+=w.demo||0;
+    c.evOrd+=w.evOrd||0; c.evSh+=w.evSh||0;
+    c.sco+=w.sco||0; c.scc+=w.scc||0;
+    c.seOrd+=w.seOrd||0; c.seComp+=w._sec||0;
+    c.mktOrd+=w.mktOrd||0; c.bizOrd+=w.bizOrd||0;
+    c.fedOrd+=w.fedOrd||0; c.fedSh+=w.fedSh||0;
+    c.demoOrd+=w.demoOrd||0; c.demoComp+=w.demoComp||0;
   });
 
+  // Category defs: revenue goal, orders key, activity key + label, avg-order goal
   const cats=[
-    {k:'ev', l:'Events',            g:S.g.cats.ev},
-    {k:'sc', l:'Service Calls',     g:S.g.cats.sc},
-    {k:'se', l:'Service Events',    g:S.g.cats.se},
-    {k:'fed',l:'Federal / Base',    g:S.g.cats.fed},
-    {k:'demo',l:'Demos',            g:S.g.cats.demo},
-    {k:'mkt',l:'Marketing / Phone', g:S.g.cats.mkt},
-    {k:'biz',l:'Biz Gift / Realtor',g:S.g.cats.biz}
+    {k:'ev', l:'Events',            g:S.g.cats.ev,  ordK:'evOrd',  actK:'evSh',    actL:'sh',    avgG:S.g.avg||659},
+    {k:'sc', l:'Service Calls',     g:S.g.cats.sc,  ordK:'sco',    actK:'scc',     actL:'comp',  avgG:S.g.scAvg||807},
+    {k:'se', l:'Service Events',    g:S.g.cats.se,  ordK:'seOrd',  actK:'seComp',  actL:'comp',  avgG:576},
+    {k:'fed',l:'Federal / Base',    g:S.g.cats.fed, ordK:'fedOrd', actK:'fedSh',   actL:'sh',    avgG:S.g.avg||659},
+    {k:'demo',l:'Demos',            g:S.g.cats.demo,ordK:'demoOrd',actK:'demoComp',actL:'comp',  avgG:S.g.avg||659},
+    {k:'mkt',l:'Marketing / Phone', g:S.g.cats.mkt, ordK:'mktOrd', actK:null,      actL:'',      avgG:S.g.avg||659},
+    {k:'biz',l:'Biz Gift / Realtor',g:S.g.cats.biz, ordK:'bizOrd', actK:null,      actL:'',      avgG:S.g.avg||659}
   ].filter(c=>c.g>0||S.cats[c.k]>0);
 
+  const dim='color:var(--text3);';
+  const heads={
+    rev:['Category','CI','CII','CIII','Total','Goal','Done'],
+    avg:['Category','CI','CII','CIII','Blended','Goal','vs Goal'],
+    vol:['Category','CI','CII','CIII','Total','','']
+  };
+  const titles={rev:'Revenue by CPO (YTD)',avg:'Avg Order by Category (YTD)',vol:'Volume — Orders & Activity (YTD)'};
+  const headEl=document.getElementById('cat-head');
+  if(headEl) headEl.innerHTML=heads[campView].map(h=>`<div>${h}</div>`).join('');
+  const titleEl=document.getElementById('cat-title');
+  if(titleEl) titleEl.textContent=titles[campView];
+
   document.getElementById('cat-rows').innerHTML=cats.map(c=>{
-    const ci=cc.CI[c.k]||0, cii=cc.CII[c.k]||0, ciii=cc.CIII[c.k]||0;
-    const tot=ci+cii+ciii;
+    const per=['CI','CII','CIII'].map(camp=>({cpo:cc[camp][c.k]||0, ord:cc[camp][c.ordK]||0, act:c.actK?(cc[camp][c.actK]||0):null}));
+    const tot=per[0].cpo+per[1].cpo+per[2].cpo;
+    const totOrd=per[0].ord+per[1].ord+per[2].ord;
+    const totAct=c.actK?(per[0].act+per[1].act+per[2].act):null;
+
+    if(campView==='avg'){
+      const cell=p=>p.ord>0?fm(Math.round(p.cpo/p.ord)):'—';
+      const blended=totOrd>0?Math.round(tot/totOrd):null;
+      const vs=blended!==null?Math.round(blended/c.avgG*100):null;
+      const col=vs===null?'var(--text3)':vs>=100?'var(--green)':vs>=85?'var(--gold)':'var(--red)';
+      return`<div class="cr-ext">
+        <div style="font-weight:600;">${c.l}</div>
+        <div style="${per[0].ord?'':dim}">${cell(per[0])}</div>
+        <div style="${per[1].ord?'':dim}">${cell(per[1])}</div>
+        <div style="${per[2].ord?'':dim}">${cell(per[2])}</div>
+        <div style="font-weight:700;">${blended!==null?fm(blended):'—'}</div>
+        <div style="color:var(--text2);">${fm(c.avgG)}</div>
+        <div style="font-weight:700;color:${col};">${vs!==null?vs+'%':'—'}</div>
+      </div>`;
+    }
+
+    if(campView==='vol'){
+      const cell=p=>(p.ord||p.act)?`${p.ord} ord${p.act?` <span style="color:var(--text2);font-weight:400;">· ${p.act} ${c.actL}</span>`:''}`:'—';
+      return`<div class="cr-ext">
+        <div style="font-weight:600;">${c.l}</div>
+        <div style="${per[0].ord||per[0].act?'':dim}">${cell(per[0])}</div>
+        <div style="${per[1].ord||per[1].act?'':dim}">${cell(per[1])}</div>
+        <div style="${per[2].ord||per[2].act?'':dim}">${cell(per[2])}</div>
+        <div style="font-weight:700;">${(totOrd||totAct)?`${totOrd} ord${totAct?` <span style="color:var(--text2);font-weight:400;">· ${totAct} ${c.actL}</span>`:''}`:'—'}</div>
+        <div></div><div></div>
+      </div>`;
+    }
+
+    // default: revenue view
     const p=pct(tot,c.g);
     const col=p>=100?'var(--green)':p>=50?'var(--gold)':'var(--red)';
-    const dim='color:var(--text3);';
     return`<div class="cr-ext">
       <div style="font-weight:600;">${c.l}</div>
-      <div style="${ci?'':dim}">${ci?fm(ci):'—'}</div>
-      <div style="${cii?'':dim}">${cii?fm(cii):'—'}</div>
-      <div style="${ciii?'':dim}">${ciii?fm(ciii):'—'}</div>
+      <div style="${per[0].cpo?'':dim}">${per[0].cpo?fm(per[0].cpo):'—'}</div>
+      <div style="${per[1].cpo?'':dim}">${per[1].cpo?fm(per[1].cpo):'—'}</div>
+      <div style="${per[2].cpo?'':dim}">${per[2].cpo?fm(per[2].cpo):'—'}</div>
       <div style="font-weight:700;">${tot?fm(tot):'—'}</div>
       <div style="color:var(--text2);">${fm(c.g)}</div>
       <div style="font-weight:700;color:${col};">${p}%</div>
     </div>`;
-  }).join('');
+  }).join('')
+  +(campView==='vol'?`<div style="font-size:11px;color:var(--text2);margin-top:9px;">Activity: sh = shifts worked · comp = completed (service calls / service-event appts / demos). Events volume counts pure Event-bucket orders; Event Service orders live under Service Calls.</div>`:'');
 
   // YoY compares 2026 YTD against 2025 *pro-rated to the same point in the year* —
   // comparing 7 months of 2026 to 12 months of 2025 would paint everything red.
