@@ -1592,6 +1592,32 @@
       "dtDisplay": "May 22\u201324, 2026",
       "cashOrders": 0,
       "cashRevenue": 197
+    },
+    {
+      "name": "Prescott Valley Service & Sales Event",
+      "loc": "Prescott Valley",
+      "camp": "CII",
+      "eventType": "Service Event",
+      "cpo": 5428,
+      "shifts": 1,
+      "ord": 7,
+      "comm": 2443,
+      "booth": 0,
+      "hotel": 0,
+      "gas": 0,
+      "food": 0,
+      "tolls": 0,
+      "other": 0,
+      "totalExp": 0,
+      "net": 2443,
+      "dt": "2026-06-22",
+      "dtEnd": "2026-06-22",
+      "dtDisplay": "Jun 22, 2026",
+      "manualCharges": [],
+      "cashOrders": 0,
+      "cashRevenue": 0,
+      "svcCPO": 0,
+      "svcOrd": 0
     }
   ],
   "g": {
