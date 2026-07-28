@@ -3139,6 +3139,33 @@ function exportBackup(){
   }
 }
 
+// Merge a Sheets snapshot into current state WITHOUT dropping weeks that only
+// exist locally — e.g. a week the Tuesday automation published to data.json
+// after the snapshot was last saved. data.json stays the source of truth for
+// the numbers; the snapshot contributes the human-entered layer (notes,
+// targets, vacation flags, goals, streaks, events, manual charges).
+function mergeSyncData(data){
+  const HUMAN_WEEK_FIELDS = ['tnote','target','isVacation','daysOff','workDays'];
+  const localByWk = {};
+  (S.weeks||[]).forEach(w=>{ localByWk[w.wk]=w; });
+  (data.weeks||[]).forEach(rw=>{
+    const lw = localByWk[rw.wk];
+    if(!lw){
+      // Week exists only in the snapshot (entered on another device, never
+      // published to data.json) — keep it whole.
+      S.weeks.push(rw);
+    } else {
+      // Week exists locally: keep local stats, take human fields from the
+      // snapshot. Skip empty snapshot values so a blank never erases a note.
+      HUMAN_WEEK_FIELDS.forEach(f=>{
+        if(rw[f]!==undefined && rw[f]!==null && rw[f]!=='') lw[f]=rw[f];
+      });
+    }
+  });
+  S.weeks.sort((a,b)=>(a.wk||0)-(b.wk||0));
+  Object.keys(data).forEach(k=>{ if(k!=='weeks') S[k]=data[k]; });
+}
+
 async function loadFromSheets(){
   if(!SHEETS_URL){ syncStatus('No sync URL set', 'var(--gold)'); return; }
   syncStatus('Loading...', 'var(--blue)');
@@ -3146,7 +3173,7 @@ async function loadFromSheets(){
     const res = await fetch(SHEETS_URL + '?action=load', { method:'GET' });
     const data = await res.json();
     if(data && data.repName){
-      Object.assign(S, data);
+      mergeSyncData(data);
       refreshAll();
       syncStatus('Loaded ✓ ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), 'var(--green)');
     } else {
