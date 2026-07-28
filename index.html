@@ -730,6 +730,7 @@
         <button class="filter-btn active" data-cview="rev" onclick="setCampView('rev',this)">Revenue</button>
         <button class="filter-btn" data-cview="avg" onclick="setCampView('avg',this)">Avg Order</button>
         <button class="filter-btn" data-cview="vol" onclick="setCampView('vol',this)">Volume</button>
+        <button class="filter-btn" data-cview="shift" onclick="setCampView('shift',this)">Per Shift</button>
       </div>
     </div>
     <div class="scrollx"><div>
@@ -1709,20 +1710,49 @@ function refreshCampaign(){
   const heads={
     rev:['Category','CI','CII','CIII','Total','Goal','Done'],
     avg:['Category','CI','CII','CIII','Blended','Goal','vs Goal'],
-    vol:['Category','CI','CII','CIII','Total']
+    vol:['Category','CI','CII','CIII','Total'],
+    shift:['Category','CI','CII','CIII','Total']
   };
-  const titles={rev:'Revenue by CPO (YTD)',avg:'Avg Order by Category (YTD)',vol:'Volume — Orders & Activity (YTD)'};
-  // Volume view drops the Goal/Done columns entirely — 5 real columns, no dead space
+  const titles={rev:'Revenue by CPO (YTD)',avg:'Avg Order by Category (YTD)',vol:'Volume — Orders & Activity (YTD)',shift:'Per Shift — Events & Service Events (YTD)'};
+  // Volume + Per Shift drop the Goal/Done columns entirely — 5 real columns, no dead space
   const volGrid='grid-template-columns:1.4fr 1fr 1fr 1fr 1.15fr;';
+  const wideView=campView==='vol'||campView==='shift';
   const headEl=document.getElementById('cat-head');
   if(headEl){
     headEl.innerHTML=heads[campView].map(h=>`<div>${h}</div>`).join('');
-    headEl.style.cssText=(campView==='vol'?volGrid:'')+'font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;';
+    headEl.style.cssText=(wideView?volGrid:'')+'font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;';
   }
   const titleEl=document.getElementById('cat-title');
   if(titleEl) titleEl.textContent=titles[campView];
 
-  document.getElementById('cat-rows').innerHTML=cats.map(c=>{
+  if(campView==='shift'){
+    // Events: shifts tracked weekly. Service Events: shifts live in the event log
+    // (Step 3), so that's the source — unlogged SEs show as — until logged.
+    const evPer=['CI','CII','CIII'].map(cp=>({cpo:cc[cp].ev,ord:cc[cp].evOrd,sh:cc[cp].evSh}));
+    const seAgg={CI:{cpo:0,ord:0,sh:0},CII:{cpo:0,ord:0,sh:0},CIII:{cpo:0,ord:0,sh:0}};
+    S.events.filter(e=>e.eventType==='Service Event').forEach(e=>{
+      const a=seAgg[e.camp]; if(!a) return;
+      a.cpo+=e.cpo||0; a.ord+=e.ord||0; a.sh+=e.shifts||0;
+    });
+    const sePer=['CI','CII','CIII'].map(cp=>seAgg[cp]);
+    const sumUp=rows=>rows.reduce((a,d)=>({cpo:a.cpo+d.cpo,ord:a.ord+d.ord,sh:a.sh+d.sh}),{cpo:0,ord:0,sh:0});
+    const shiftCell=(d,emph)=>d.sh>0
+      ? `<div>
+          <div style="font-size:15px;font-weight:700;${emph?'color:var(--blue);':''}line-height:1.2;">${fm(Math.round(d.cpo/d.sh))}<span style="font-size:11px;font-weight:600;color:var(--text2);">/shift</span></div>
+          <div style="font-size:11px;color:var(--text2);margin-top:1px;">${d1(d.ord/d.sh)} orders/shift · ${d.sh} sh</div>
+        </div>`
+      : `<div style="${dim}">—</div>`;
+    const shiftRow=(label,per)=>`<div class="cr-ext" style="${volGrid}padding:11px 0;">
+      <div style="font-weight:600;">${label}</div>
+      ${shiftCell(per[0])}${shiftCell(per[1])}${shiftCell(per[2])}${shiftCell(sumUp(per),true)}
+    </div>`;
+    document.getElementById('cat-rows').innerHTML=
+      shiftRow('Events',evPer)
+      +shiftRow('Service Events',sePer)
+      +`<div style="font-size:11px;color:var(--text3);margin-top:9px;">Event shifts come from weekly stats; service-event shifts come from the Event Profitability log — log an SE in Step 3 for it to count here.</div>`;
+  }
+
+  if(campView!=='shift') document.getElementById('cat-rows').innerHTML=cats.map(c=>{
     const per=['CI','CII','CIII'].map(camp=>({cpo:cc[camp][c.k]||0, ord:cc[camp][c.ordK]||0, act:c.actK?(cc[camp][c.actK]||0):null}));
     const tot=per[0].cpo+per[1].cpo+per[2].cpo;
     const totOrd=per[0].ord+per[1].ord+per[2].ord;
