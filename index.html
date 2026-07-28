@@ -644,6 +644,14 @@
           </div>
         </div>
 
+        <div class="fs"><div class="fsl">Event Service Orders <span style="font-size:11px;color:var(--text2);font-weight:400;">— orders flagged "Event Service" written at this event. Counted in the Service Call bucket in weekly stats; tracked here so the event still gets ROI credit.</span></div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">Event Service CPO ($)</label><input type="number" class="fin" id="p-svc-cpo" placeholder="0" oninput="calcProfit()"></div>
+            <div class="fgrp"><label class="flbl">Event Service Orders (#)</label><input type="number" class="fin" id="p-svc-ord" placeholder="0"></div>
+          </div>
+          <div class="anote" style="margin-top:6px;">Do NOT also include these dollars in Event CPO above — they live in Service Calls (scp/sco) in the weekly entry.</div>
+        </div>
+
         <div class="fs"><div class="fsl">Out-of-Pocket Expenses</div>
           <div id="p-expense-breakdown">
           <div class="fg">
@@ -2419,7 +2427,9 @@ function onProjEdit(input){
 function recalcAllEvents() {
   const rate = (parseFloat(document.getElementById('comm-rate').value)||45) / 100;
   S.events.forEach(e => {
-    e.comm = Math.round((e.cpo||0) * rate);
+    // svcCPO = Event Service revenue attributed to this event (lives in the SC
+    // bucket in weekly stats, but the event earns its commission)
+    e.comm = Math.round(((e.cpo||0) + (e.svcCPO||0)) * rate);
     // Backward-compat: cashRevenue || 0 for events created before this field existed
     e.net = e.comm + (e.cashRevenue||0) - (e.totalExp||0);
   });
@@ -2447,8 +2457,11 @@ function toggleExpenseBreakdown(){
 
 function calcProfit(){
   const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
+  const svcCPO=parseFloat(document.getElementById('p-svc-cpo')?.value)||0;
   const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
-  const comm=Math.round(cpo*rate);
+  // Event Service revenue is bucketed under Service Calls in weekly stats, but the
+  // event produced it — so it counts toward this event's commission and net profit.
+  const comm=Math.round((cpo+svcCPO)*rate);
   document.getElementById('p-comm').value=comm>0?fm(comm):'';
   const booth=parseFloat(document.getElementById('p-cost-total').value)||0;
   const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
@@ -2462,8 +2475,8 @@ function calcProfit(){
   const totalExp=booth+hotel+gas+food+tolls+other+manualSum;
   document.getElementById('p-total-exp').value=totalExp>0?fm(totalExp):'';
   const net=comm + cashRev - totalExp;
-  // Show preview if there's ANY meaningful input (cpo, cash, or expenses)
-  const hasInput = cpo>0 || cashRev>0 || totalExp>0;
+  // Show preview if there's ANY meaningful input (cpo, service cpo, cash, or expenses)
+  const hasInput = cpo>0 || svcCPO>0 || cashRev>0 || totalExp>0;
   if(hasInput){
     const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
     const ok=net>=threshold;
@@ -2501,8 +2514,10 @@ function updateCharge(idx, field, val){ if(formManualCharges[idx]) formManualCha
 
 function readEventFromForm(){
   const cpo=parseFloat(document.getElementById('p-cpo').value)||0;
+  const svcCPO=parseFloat(document.getElementById('p-svc-cpo')?.value)||0;
+  const svcOrd=parseInt(document.getElementById('p-svc-ord')?.value)||0;
   const rate=(parseFloat(document.getElementById('comm-rate').value)||45)/100;
-  const comm=Math.round(cpo*rate);
+  const comm=Math.round((cpo+svcCPO)*rate);
   const costTotal=parseFloat(document.getElementById('p-cost-total').value)||0;
   const hotel=parseFloat(document.getElementById('p-hotel').value)||0;
   const gas=parseFloat(document.getElementById('p-gas').value)||0;
@@ -2535,7 +2550,9 @@ function readEventFromForm(){
     dt: dtStart, dtEnd, dtDisplay,
     manualCharges,
     cashOrders,
-    cashRevenue
+    cashRevenue,
+    svcCPO,   // Event Service revenue reclassified to the SC bucket in weekly stats
+    svcOrd    // — attribution only: NOT part of e.cpo, but part of comm and net
   };
 }
 
@@ -2596,6 +2613,8 @@ function editEvent(idx){
   set('p-other', e.other);
   set('p-cash-count', e.cashOrders||0);
   set('p-cash-rev', e.cashRevenue||0);
+  set('p-svc-cpo', e.svcCPO||'');
+  set('p-svc-ord', e.svcOrd||'');
   // Load manual charges
   formManualCharges = (e.manualCharges||[]).map(c => ({label:c.label, amount:c.amount}));
   renderManualCharges();
@@ -2622,7 +2641,7 @@ function cancelEventEdit(){
 }
 
 function clearEventForm(){
-  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other','p-cash-count','p-cash-rev'].forEach(id=>{
+  ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other','p-cash-count','p-cash-rev','p-svc-cpo','p-svc-ord'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('p-comm').value='';
@@ -2648,11 +2667,15 @@ function refreshProfit(){
   const totalExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
   const totalNet=S.events.reduce((s,e)=>s+(e.net||0),0);
   const hitCount=S.events.filter(e=>e.net>=threshold).length;
+  const svcTotal=S.events.reduce((s,e)=>s+(e.svcCPO||0),0);
+  const svcOrdTotal=S.events.reduce((s,e)=>s+(e.svcOrd||0),0);
+  const svcEventCount=S.events.filter(e=>(e.svcCPO||0)>0||(e.svcOrd||0)>0).length;
   document.getElementById('prof-summary').innerHTML=`
     <div class="mc neu"><div class="mlbl">Total Commission</div><div class="mval">${S.events.length>0?fm(totalComm):'—'}</div><div class="msub tm">${S.events.length} events</div></div>
     <div class="mc ${totalNet>0?'pos':'neg'}"><div class="mlbl">Total Net Profit</div><div class="mval" style="color:${totalNet>=0?'var(--green)':'var(--red)'}">${S.events.length>0?fm(totalNet):'—'}</div><div class="msub tm">after all expenses</div></div>
     <div class="mc neu"><div class="mlbl">Total Out of Pocket</div><div class="mval">${S.events.length>0?fm(totalExp):'—'}</div><div class="msub tm">travel &amp; expenses</div></div>
-    <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${S.events.length>0?fm(Math.round(totalNet/S.events.length)):'—'}</div><div class="msub tm" style="color:${S.events.length>0&&Math.round(totalNet/S.events.length)>=threshold?'var(--green)':'var(--text2)'};">${S.events.length>0?(Math.round(totalNet/S.events.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`;
+    <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${S.events.length>0?fm(Math.round(totalNet/S.events.length)):'—'}</div><div class="msub tm" style="color:${S.events.length>0&&Math.round(totalNet/S.events.length)>=threshold?'var(--green)':'var(--text2)'};">${S.events.length>0?(Math.round(totalNet/S.events.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`
+    +(svcTotal>0||svcOrdTotal>0?`<div style="grid-column:1/-1;background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;color:var(--gold);font-weight:600;">Event Service YTD: ${fm(svcTotal)} from ${plural(svcOrdTotal,'order')} across ${plural(svcEventCount,'event')} — bucketed under Service Calls in weekly stats; commission credited to the events below.</div>`:'');
 
   if(S.events.length===0){
     document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No events logged yet. Add your first event →</div>';
@@ -2691,6 +2714,9 @@ function refreshProfit(){
       ? `<div style="font-size:11px;color:var(--text2);margin-top:8px;">Cash: <strong style="color:var(--green);">${fm(cashRev)}</strong>${cashOrdersN>0?' from '+plural(cashOrdersN,'order'):''} <span style="color:var(--text3);">(off-book — not in CPO)</span></div>`
       : '';
     const expRatio = e.comm > 0 ? Math.round((e.totalExp||0)/e.comm*100) : null;
+    const svcLine = ((e.svcCPO||0) > 0 || (e.svcOrd||0) > 0)
+      ? `<div style="font-size:11px;color:var(--text2);margin-top:8px;">Event Service: <strong style="color:var(--gold);">${fm(e.svcCPO||0)}</strong>${(e.svcOrd||0)>0?' from '+plural(e.svcOrd,'order'):''} <span style="color:var(--text3);">(in the Service Call bucket — commission credited to this event)</span></div>`
+      : '';
     const manualLine = manual.length > 0
       ? `<div style="font-size:11px;color:var(--text2);margin-top:6px;">Additional charges: ${manual.map(c => `<span style="color:var(--text);">${c.label||'Misc'}</span> <span style="color:var(--red);">-${fm(c.amount)}</span>`).join(' · ')}</div>`
       : '';
@@ -2712,6 +2738,7 @@ function refreshProfit(){
         <div class="prof-stat"><div class="prof-stat-lbl">Expenses</div><div class="prof-stat-val tr">-${fm(e.totalExp)}</div></div>
         <div class="prof-stat"><div class="prof-stat-lbl">Net Profit</div><div class="prof-stat-val" style="color:${hit?'var(--green)':'var(--red)'};">${fm(e.net)}</div></div>
       </div>
+      ${svcLine}
       ${cashLine}
       ${manualLine}
       <div style="font-size:11px;color:var(--text2);margin-top:8px;">
@@ -2772,7 +2799,7 @@ function renderReconciliation(){
     </div>`;
   };
   body.innerHTML=line('Traditional events',wkEv,logTrad)+line('Service events',wkSe,logSe)
-    +`<div style="font-size:11px;color:var(--text2);margin-top:4px;">Catch entry slips the week they happen: these two sources are entered separately and should agree.</div>`;
+    +`<div style="font-size:11px;color:var(--text2);margin-top:4px;">Catch entry slips the week they happen: these two sources are entered separately and should agree. Event Service orders are excluded from both sides by design — they live in the Service Call bucket and are tracked per-event above.</div>`;
 }
 
 // ==================== ENTRIES ====================
