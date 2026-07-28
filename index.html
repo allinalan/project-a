@@ -592,6 +592,13 @@
           </div>
         </div>
 
+        <div class="fs"><div class="fsl">RoR Received <span style="font-size:11px;color:var(--text2);font-weight:400;">— orders where you're Rep of Record but didn't work the event/appt. Real CPO, but kept out of your $/shift and per-day stats.</span></div>
+          <div class="fg">
+            <div class="fgrp"><label class="flbl">RoR CPO ($)</label><input type="number" class="fin" id="i-ror" placeholder="0"></div>
+            <div class="fgrp"><label class="flbl">RoR Orders (#)</label><input type="number" class="fin" id="i-ror-ord" placeholder="0"></div>
+          </div>
+        </div>
+
         <div class="fs"><div class="fsl">Demos (In-Home &amp; Virtual)</div>
           <div class="fg4">
             <div class="fgrp"><label class="flbl">Demo CPO ($)</label><input type="number" class="fin" id="i-demo" placeholder="0" oninput="calcDemos()"></div>
@@ -920,6 +927,19 @@
       </div>
     </div>
 
+  </div>
+
+  <div class="g2e">
+    <!-- RoR Received -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">RoR Received (YTD)</div><div class="badge bgy">Passive — excluded from $/shift &amp; per-day stats</div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR CPO</div><div style="font-size:17px;font-weight:700;color:#0d9488;" id="ror-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR Orders</div><div style="font-size:17px;font-weight:700;" id="ror-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="ror-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">% of Total CPO</div><div style="font-size:17px;font-weight:700;" id="ror-stat-pct">—</div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1255,7 +1275,8 @@ function refreshHome(){
     {label:'Federal',       val:S.cats.fed||0,  color:'#9b2c8f'},
     {label:'Demos',         val:S.cats.demo||0, color:'#0891b2'},
     {label:'Marketing',     val:S.cats.mkt||0,  color:'#7c3aed'},
-    {label:'Biz Gift',      val:S.cats.biz||0,  color:'#c0392b'}
+    {label:'Biz Gift',      val:S.cats.biz||0,  color:'#c0392b'},
+    {label:'RoR Received',  val:S.cats.ror||0,  color:'#0d9488'}
   ].filter(c=>c.val>0);
   const totalCPO = chartCats.reduce((s,c)=>s+c.val,0);
   const canvas = document.getElementById('donut-chart');
@@ -1680,8 +1701,8 @@ function refreshCampaign(){
   });
 
   // Per-campaign category breakdown from weekly entries — CPO, orders, and activity
-  const zero=()=>({ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0,
-    evOrd:0,evSh:0,sco:0,scc:0,seOrd:0,seComp:0,mktOrd:0,bizOrd:0,fedOrd:0,fedSh:0,demoOrd:0,demoComp:0});
+  const zero=()=>({ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0,ror:0,
+    evOrd:0,evSh:0,sco:0,scc:0,seOrd:0,seComp:0,mktOrd:0,bizOrd:0,fedOrd:0,fedSh:0,demoOrd:0,demoComp:0,rorOrd:0});
   const cc={CI:zero(),CII:zero(),CIII:zero()};
   S.weeks.forEach(w=>{
     const c=cc[w.camp]; if(!c) return;
@@ -1693,6 +1714,7 @@ function refreshCampaign(){
     c.mktOrd+=w.mktOrd||0; c.bizOrd+=w.bizOrd||0;
     c.fedOrd+=w.fedOrd||0; c.fedSh+=w.fedSh||0;
     c.demoOrd+=w.demoOrd||0; c.demoComp+=w.demoComp||0;
+    c.ror+=w.ror||0; c.rorOrd+=w.rorOrd||0;
   });
 
   // Category defs: revenue goal, orders key, activity key + label, avg-order goal
@@ -1703,7 +1725,8 @@ function refreshCampaign(){
     {k:'fed',l:'Federal / Base',    g:S.g.cats.fed, ordK:'fedOrd', actK:'fedSh',   actL:'sh',    avgG:S.g.avg||659},
     {k:'demo',l:'Demos',            g:S.g.cats.demo,ordK:'demoOrd',actK:'demoComp',actL:'comp',  avgG:S.g.avg||659},
     {k:'mkt',l:'Marketing / Phone', g:S.g.cats.mkt, ordK:'mktOrd', actK:null,      actL:'',      avgG:S.g.avg||659},
-    {k:'biz',l:'Biz Gift / Realtor',g:S.g.cats.biz, ordK:'bizOrd', actK:null,      actL:'',      avgG:S.g.avg||659}
+    {k:'biz',l:'Biz Gift / Realtor',g:S.g.cats.biz, ordK:'bizOrd', actK:null,      actL:'',      avgG:S.g.avg||659},
+    {k:'ror',l:'RoR Received',      g:(S.g.cats.ror||0), ordK:'rorOrd', actK:null, actL:'',      avgG:S.g.avg||659}
   ].filter(c=>c.g>0||S.cats[c.k]>0);
 
   const dim='color:var(--text3);';
@@ -1868,12 +1891,13 @@ function refreshRatios(){
   // Only counts weeks where workDays is explicitly set (legacy weeks excluded so the ratio is honest)
   const wkWithWD = S.weeks.filter(w => w.workDays !== undefined && w.workDays > 0);
   const totalWD = wkWithWD.reduce((s,w)=>s+(w.workDays||0),0);
-  const cpoFromWDWeeks = wkWithWD.reduce((s,w)=>s+(w.cpo||0),0);
+  // RoR revenue is passive (received, not worked) — it never counts toward field productivity
+  const cpoFromWDWeeks = wkWithWD.reduce((s,w)=>s+Math.max(0,(w.cpo||0)-(w.ror||0)),0);
   const cpoPerWorkDay = totalWD > 0 ? Math.round(cpoFromWDWeeks/totalWD) : null;
   const avgWDPerWeek = wkWithWD.length > 0 ? (totalWD/wkWithWD.length).toFixed(1) : null;
   const setText = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   setText('prod-cpo-per-day', cpoPerWorkDay !== null ? fm(cpoPerWorkDay) : '—');
-  setText('prod-cpo-per-day-sub', cpoPerWorkDay !== null ? `from ${fm(cpoFromWDWeeks)} ÷ ${totalWD} days` : 'Enter working days in Step 1');
+  setText('prod-cpo-per-day-sub', cpoPerWorkDay !== null ? `from ${fm(cpoFromWDWeeks)} ÷ ${totalWD} days · excl. RoR` : 'Enter working days in Step 1');
   setText('prod-total-workdays', totalWD > 0 ? totalWD : '—');
   setText('prod-total-workdays-sub', totalWD > 0 ? `across ${wkWithWD.length} tracked wk${wkWithWD.length===1?'':'s'}` : 'YTD');
   setText('prod-avg-workdays', avgWDPerWeek !== null ? avgWDPerWeek : '—');
@@ -1921,6 +1945,12 @@ function refreshRatios(){
   const fedSh  = S.weeks.reduce((s,w)=>s+(w.fedSh||0),0);
   const fedShAvg = fedSh>0?Math.round(fedCPO/fedSh):null;
   const fedOrdShift = fedSh>0?d1(fedOrd/fedSh):null;
+
+  // RoR Received (passive — display only, never scored or in activity math)
+  const rorCPO = S.weeks.reduce((s,w)=>s+(w.ror||0),0);
+  const rorOrd = S.weeks.reduce((s,w)=>s+(w.rorOrd||0),0);
+  const rorAvg = rorOrd>0?Math.round(rorCPO/rorOrd):null;
+  const rorPct = t.cpo>0?Math.round(rorCPO/t.cpo*100):null;
 
   // Demos
   const demoCPO   = S.weeks.reduce((s,w)=>s+(w.demo||0),0);
@@ -2178,6 +2208,13 @@ function refreshRatios(){
   document.getElementById('biz-stat-avg').textContent = bizAvg?fm(bizAvg):'—';
   document.getElementById('biz-stat-pct').textContent = bizPct!==null?bizPct+'%':'—';
 
+  // RoR DOM
+  const setT=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setT('ror-stat-cpo', rorCPO>0?fm(rorCPO):'—');
+  setT('ror-stat-ord', rorOrd||'—');
+  setT('ror-stat-avg', rorAvg?fm(rorAvg):'—');
+  setT('ror-stat-pct', rorPct!==null&&rorCPO>0?rorPct+'%':'—');
+
   // Federal DOM
   document.getElementById('fed-stat-cpo').textContent = fedCPO>0?fm(fedCPO):'—';
   document.getElementById('fed-stat-ord').textContent = fedOrd||'—';
@@ -2291,7 +2328,8 @@ function refreshYearView(){
   // only weeks with a positive Work Days entry count, so untracked weeks can't skew it
   const fieldWks = S.weeks.filter(w => w.workDays !== undefined && w.workDays > 0);
   const fieldDays = fieldWks.reduce((s,w) => s + w.workDays, 0);
-  const fieldCPO = fieldWks.reduce((s,w) => s + (w.cpo||0), 0);
+  // RoR received is passive — excluded so this stays a true in-field production rate
+  const fieldCPO = fieldWks.reduce((s,w) => s + Math.max(0,(w.cpo||0)-(w.ror||0)), 0);
   const cpoPerFieldDay = fieldDays > 0 ? Math.round(fieldCPO/fieldDays) : null;
   const vacationWkSet=new Set(S.weeks.filter(w=>w.isVacation).map(w=>w.wk));
   Object.entries(S.yearNotes).forEach(([wk,n])=>{ if(noteIsVac(n)) vacationWkSet.add(parseInt(wk)); });
@@ -2988,7 +3026,7 @@ function calcDemos(){
 // ==================== EDIT WEEK ====================
 function editWeek(idx){
   const w=S.weeks[idx];editIdx=idx;
-  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||''],['i-workdays', w.workDays !== undefined ? w.workDays : '']];
+  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-ror',w.ror||''],['i-ror-ord',w.rorOrd||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||''],['i-workdays', w.workDays !== undefined ? w.workDays : '']];
   map.forEach(([id,val])=>{const el=document.getElementById(id);if(el) el.value=val;});
   document.getElementById('i-camp').value=w.camp;
   // Restore vacation toggle state (with backward-compat: infer from daysOff if missing)
@@ -3027,6 +3065,7 @@ function submitStats(){
     mkt:parseFloat(g('i-mkt').value)||0,mktOrd:parseInt(g('i-mkt-ord').value)||0,
     biz:parseFloat(g('i-biz').value)||0,bizOrd:parseInt(g('i-biz-ord').value)||0,
     fed:parseFloat(g('i-fed').value)||0,fedOrd:parseInt(g('i-fed-ord').value)||0,fedSh:parseInt(g('i-fed-sh').value)||0,
+    ror:parseFloat(g('i-ror')?.value)||0,rorOrd:parseInt(g('i-ror-ord')?.value)||0,
     demo:parseFloat(g('i-demo').value)||0,demoOrd:parseInt(g('i-demo-ord').value)||0,demoBooked:parseInt(g('i-demo-booked').value)||0,demoComp:parseInt(g('i-demo-comp').value)||0,
     target:parseFloat(g('i-target').value)||0,tnote:g('i-tnote').value,
     daysOff: g('i-vac')?.checked ? 7 : Math.min(parseInt(g('i-daysoff').value)||0, 5),
@@ -3057,7 +3096,7 @@ function submitStats(){
 }
 
 function clearForm(){
-  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff','i-workdays'].forEach(id=>{
+  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-ror','i-ror-ord','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff','i-workdays'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
   const vacChk=document.getElementById('i-vac');
@@ -3158,7 +3197,7 @@ function loadGoalsFromLocal(){
 // Normalize legacy weeks + rebuild category totals — cheap, runs before any render
 function prepData(){
   S.weeks.forEach(w=>{ if(w.isVacation===undefined) w.isVacation=((w.daysOff||0)>=7); });
-  S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0};
+  S.cats={ev:0,sc:0,se:0,mkt:0,biz:0,fed:0,demo:0,ror:0};
   S.weeks.forEach(function(w){
     S.cats.ev+=(w.ev||0);
     S.cats.sc+=(w.scp||0);
@@ -3167,6 +3206,7 @@ function prepData(){
     S.cats.biz+=(w.biz||0);
     S.cats.fed+=(w.fed||0);
     S.cats.demo+=(w.demo||0);
+    S.cats.ror+=(w.ror||0);
   });
 }
 

@@ -7,7 +7,8 @@ reconciled on the Event Profitability tab.
 ## Golden rules
 
 1. **Never modify historical values in `data.json`** unless Alan explicitly asks.
-   Every week must satisfy the invariant: `cpo == ev + scp + se + mkt + biz + fed + demo`.
+   Every week must satisfy the invariant:
+   `cpo == ev + scp + se + mkt + biz + fed + demo + ror`.
 2. All engine changes go through a PR to `main`; `data.json` changes ride Alan's own
    save pipeline.
 
@@ -16,6 +17,13 @@ reconciled on the Event Profitability tab.
 When parsing an order export into weekly stats:
 
 - Bucket orders by their **order type flag**, not by where they were written.
+- **"RoR Received" rule:** an order where Alan is the Rep of Record but did NOT
+  work the event/appointment that produced it (e.g. his customer bought at a
+  service event another rep worked) goes in the **`ror`/`rorOrd`** bucket —
+  never in `se`, `ev`, or `scp`. It still counts once in the week's total `cpo`
+  (it is real CPO with commission), but it must not touch any activity-based
+  metric: RoR revenue is excluded from $/shift, orders/shift, and
+  CPO-per-working-day calculations, and no event-log entry is created for it.
 - **"Event Service" rule:** an order written at an event (location/source says Event)
   whose order flag says **Event Service** counts as a **Service Call** order:
   - weekly stats: add its CPO to `scp` and its order count to `sco` — **not** `ev`/`evOrd`
@@ -34,7 +42,8 @@ When parsing an order export into weekly stats:
 
 `cpo`/`ord` totals · `ev`/`evOrd`/`evSh` traditional events · `scp`/`sco`/`scb`/`scc`
 service calls (CPO/orders/booked/completed) · `se`/`seOrd` service events ·
-`mkt`, `biz`, `fed`(+`fedSh`), `demo`(+booked/comp) other buckets · `daysOff`,
+`mkt`, `biz`, `fed`(+`fedSh`), `demo`(+booked/comp) other buckets ·
+`ror`/`rorOrd` RoR CPO received (passive — excluded from activity metrics) · `daysOff`,
 `workDays`, `isVacation` (7 days off = vacation) · `target`, `tnote` planning.
 
 Projections (`projections[wk]`) store Service Calls under the key **`sc`** (not `scp`).
