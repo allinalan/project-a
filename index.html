@@ -1709,11 +1709,16 @@ function refreshCampaign(){
   const heads={
     rev:['Category','CI','CII','CIII','Total','Goal','Done'],
     avg:['Category','CI','CII','CIII','Blended','Goal','vs Goal'],
-    vol:['Category','CI','CII','CIII','Total','','']
+    vol:['Category','CI','CII','CIII','Total']
   };
   const titles={rev:'Revenue by CPO (YTD)',avg:'Avg Order by Category (YTD)',vol:'Volume — Orders & Activity (YTD)'};
+  // Volume view drops the Goal/Done columns entirely — 5 real columns, no dead space
+  const volGrid='grid-template-columns:1.4fr 1fr 1fr 1fr 1.15fr;';
   const headEl=document.getElementById('cat-head');
-  if(headEl) headEl.innerHTML=heads[campView].map(h=>`<div>${h}</div>`).join('');
+  if(headEl){
+    headEl.innerHTML=heads[campView].map(h=>`<div>${h}</div>`).join('');
+    headEl.style.cssText=(campView==='vol'?volGrid:'')+'font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;';
+  }
   const titleEl=document.getElementById('cat-title');
   if(titleEl) titleEl.textContent=titles[campView];
 
@@ -1740,14 +1745,21 @@ function refreshCampaign(){
     }
 
     if(campView==='vol'){
-      const cell=p=>(p.ord||p.act)?`${p.ord} ord${p.act?` <span style="color:var(--text2);font-weight:400;">· ${p.act} ${c.actL}</span>`:''}`:'—';
-      return`<div class="cr-ext">
+      const actWord=c.actL==='sh'?'shifts':'completed';
+      // Stacked stat cell: big order count on top, activity in small type below
+      const cell=(p,emph)=>{
+        if(!p.ord&&!p.act) return `<div style="${dim}">—</div>`;
+        return `<div>
+          <div style="font-size:15px;font-weight:700;${emph?'color:var(--blue);':''}line-height:1.2;">${p.ord}<span style="font-size:11px;font-weight:600;color:var(--text2);"> orders</span></div>
+          ${p.act?`<div style="font-size:11px;color:var(--text2);margin-top:1px;">${p.act} ${actWord}</div>`:''}
+        </div>`;
+      };
+      return`<div class="cr-ext" style="${volGrid}padding:11px 0;">
         <div style="font-weight:600;">${c.l}</div>
-        <div style="${per[0].ord||per[0].act?'':dim}">${cell(per[0])}</div>
-        <div style="${per[1].ord||per[1].act?'':dim}">${cell(per[1])}</div>
-        <div style="${per[2].ord||per[2].act?'':dim}">${cell(per[2])}</div>
-        <div style="font-weight:700;">${(totOrd||totAct)?`${totOrd} ord${totAct?` <span style="color:var(--text2);font-weight:400;">· ${totAct} ${c.actL}</span>`:''}`:'—'}</div>
-        <div></div><div></div>
+        ${cell(per[0])}
+        ${cell(per[1])}
+        ${cell(per[2])}
+        ${cell({ord:totOrd,act:totAct},true)}
       </div>`;
     }
 
@@ -1764,7 +1776,7 @@ function refreshCampaign(){
       <div style="font-weight:700;color:${col};">${p}%</div>
     </div>`;
   }).join('')
-  +(campView==='vol'?`<div style="font-size:11px;color:var(--text2);margin-top:9px;">Activity: sh = shifts worked · comp = completed (service calls / service-event appts / demos). Events volume counts pure Event-bucket orders; Event Service orders live under Service Calls.</div>`:'');
+  +(campView==='vol'?`<div style="font-size:11px;color:var(--text3);margin-top:9px;">Event Service orders are counted under Service Calls.</div>`:'');
 
   // YoY compares 2026 YTD against 2025 *pro-rated to the same point in the year* —
   // comparing 7 months of 2026 to 12 months of 2025 would paint everything red.
