@@ -37,6 +37,18 @@ When parsing an order export into weekly stats:
   commission and net profit, since the event produced that revenue.
 - The dashboard's Event Profitability tab shows the reclassified amount per event and
   a YTD "sourced at events" total, so event ROI still gets full credit.
+- **Late-order / add-on rule (no retro-edits, no double counting):** revenue is
+  booked in the week the ORDER IS PLACED (export order date) — even when the
+  appointment that produced it happened in an earlier week. Never retro-edit a
+  closed week for a late-closing sale or an order add-on; each order appears in
+  exactly one export week, so counting strictly by order date makes double
+  counting impossible. Two corollaries:
+  - A no-sale appointment that closes later: the appointment was already counted
+    (`scb`/`scc`) in the week it was worked — do NOT count it again in the week
+    the order lands. YTD closing ratio self-corrects.
+  - An add-on to an existing order (same appointment): CPO books in the add-on's
+    order week, same bucket as the original. Order count follows the export's
+    order records; never re-count the appointment.
 
 ## Field glossary (weekly entries)
 
