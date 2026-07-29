@@ -47,8 +47,12 @@ When parsing an order export into weekly stats:
     (`scb`/`scc`) in the week it was worked — do NOT count it again in the week
     the order lands. YTD closing ratio self-corrects.
   - An add-on to an existing order (same appointment): CPO books in the add-on's
-    order week, same bucket as the original. Order count follows the export's
-    order records; never re-count the appointment.
+    order week, same bucket as the original — but it is **CPO only, never a new
+    order**. Do not increment `ord` or the bucket's order count (`sco`, `evOrd`,
+    etc.) for an add-on, even if the export gives it its own order number: one
+    appointment + one customer = one order in the stats. Never re-count the
+    appointment either. (Practical test when parsing an export: same customer,
+    add-on/amendment to an order already counted in a prior week → CPO only.)
 
 ## Field glossary (weekly entries)
 
