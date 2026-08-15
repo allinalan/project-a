@@ -209,7 +209,7 @@
   .mb.open{display:flex;}
   .mo{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:20px;width:400px;box-shadow:0 8px 30px rgba(26,95,170,.12);}
   .motit{font-size:14px;font-weight:700;margin-bottom:13px;color:var(--blue);}
-  .toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:7px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;}
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:7px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
   .toast.blue{background:var(--blue);}
   /* ===== TREND CHART ===== */
@@ -237,6 +237,28 @@
   .roi-table td{padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap;}
   .roi-table tr:last-child td{border-bottom:none;}
   .roi-verdict{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;display:inline-block;}
+  /* ===== SC2 PUSH TAB ===== */
+  .sc2-window{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-light);border:1px solid var(--blue-mid);padding:3px 10px;border-radius:11px;display:inline-block;}
+  .sc2-callout{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.55;margin-top:12px;}
+  .sc2-callout b{color:var(--text);}
+  .sc2-note{background:var(--surface2);border:1px dashed var(--border2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.55;}
+  .sc2-funnel{display:flex;align-items:stretch;gap:8px;margin-bottom:14px;}
+  .sc2-step{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;}
+  .sc2-step .fv{font-size:21px;font-weight:700;color:var(--text);line-height:1.1;}
+  .sc2-step .fl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-top:3px;}
+  .sc2-step .fs{font-size:11px;font-weight:700;margin-top:2px;}
+  .sc2-farrow{display:flex;align-items:center;color:var(--text3);font-size:15px;font-weight:700;flex:0 0 auto;}
+  .minibar{height:14px;background:var(--surface2);border-radius:4px;overflow:hidden;min-width:70px;}
+  .minibar>div{height:100%;background:var(--blue);border-radius:0 4px 4px 0;min-width:2px;}
+  .minibar.gold>div{background:var(--gold);}
+  .sc2-list{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6;color:var(--text);}
+  .sc2-list li{margin-bottom:8px;}
+  .sc2-list li:last-child{margin-bottom:0;}
+  .sc2-cmp-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px;}
+  .sc2-cmp-row .cl{flex:0 0 130px;color:var(--text2);font-weight:600;}
+  .sc2-cmp-row .ctrack{flex:1;display:flex;flex-direction:column;gap:3px;}
+  .sc2-cmp-row .cv{flex:0 0 auto;text-align:right;min-width:130px;font-weight:700;white-space:nowrap;}
+  .delta-chip{font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;margin-left:6px;display:inline-block;}
   /* ===== BOTTOM APP NAV (mobile) ===== */
   .bnav{display:none;}
   .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -331,6 +353,7 @@
     <button class="tab" data-page="yearview" onclick="showPage('yearview',this)">Year View</button>
     <button class="tab" data-page="plan" onclick="showPage('plan',this)">Plan</button>
     <button class="tab" data-page="profit" onclick="showPage('profit',this)">Event Profitability</button>
+    <button class="tab" data-page="sc2" onclick="showPage('sc2',this)">SC2 PUSH</button>
     <button class="tab" data-page="enter" onclick="showPage('enter',this)">Enter Stats</button>
   </div>
   <div class="nav-r">
@@ -1061,6 +1084,147 @@
   </div>
 </div>
 
+<!-- SC2 PUSH (Alan's personal push retrospective — static numbers from the Aug 14 handoff,
+     independent of data.json / weekly stats) -->
+<div class="page" id="page-sc2">
+  <div class="eyebrow">SC2 PUSH · Jul 16 – Aug 3, 2026</div>
+  <div class="ptitle" style="margin-bottom:6px;">The $90K <span>PUSH.</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+    <span class="sc2-window">16 of 19 days worked</span>
+    <span class="sc2-window">12 appointment days + 4 event days</span>
+    <span style="font-size:11px;color:var(--text3);">Compiled Aug 14 from my_orders export + calendar · 4 × $0 house orders excluded from all counts</span>
+  </div>
+
+  <!-- HEADLINE KPIs -->
+  <div class="g4">
+    <div class="mc accent"><div class="mlbl">Total Push CPO</div><div class="mval">$90,770</div><div class="msub tm">89 orders · $1,020 avg order</div></div>
+    <div class="mc neu"><div class="mlbl">Per Day Worked</div><div class="mval">$5,673</div><div class="msub tm">every PUSH day ≈ $5K+ of inventory</div></div>
+    <div class="mc pos"><div class="mlbl">Close Rate</div><div class="mval">76.7%</div><div class="msub tg">46 orders / 60 completed appts</div></div>
+    <div class="mc neu"><div class="mlbl">Per Completed Appt</div><div class="mval">$914</div><div class="msub tm">$694 per booked slot</div></div>
+  </div>
+
+  <!-- 2025 vs 2026 COMPARISON (rendered by refreshSC2 from SC2_2025/SC2_2026 consts) -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">2025 vs 2026 PUSH</div><div class="badge bgo">Year over Year</div></div>
+    <div id="sc2-compare"></div>
+  </div>
+
+  <div class="g2e">
+    <!-- ORDERS BY SOURCE -->
+    <div class="panel" style="overflow-x:auto;">
+      <div class="phead"><div class="ptit2">Orders by Source</div><div class="badge bb">89 orders</div></div>
+      <table class="roi-table">
+        <tr><th>Source</th><th>Ord</th><th>CPO</th><th>Avg</th><th style="min-width:110px;">% of CPO</th></tr>
+        <tr><td><b>Service Calls</b><div style="font-size:10px;color:var(--text3);">incl. 3 Maricopa-lead SCs</div></td><td>53</td><td><b>$63,181</b></td><td>$1,192</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:69.6%"></div></div><span style="font-size:11px;font-weight:700;">69.6%</span></div></td></tr>
+        <tr><td><b>Events</b><div style="font-size:10px;color:var(--text3);">booth sales only</div></td><td>19</td><td><b>$19,121</b></td><td>$1,006</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:21.1%"></div></div><span style="font-size:11px;font-weight:700;">21.1%</span></div></td></tr>
+        <tr><td><b>Marketing</b><div style="font-size:10px;color:var(--text3);">all re-orders</div></td><td>14</td><td><b>$5,632</b></td><td>$402</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:6.2%"></div></div><span style="font-size:11px;font-weight:700;">6.2%</span></div></td></tr>
+        <tr><td><b>RoR</b><div style="font-size:10px;color:var(--text3);">placed by the team</div></td><td>2</td><td><b>$2,743</b></td><td>$1,372</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:3%"></div></div><span style="font-size:11px;font-weight:700;">3.0%</span></div></td></tr>
+        <tr><td><b>Other</b></td><td>1</td><td><b>$93</b></td><td>$93</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:0.1%"></div></div><span style="font-size:11px;font-weight:700;">0.1%</span></div></td></tr>
+      </table>
+      <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.5;">Marketing split: <b>Text</b> 13 orders / $3,066 / $236 avg · <b>Email</b> 1 order / $2,566. One targeted email re-order out-earned all 13 texts combined.</div>
+    </div>
+
+    <!-- CPO DISTRIBUTION -->
+    <div class="panel" style="overflow-x:auto;">
+      <div class="phead"><div class="ptit2">CPO Distribution</div><div class="badge bb">all 89 orders</div></div>
+      <table class="roi-table">
+        <tr><th>Range</th><th>Ord</th><th>CPO</th><th>Avg</th><th style="min-width:110px;">% of CPO</th></tr>
+        <tr><td>$0–500</td><td>40</td><td>$8,405</td><td>$210</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:9.3%"></div></div><span style="font-size:11px;font-weight:700;">9.3%</span></div></td></tr>
+        <tr><td>$500–1K</td><td>11</td><td>$8,343</td><td>$758</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:9.2%"></div></div><span style="font-size:11px;font-weight:700;">9.2%</span></div></td></tr>
+        <tr><td>$1K–2K</td><td>23</td><td>$31,882</td><td>$1,386</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:35.1%"></div></div><span style="font-size:11px;font-weight:700;">35.1%</span></div></td></tr>
+        <tr><td>$2K–3K</td><td>9</td><td>$21,400</td><td>$2,378</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:23.6%"></div></div><span style="font-size:11px;font-weight:700;">23.6%</span></div></td></tr>
+        <tr><td>$3K–4K</td><td>5</td><td>$16,391</td><td>$3,278</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:18.1%"></div></div><span style="font-size:11px;font-weight:700;">18.1%</span></div></td></tr>
+        <tr><td>$4K+</td><td>1</td><td>$4,349</td><td>$4,349</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="minibar" style="flex:1;"><div style="width:4.8%"></div></div><span style="font-size:11px;font-weight:700;">4.8%</span></div></td></tr>
+      </table>
+      <div class="sc2-callout" style="margin-top:10px;"><b>15 orders at $2K+ = 46.4% of all CPO</b> from just 16.9% of orders. Under-$500 was 44.9% of orders but only 9.3% of CPO.</div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT FUNNEL -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">Appointment Funnel</div><div class="badge bb">12 appointment days</div></div>
+    <div class="sc2-funnel">
+      <div class="sc2-step"><div class="fv">79</div><div class="fl">Booked</div><div class="fs tm">$694 / booked</div></div>
+      <div class="sc2-farrow">→</div>
+      <div class="sc2-step"><div class="fv">60</div><div class="fl">Completed</div><div class="fs tb">75.9% show</div></div>
+      <div class="sc2-farrow">→</div>
+      <div class="sc2-step"><div class="fv">46</div><div class="fl">Orders</div><div class="fs tg">76.7% close</div></div>
+    </div>
+    <div class="sc2-callout" style="margin:0 0 14px;"><b>28 empty seats produced nothing</b> — 19 resched/no-shows + 9 slots never filled, at ≈$914 per completed appointment. Confirmation discipline + a lead bank for open slots is the cheapest money available. Unfilled slots cluster in evening blocks and Aug 3.</div>
+    <div class="scrollx">
+      <table class="roi-table">
+        <tr><th>Day</th><th>Booked</th><th>Orders</th><th>No Sales</th><th>Resch/NS</th><th>Close %</th></tr>
+        <tr><td>Thu Jul 16</td><td>6</td><td>4</td><td>2</td><td>0</td><td>67%</td></tr>
+        <tr><td>Mon Jul 20</td><td>6</td><td>3</td><td>2</td><td>1</td><td>60%</td></tr>
+        <tr><td>Tue Jul 21</td><td>7</td><td>6</td><td>1</td><td>0</td><td>86%</td></tr>
+        <tr><td>Wed Jul 22</td><td>8</td><td>6</td><td>0</td><td>2</td><td><b class="tg">100%</b></td></tr>
+        <tr><td>Thu Jul 23</td><td>6</td><td>6</td><td>0</td><td>0</td><td><b class="tg">100%</b></td></tr>
+        <tr><td>Sat Jul 25 <span style="color:var(--text3);">(Tucson)</span></td><td>6</td><td>4</td><td>1</td><td>1</td><td>80%</td></tr>
+        <tr><td>Sun Jul 26</td><td>8</td><td>0</td><td>5</td><td>3</td><td><b class="tr">0%</b></td></tr>
+        <tr><td>Mon Jul 27</td><td>7</td><td>4</td><td>0</td><td>3</td><td><b class="tg">100%</b></td></tr>
+        <tr><td>Tue Jul 28</td><td>5</td><td>3</td><td>1</td><td>1</td><td>75%</td></tr>
+        <tr><td>Wed Jul 29</td><td>5</td><td>3</td><td>1</td><td>1</td><td>75%</td></tr>
+        <tr><td>Thu Jul 30</td><td>7</td><td>4</td><td>1</td><td>2</td><td>80%</td></tr>
+        <tr><td>Mon Aug 3</td><td>8</td><td>3</td><td>0</td><td>5</td><td><b class="tg">100%</b></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="g2e">
+    <!-- EVENTS -->
+    <div class="panel" style="overflow-x:auto;">
+      <div class="phead"><div class="ptit2">Events — Day-Rate Test</div><div class="badge bgo">2 events · 4 days</div></div>
+      <table class="roi-table">
+        <tr><th>Event</th><th>Ord</th><th>Booth CPO</th><th>Avg</th><th>Day Rate</th></tr>
+        <tr><td><b>Maricopa Home &amp; Landscape</b><div style="font-size:10px;color:var(--text3);">Jul 17–18</div></td><td>12</td><td><b>$16,087</b></td><td>$1,341</td><td><b class="tg">$8,044/day</b></td></tr>
+        <tr><td><b>Hunters Extravaganza, Houston</b><div style="font-size:10px;color:var(--text3);">Aug 1–2</div></td><td>7</td><td><b>$3,034</b></td><td>$433</td><td><b class="tr">$1,517/day</b></td></tr>
+      </table>
+      <div class="sc2-callout" style="margin-top:10px;"><b>Maricopa follow-up: +$3,296</b> in service calls from booth leads (Laing $1,521 · Mertins $1,321 · Wiley $454) → <b>$19,383 total attributed CPO</b>, 17% of it earned after the show closed. Judge events by booth CPO <i>plus</i> post-event SC production.</div>
+      <div class="sc2-note" style="margin-top:8px;">Day-rate principle: every PUSH day is ~$5,000+ of inventory. Maricopa earns its days; Hunters ($1,517/day + travel) did not — that one venue call was roughly the gap between $90.8K and $100K.</div>
+    </div>
+
+    <!-- THE READ -->
+    <div class="panel" style="overflow-x:auto;">
+      <div class="phead"><div class="ptit2">Coach's Read — Path to $126K</div><div class="badge bg">3 levers</div></div>
+      <table class="roi-table">
+        <tr><th>Lever</th><th>Move</th><th>Adds</th><th>New Total</th></tr>
+        <tr><td><b>Average order</b></td><td>23 orders $1,386 → $2,378 band</td><td class="tg"><b>+$22,812</b></td><td>$113,582</td></tr>
+        <tr><td><b>Show rate</b></td><td>75.9% → 85% (+7 completed)</td><td class="tg"><b>+$6,398</b></td><td>$97,168</td></tr>
+        <tr><td><b>Fill open slots</b></td><td>9 slots at current rates</td><td class="tg"><b>+$6,246</b></td><td>$97,016</td></tr>
+        <tr><td colspan="2"><b>All three</b></td><td class="tg"><b>+$35,456</b></td><td><b>≈ $126,000</b></td></tr>
+      </table>
+      <div class="sc2-callout" style="margin-top:10px;"><b>Verdict:</b> closing (76.7%, five 100% days) is not the constraint. The need isn't a better pitch — it's <b>fuller days and a bigger ask</b>. Same calendar, one band higher, every seat filled = a $126K PUSH.</div>
+    </div>
+  </div>
+
+  <div class="g2e">
+    <!-- CATEGORIZATION RULES -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Categorization Rules</div><div class="badge bgy">locked — reuse next push</div></div>
+      <ul class="sc2-list">
+        <li>$0 house orders under Alan's own name are removed entirely.</li>
+        <li>All re-orders count as <b>Marketing</b>; untagged re-orders count as text message.</li>
+        <li><b>RoR</b> = orders placed for Alan by the team (Snowflake $109 via Matt · Surprise S&amp;S $2,634).</li>
+        <li>Event lines = <b>booth orders only</b> (ordered at the table).</li>
+        <li>Event leads who buy later at a service call = <b>Service Calls</b>, with attribution credit tracked back to the event.</li>
+        <li>Calendar: green = order · red = no sale · yellow = resched/no-show. Unnamed red "SC" blocks = unfilled open slots, <b>not</b> no-sales.</li>
+      </ul>
+    </div>
+
+    <!-- OPEN QUESTIONS -->
+    <div class="panel">
+      <div class="phead"><div class="ptit2">Open Questions — 2027 Masterplan</div><div class="badge bgo">5 threads</div></div>
+      <ul class="sc2-list">
+        <li><b>Sunday Jul 26:</b> 0-for-5 with all named customers — lead source? Energy after the Tucson Saturday? Needs a post-mortem.</li>
+        <li><b>The 9 unfilled slots</b> cluster in evening blocks and Aug 3 — assistant lead-bank gap?</li>
+        <li><b>One $2,566 email re-order</b> beat all 13 text orders combined — repeatable targeted-email play for high-CPO past customers?</li>
+        <li><b>What turns a $1,386 order into $2,378</b> — bigger ask, block upgrades, flatware in the conversation?</li>
+        <li><b>Maricopa produced 3 post-show SCs organically</b> — what does a deliberate booth lead-capture goal look like (sharpening line = lead line), and who owns it?</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <!-- DAILY ONE THING EDIT MODAL -->
 <div class="mb" id="dailyModal">
   <div class="mo">
@@ -1098,6 +1262,7 @@
   <button class="bnav-item" data-page="yearview" onclick="showPage('yearview',this)"><span class="bi">📅</span>Year</button>
   <button class="bnav-item" data-page="plan" onclick="showPage('plan',this)"><span class="bi">📝</span>Plan</button>
   <button class="bnav-item" data-page="profit" onclick="showPage('profit',this)"><span class="bi">💰</span>Profit</button>
+  <button class="bnav-item" data-page="sc2" onclick="showPage('sc2',this)"><span class="bi">🔥</span>SC2</button>
   <button class="bnav-item" data-page="enter" onclick="showPage('enter',this)"><span class="bi">➕</span>Enter</button>
 </div>
 
@@ -1157,6 +1322,7 @@ function refreshPage(id){
     case 'yearview': refreshYearView(); break;
     case 'plan':     refreshPlan(); break;
     case 'profit':   refreshProfit(); break;
+    case 'sc2':      refreshSC2(); break;
     case 'enter':    refreshEntries(); break;
     default:         refreshAll();
   }
@@ -3212,7 +3378,55 @@ function prepData(){
 
 function refreshAll(){
   prepData();
-  refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();
+  refreshHome();refreshCampaign();refreshRatios();refreshYearView();refreshPlan();refreshProfit();refreshEntries();refreshSC2();
+}
+
+// ==================== SC2 PUSH TAB ====================
+// Static retrospective — numbers live here, not in data.json, so the weekly-stats
+// invariant and Alan's save pipeline are never touched by this tab.
+const SC2_2026 = { year:2026, cpo:90770, orders:89, avg:1020, perDay:5673,
+  daysWorked:16, daysTotal:19, booked:79, completed:60, scOrders:46,
+  show:75.9, close:76.7 };
+// Paste the 2025 PUSH results here (same shape as SC2_2026) to unlock the
+// year-over-year comparison. Any field left out just renders as "—".
+const SC2_2025 = null;
+
+function refreshSC2(){
+  const el = document.getElementById('sc2-compare');
+  if(!el) return;
+  if(!SC2_2025){
+    el.innerHTML = '<div class="sc2-note">2025 SC2 PUSH results not loaded yet — send Claude your 2025 push numbers and this panel becomes a side-by-side comparison (CPO, orders, avg order, $/day, show rate, close rate) with year-over-year deltas.</div>';
+    return;
+  }
+  const metrics = [
+    {k:'cpo',      lbl:'Total CPO',    fmt:v=>fm(v)},
+    {k:'orders',   lbl:'Orders',       fmt:v=>v},
+    {k:'avg',      lbl:'Avg Order',    fmt:v=>fm(v)},
+    {k:'perDay',   lbl:'$ / Day Worked', fmt:v=>fm(v)},
+    {k:'show',     lbl:'Show Rate',    fmt:v=>v+'%'},
+    {k:'close',    lbl:'Close Rate',   fmt:v=>v+'%'}
+  ];
+  let html = '<div style="display:flex;gap:14px;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;">'
+    + '<span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--blue);margin-right:5px;vertical-align:-1px;"></span>2026</span>'
+    + '<span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--gold);margin-right:5px;vertical-align:-1px;"></span>2025</span></div>';
+  metrics.forEach(m=>{
+    const a = SC2_2026[m.k], b = SC2_2025[m.k];
+    if(a==null && b==null) return;
+    const max = Math.max(a||0, b||0) || 1;
+    const delta = (a!=null && b!=null && b!==0) ? Math.round((a-b)/b*100) : null;
+    const chip = delta==null ? '' :
+      '<span class="delta-chip" style="'+(delta>=0?'background:var(--green-light);color:var(--green);':'background:var(--red-light);color:var(--red);')+'">'
+      + (delta>=0?'+':'')+delta+'%</span>';
+    html += '<div class="sc2-cmp-row">'
+      + '<div class="cl">'+m.lbl+'</div>'
+      + '<div class="ctrack">'
+      +   '<div class="minibar"><div style="width:'+((a||0)/max*100)+'%"></div></div>'
+      +   '<div class="minibar gold"><div style="width:'+((b||0)/max*100)+'%"></div></div>'
+      + '</div>'
+      + '<div class="cv">'+(a!=null?m.fmt(a):'—')+' <span style="color:var(--text3);font-weight:400;">vs</span> '+(b!=null?m.fmt(b):'—')+chip+'</div>'
+      + '</div>';
+  });
+  el.innerHTML = html;
 }
 
 // ==================== GOOGLE SHEETS SYNC ====================
