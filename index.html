@@ -3387,21 +3387,24 @@ function refreshAll(){
 const SC2_2026 = { year:2026, cpo:90770, orders:89, avg:1020, perDay:5673,
   daysWorked:16, daysTotal:19, booked:79, completed:60, scOrders:46,
   show:75.9, close:76.7, o3k:6, cpo3k:20740, o4k:1, cpo4k:4349 };
-// 2025 PUSH (Jul 11–31) — totals recomputed from the 131-row order list in
-// Alan's SC2 sheet; they reconcile exactly with that sheet's summary cells.
+// 2025 PUSH (Jul 11–31) — totals recomputed from the order list in Alan's SC2
+// sheet. The sheet's own summary shows $145,923 across 131 orders; the one
+// house order under Alan's own name (#73056730, $1,076, Jul 31) is excluded
+// here to match the 2026 rule, giving the true $144,847 across 130 orders.
 // Appointments weren't tracked in 2025, so booked/completed/show/close are null
 // and the comparison rows for those render as "not tracked".
-const SC2_2025 = { year:2025, cpo:145923, orders:131, avg:1114, perDay:7680,
+const SC2_2025 = { year:2025, cpo:144847, orders:130, avg:1114, perDay:7624,
   daysWorked:19, daysTotal:21, booked:null, completed:null, scOrders:null,
   show:null, close:null, o3k:12, cpo3k:46249, o4k:6, cpo4k:26150 };
 // Channel comparison. 2025 bucketed as SC/E/P where P = phone orders, which maps
-// to the 2026 Marketing bucket (all re-orders — text, email, phone). 2026's RoR
+// to the 2026 Marketing bucket (all re-orders — text, email, phone). The excluded
+// house order came out of P, so 2025 phone is 20 orders / $18,503. 2026's RoR
 // ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table;
 // $87,934 mapped + $2,836 unmapped = the full $90,770.
 const SC2_CHANNELS = [
   {lbl:'Service Call', o25:81, c25:95689, o26:53, c26:63181},
   {lbl:'Event',        o25:29, c25:30655, o26:19, c26:19121},
-  {lbl:'Phone / Marketing', o25:21, c25:19579, o26:14, c26:5632}
+  {lbl:'Phone / Marketing', o25:20, c25:18503, o26:14, c26:5632}
 ];
 
 function refreshSC2(){
@@ -3475,14 +3478,18 @@ function refreshSC2(){
   html += '</table>'
     + '<div style="font-size:11px;color:var(--text3);margin-top:7px;line-height:1.5;">'
     + '2025 tracked SC / E / P, where <b>P = phone orders</b> — mapped here to the 2026 Marketing bucket (all re-orders: text, email, phone). '
-    + '2026\'s RoR ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table; $87,934 mapped + $2,836 unmapped = the full $90,770.</div></div>';
+    + '2026\'s RoR ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table; $87,934 mapped + $2,836 unmapped = the full $90,770. '
+    + 'The 2025 column excludes one house order under Alan\'s own name ($1,076, Jul 31), matching the 2026 rule.</div></div>';
 
+  const ordDeltas = SC2_CHANNELS.map(c=>Math.round((c.o26-c.o25)/c.o25*100));
+  const ph = SC2_CHANNELS[2], phGap = ph.c25 - ph.c26;
   html += '<div class="sc2-callout" style="margin-top:14px;border-color:var(--accent-border);"><b>What the channel split says:</b> '
-    + 'order <i>count</i> fell almost exactly the same amount in every channel — <b>−35% service calls, −34% events, −33% phone</b>. '
+    + 'order <i>count</i> fell by a similar share in every channel — <b>'+ordDeltas[0]+'% service calls, '+ordDeltas[1]+'% events, '+ordDeltas[2]+'% phone</b>. '
     + 'That is a volume story, not a mix or a closing story. Two things stand out inside it: service-call average order actually '
     + '<b>held and ticked up</b> ($1,181 → $1,192), so the selling didn\'t get worse — there was simply less of it. '
-    + 'And the phone channel lost more than the others because its orders shrank as well as thinned, '
-    + '<b>$932 → $402 average, −71% in total CPO</b>. That one channel accounts for $13,947 of the $55,153 gap.</div>';
+    + 'And the phone channel lost the most because its orders shrank as well as thinned — '
+    + '<b>'+fm(ph.c25/ph.o25)+' → '+fm(ph.c26/ph.o26)+' average, '+Math.round((ph.c26-ph.c25)/ph.c25*100)+'% in total CPO</b>. '
+    + 'That one channel is '+fm(phGap)+' of the '+fm(Math.abs(gap))+' gap.</div>';
 
   html += '<div class="sc2-callout" style="border-color:var(--red);background:var(--red-light);">'
     + '<b>Read it straight: 2026 came in '+fm(Math.abs(gap))+' under 2025 ('+gapPct+'%).</b> '
