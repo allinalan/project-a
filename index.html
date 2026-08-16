@@ -3386,10 +3386,26 @@ function refreshAll(){
 // invariant and Alan's save pipeline are never touched by this tab.
 const SC2_2026 = { year:2026, cpo:90770, orders:89, avg:1020, perDay:5673,
   daysWorked:16, daysTotal:19, booked:79, completed:60, scOrders:46,
-  show:75.9, close:76.7 };
-// Paste the 2025 PUSH results here (same shape as SC2_2026) to unlock the
-// year-over-year comparison. Any field left out just renders as "—".
-const SC2_2025 = null;
+  show:75.9, close:76.7, o3k:6, cpo3k:20740, o4k:1, cpo4k:4349 };
+// 2025 PUSH (Jul 11–31) — totals recomputed from the order list in Alan's SC2
+// sheet. The sheet's own summary shows $145,923 across 131 orders; the one
+// house order under Alan's own name (#73056730, $1,076, Jul 31) is excluded
+// here to match the 2026 rule, giving the true $144,847 across 130 orders.
+// Appointments weren't tracked in 2025, so booked/completed/show/close are null
+// and the comparison rows for those render as "not tracked".
+const SC2_2025 = { year:2025, cpo:144847, orders:130, avg:1114, perDay:7624,
+  daysWorked:19, daysTotal:21, booked:null, completed:null, scOrders:null,
+  show:null, close:null, o3k:12, cpo3k:46249, o4k:6, cpo4k:26150 };
+// Channel comparison. 2025 bucketed as SC/E/P where P = phone orders, which maps
+// to the 2026 Marketing bucket (all re-orders — text, email, phone). The excluded
+// house order came out of P, so 2025 phone is 20 orders / $18,503. 2026's RoR
+// ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table;
+// $87,934 mapped + $2,836 unmapped = the full $90,770.
+const SC2_CHANNELS = [
+  {lbl:'Service Call', o25:81, c25:95689, o26:53, c26:63181},
+  {lbl:'Event',        o25:29, c25:30655, o26:19, c26:19121},
+  {lbl:'Phone / Marketing', o25:20, c25:18503, o26:14, c26:5632}
+];
 
 function refreshSC2(){
   const el = document.getElementById('sc2-compare');
@@ -3399,14 +3415,26 @@ function refreshSC2(){
     return;
   }
   const metrics = [
-    {k:'cpo',      lbl:'Total CPO',    fmt:v=>fm(v)},
-    {k:'orders',   lbl:'Orders',       fmt:v=>v},
-    {k:'avg',      lbl:'Avg Order',    fmt:v=>fm(v)},
-    {k:'perDay',   lbl:'$ / Day Worked', fmt:v=>fm(v)},
-    {k:'show',     lbl:'Show Rate',    fmt:v=>v+'%'},
-    {k:'close',    lbl:'Close Rate',   fmt:v=>v+'%'}
+    {k:'cpo',    lbl:'Total CPO',      fmt:v=>fm(v)},
+    {k:'orders', lbl:'Orders',         fmt:v=>v},
+    {k:'avg',    lbl:'Avg Order',      fmt:v=>fm(v)},
+    {k:'perDay', lbl:'$ / Day Worked', fmt:v=>fm(v)},
+    {k:'daysWorked', lbl:'Days Worked', fmt:v=>v},
+    {k:'cpo3k',  lbl:'CPO from $3K+',  fmt:v=>fm(v)},
+    {k:'show',   lbl:'Show Rate',      fmt:v=>v+'%'},
+    {k:'close',  lbl:'Close Rate',     fmt:v=>v+'%'}
   ];
-  let html = '<div style="display:flex;gap:14px;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;">'
+  // Headline deltas first — the gap is the point of this panel
+  const gap = SC2_2026.cpo - SC2_2025.cpo;
+  const gapPct = Math.round(gap/SC2_2025.cpo*100);
+  let html = '<div class="g4" style="margin-bottom:14px;">'
+    + sc2Delta('Total CPO', fm(SC2_2026.cpo), fm(SC2_2025.cpo), gapPct, fm(Math.abs(gap)))
+    + sc2Delta('Orders', SC2_2026.orders, SC2_2025.orders, Math.round((SC2_2026.orders-SC2_2025.orders)/SC2_2025.orders*100), Math.abs(SC2_2026.orders-SC2_2025.orders)+' orders')
+    + sc2Delta('Avg Order', fm(SC2_2026.avg), fm(SC2_2025.avg), Math.round((SC2_2026.avg-SC2_2025.avg)/SC2_2025.avg*100), fm(Math.abs(SC2_2026.avg-SC2_2025.avg)))
+    + sc2Delta('$ / Day Worked', fm(SC2_2026.perDay), fm(SC2_2025.perDay), Math.round((SC2_2026.perDay-SC2_2025.perDay)/SC2_2025.perDay*100), fm(Math.abs(SC2_2026.perDay-SC2_2025.perDay))+'/day')
+    + '</div>';
+
+  html += '<div style="display:flex;gap:14px;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;">'
     + '<span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--blue);margin-right:5px;vertical-align:-1px;"></span>2026</span>'
     + '<span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--gold);margin-right:5px;vertical-align:-1px;"></span>2025</span></div>';
   metrics.forEach(m=>{
@@ -3417,16 +3445,74 @@ function refreshSC2(){
     const chip = delta==null ? '' :
       '<span class="delta-chip" style="'+(delta>=0?'background:var(--green-light);color:var(--green);':'background:var(--red-light);color:var(--red);')+'">'
       + (delta>=0?'+':'')+delta+'%</span>';
+    const val = b==null
+      ? (a!=null?m.fmt(a):'—')+' <span style="color:var(--text3);font-weight:400;font-size:11px;">· not tracked in 2025</span>'
+      : (a!=null?m.fmt(a):'—')+' <span style="color:var(--text3);font-weight:400;">vs</span> '+m.fmt(b)+chip;
     html += '<div class="sc2-cmp-row">'
       + '<div class="cl">'+m.lbl+'</div>'
       + '<div class="ctrack">'
       +   '<div class="minibar"><div style="width:'+((a||0)/max*100)+'%"></div></div>'
-      +   '<div class="minibar gold"><div style="width:'+((b||0)/max*100)+'%"></div></div>'
+      +   (b==null ? '' : '<div class="minibar gold"><div style="width:'+(b/max*100)+'%"></div></div>')
       + '</div>'
-      + '<div class="cv">'+(a!=null?m.fmt(a):'—')+' <span style="color:var(--text3);font-weight:400;">vs</span> '+(b!=null?m.fmt(b):'—')+chip+'</div>'
+      + '<div class="cv">'+val+'</div>'
       + '</div>';
   });
+
+  // Channel-level comparison — where the gap actually sits
+  html += '<div style="margin-top:16px;overflow-x:auto;">'
+    + '<div class="ptit2" style="margin-bottom:8px;">By Channel</div>'
+    + '<table class="roi-table"><tr><th>Channel</th><th>2025</th><th>2026</th><th>CPO Δ</th><th>Orders Δ</th><th>Avg Order</th></tr>';
+  SC2_CHANNELS.forEach(c=>{
+    const dC = Math.round((c.c26-c.c25)/c.c25*100);
+    const dO = Math.round((c.o26-c.o25)/c.o25*100);
+    const a25 = Math.round(c.c25/c.o25), a26 = Math.round(c.c26/c.o26);
+    const dA = Math.round((a26-a25)/a25*100);
+    const cls = v => v>=0 ? 'tg' : 'tr';
+    html += '<tr><td><b>'+c.lbl+'</b></td>'
+      + '<td>'+c.o25+' ord · '+fm(c.c25)+'</td>'
+      + '<td>'+c.o26+' ord · '+fm(c.c26)+'</td>'
+      + '<td class="'+cls(dC)+'"><b>'+(dC>=0?'+':'')+dC+'%</b></td>'
+      + '<td class="'+cls(dO)+'">'+(dO>=0?'+':'')+dO+'%</td>'
+      + '<td>'+fm(a25)+' → '+fm(a26)+' <span class="'+cls(dA)+'" style="font-weight:700;">'+(dA>=0?'+':'')+dA+'%</span></td></tr>';
+  });
+  html += '</table>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:7px;line-height:1.5;">'
+    + '2025 tracked SC / E / P, where <b>P = phone orders</b> — mapped here to the 2026 Marketing bucket (all re-orders: text, email, phone). '
+    + '2026\'s RoR ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table; $87,934 mapped + $2,836 unmapped = the full $90,770. '
+    + 'The 2025 column excludes one house order under Alan\'s own name ($1,076, Jul 31), matching the 2026 rule.</div></div>';
+
+  const ordDeltas = SC2_CHANNELS.map(c=>Math.round((c.o26-c.o25)/c.o25*100));
+  const ph = SC2_CHANNELS[2], phGap = ph.c25 - ph.c26;
+  html += '<div class="sc2-callout" style="margin-top:14px;border-color:var(--accent-border);"><b>What the channel split says:</b> '
+    + 'order <i>count</i> fell by a similar share in every channel — <b>'+ordDeltas[0]+'% service calls, '+ordDeltas[1]+'% events, '+ordDeltas[2]+'% phone</b>. '
+    + 'That is a volume story, not a mix or a closing story. Two things stand out inside it: service-call average order actually '
+    + '<b>held and ticked up</b> ($1,181 → $1,192), so the selling didn\'t get worse — there was simply less of it. '
+    + 'And the phone channel lost the most because its orders shrank as well as thinned — '
+    + '<b>'+fm(ph.c25/ph.o25)+' → '+fm(ph.c26/ph.o26)+' average, '+Math.round((ph.c26-ph.c25)/ph.c25*100)+'% in total CPO</b>. '
+    + 'That one channel is '+fm(phGap)+' of the '+fm(Math.abs(gap))+' gap.</div>';
+
+  html += '<div class="sc2-callout" style="border-color:var(--red);background:var(--red-light);">'
+    + '<b>Read it straight: 2026 came in '+fm(Math.abs(gap))+' under 2025 ('+gapPct+'%).</b> '
+    + 'Three fewer days worked explains part of it, but not most — the day rate itself fell from '
+    + fm(SC2_2025.perDay)+' to '+fm(SC2_2026.perDay)+'. The clearest single gap is the top of the order book: '
+    + '2025 produced <b>'+SC2_2025.o4k+' orders at $4K+</b> ('+fm(SC2_2025.cpo4k)+') against <b>'+SC2_2026.o4k+' in 2026</b> ('+fm(SC2_2026.cpo4k)+'), '
+    + 'and '+fm(SC2_2025.cpo3k)+' vs '+fm(SC2_2026.cpo3k)+' from the $3K+ band overall.</div>';
+  html += '<div class="sc2-note" style="margin-top:9px;">'
+    + 'Worth noting before drawing conclusions: the windows differ (2025 ran Jul 11–31 over '+SC2_2025.daysTotal+' days, 2026 ran Jul 16–Aug 3 over '+SC2_2026.daysTotal+'), '
+    + 'appointments weren\'t tracked in 2025 so there\'s no show/close comparison, and 2025 had no RoR bucket at all — '
+    + 'any rep-of-record orders that year are folded into the three channels above rather than split out. '
+    + 'The 2026 lever table above targets ≈$126K, which is <b>below the '+fm(SC2_2025.cpo)+' actually done in 2025</b> — worth resetting against.</div>';
   el.innerHTML = html;
+}
+// One delta card for the year-over-year headline row
+function sc2Delta(lbl, now, prior, pct, absTxt){
+  const up = pct >= 0;
+  return '<div class="mc '+(up?'pos':'neg')+'">'
+    + '<div class="mlbl">'+lbl+'</div>'
+    + '<div class="mval">'+now+'</div>'
+    + '<div class="msub '+(up?'tg':'tr')+'" style="font-weight:700;">'+(up?'▲ +':'▼ ')+pct+'% · '+(up?'+':'−')+absTxt+'</div>'
+    + '<div class="msub tm" style="font-size:11px;">2025: '+prior+'</div>'
+    + '</div>';
 }
 
 // ==================== GOOGLE SHEETS SYNC ====================
