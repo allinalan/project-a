@@ -259,6 +259,17 @@
   .sc2-cmp-row .ctrack{flex:1;display:flex;flex-direction:column;gap:3px;}
   .sc2-cmp-row .cv{flex:0 0 auto;text-align:right;min-width:130px;font-weight:700;white-space:nowrap;}
   .delta-chip{font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;margin-left:6px;display:inline-block;}
+  /* Phone: comparison rows go two-line (label+value, then full-width bars) so the
+     delta chips never push past the viewport and the bars get real width */
+  @media(max-width:700px){
+    .sc2-cmp-row{flex-wrap:wrap;gap:4px 8px;margin-bottom:13px;}
+    .sc2-cmp-row .cl{flex:1 1 auto;}
+    .sc2-cmp-row .cv{min-width:0;}
+    .sc2-cmp-row .ctrack{flex:1 1 100%;order:3;}
+    .sc2-funnel{gap:5px;}
+    .sc2-step{padding:9px 4px;}
+    .sc2-step .fv{font-size:18px;}
+  }
   /* ===== BOTTOM APP NAV (mobile) ===== */
   .bnav{display:none;}
   .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -1097,7 +1108,7 @@
 
   <!-- HEADLINE KPIs -->
   <div class="g4">
-    <div class="mc accent"><div class="mlbl">Total Push CPO</div><div class="mval">$90,770</div><div class="msub tm">89 orders · $1,020 avg order</div></div>
+    <div class="mc accent"><div class="mlbl">Total Push CPO</div><div class="mval">$90,770</div><div class="msub tm">89 orders · $1,020 avg order</div><div class="msub tr" style="font-weight:700;">▼ 37% vs 2025 ($144,847)</div></div>
     <div class="mc neu"><div class="mlbl">Per Day Worked</div><div class="mval">$5,673</div><div class="msub tm">every PUSH day ≈ $5K+ of inventory</div></div>
     <div class="mc pos"><div class="mlbl">Close Rate</div><div class="mval">76.7%</div><div class="msub tg">46 orders / 60 completed appts</div></div>
     <div class="mc neu"><div class="mlbl">Per Completed Appt</div><div class="mval">$914</div><div class="msub tm">$694 per booked slot</div></div>
@@ -3414,15 +3425,13 @@ function refreshSC2(){
     el.innerHTML = '<div class="sc2-note">2025 SC2 PUSH results not loaded yet — send Claude your 2025 push numbers and this panel becomes a side-by-side comparison (CPO, orders, avg order, $/day, show rate, close rate) with year-over-year deltas.</div>';
     return;
   }
+  // Only bar rows that ADD something beyond the delta cards above them —
+  // orders / avg / $-per-day already have cards, and show/close have no 2025
+  // side to compare (covered in the caveat note instead).
   const metrics = [
-    {k:'cpo',    lbl:'Total CPO',      fmt:v=>fm(v)},
-    {k:'orders', lbl:'Orders',         fmt:v=>v},
-    {k:'avg',    lbl:'Avg Order',      fmt:v=>fm(v)},
-    {k:'perDay', lbl:'$ / Day Worked', fmt:v=>fm(v)},
-    {k:'daysWorked', lbl:'Days Worked', fmt:v=>v},
-    {k:'cpo3k',  lbl:'CPO from $3K+',  fmt:v=>fm(v)},
-    {k:'show',   lbl:'Show Rate',      fmt:v=>v+'%'},
-    {k:'close',  lbl:'Close Rate',     fmt:v=>v+'%'}
+    {k:'cpo',        lbl:'Total CPO',     fmt:v=>fm(v)},
+    {k:'daysWorked', lbl:'Days Worked',   fmt:v=>v},
+    {k:'cpo3k',      lbl:'CPO from $3K+', fmt:v=>fm(v)}
   ];
   // Headline deltas first — the gap is the point of this panel
   const gap = SC2_2026.cpo - SC2_2025.cpo;
@@ -3458,10 +3467,12 @@ function refreshSC2(){
       + '</div>';
   });
 
-  // Channel-level comparison — where the gap actually sits
-  html += '<div style="margin-top:16px;overflow-x:auto;">'
+  // Channel-level comparison — where the gap actually sits. The Δ column comes
+  // right after the channel name so it's still on-screen at phone width, where
+  // the rest of the table scrolls sideways.
+  html += '<div style="margin-top:16px;">'
     + '<div class="ptit2" style="margin-bottom:8px;">By Channel</div>'
-    + '<table class="roi-table"><tr><th>Channel</th><th>2025</th><th>2026</th><th>CPO Δ</th><th>Orders Δ</th><th>Avg Order</th></tr>';
+    + '<div class="scrollx"><table class="roi-table"><tr><th>Channel</th><th>CPO Δ</th><th>2025</th><th>2026</th><th>Orders Δ</th><th>Avg Order</th></tr>';
   SC2_CHANNELS.forEach(c=>{
     const dC = Math.round((c.c26-c.c25)/c.c25*100);
     const dO = Math.round((c.o26-c.o25)/c.o25*100);
@@ -3469,13 +3480,13 @@ function refreshSC2(){
     const dA = Math.round((a26-a25)/a25*100);
     const cls = v => v>=0 ? 'tg' : 'tr';
     html += '<tr><td><b>'+c.lbl+'</b></td>'
+      + '<td class="'+cls(dC)+'"><b>'+(dC>=0?'+':'')+dC+'%</b></td>'
       + '<td>'+c.o25+' ord · '+fm(c.c25)+'</td>'
       + '<td>'+c.o26+' ord · '+fm(c.c26)+'</td>'
-      + '<td class="'+cls(dC)+'"><b>'+(dC>=0?'+':'')+dC+'%</b></td>'
       + '<td class="'+cls(dO)+'">'+(dO>=0?'+':'')+dO+'%</td>'
       + '<td>'+fm(a25)+' → '+fm(a26)+' <span class="'+cls(dA)+'" style="font-weight:700;">'+(dA>=0?'+':'')+dA+'%</span></td></tr>';
   });
-  html += '</table>'
+  html += '</table></div>'
     + '<div style="font-size:11px;color:var(--text3);margin-top:7px;line-height:1.5;">'
     + '2025 tracked SC / E / P, where <b>P = phone orders</b> — mapped here to the 2026 Marketing bucket (all re-orders: text, email, phone). '
     + '2026\'s RoR ($2,743) and Other ($93) have no 2025 counterpart and sit outside this table; $87,934 mapped + $2,836 unmapped = the full $90,770. '
