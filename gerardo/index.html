@@ -564,22 +564,29 @@ function renderHeader(){
 function renderScorecard(){
   const os = pool();
   const all = agg(os), cur = agg(os.filter(inCur)), prev = agg(os.filter(inPrev));
+  const rng = (a,b) => agg(os.filter(o=>o.d>=a && o.d<=b));
+  const y26 = rng("2026-01-01","2026-12-31");
+  const y25 = rng("2025-01-01","2025-12-31");
+  const y25pace = rng("2025-01-01", M.curEnd.replace("2026","2025")); // same-window: Jan 1 → Aug 18
+  const fall24 = rng("2024-09-01","2024-12-31");
+  const fall24ev = agg(os.filter(o=>o.e && o.d>="2024-09-01" && o.d<="2024-12-31"));
+  const pace = pctS(y26.cpo, y25pace.cpo);
   const fullMonths = monthly(os).filter(([k])=>!PARTIAL.has(k));
   const mAvg = fullMonths.reduce((s,[,v])=>s+v.cpo,0)/(fullMonths.length||1);
   const byB = BUCKETS.map(b=>({...b, ...agg(os.filter(o=>bucketOf(o)===b.k))})).sort((a,b)=>b.cpo-a.cpo);
   const top = byB[0];
   const growth = pctS(cur.cpo, prev.cpo);
-  $("#scorecard-sub").textContent = `Two years of real orders — ${M.prevStart} through ${M.curEnd}. Current 12 months = ${M.curStart} → ${M.curEnd}; previous = ${M.prevStart} → ${M.prevEnd}.`;
+  $("#scorecard-sub").textContent = `Built from real orders, ${M.prevStart} through ${M.curEnd}. 2026 is year-to-date; 2025 is the full calendar year (10-day export gap in Aug); Fall 2024 is the Sep–Dec campaign window.`;
   $("#kpi-grid").innerHTML = `
-    <div class="hero"><div><div class="lab">Total sales · 24 months</div><div class="v num">${fmt$(all.cpo)}</div></div>
-      <div class="cap">${fmtN(all.ord)} orders · average order ${fmt$c(all.cpo/all.ord)}</div></div>
+    <div class="hero"><div><div class="lab">2026 sales · year to date</div><div class="v num">${fmt$(y26.cpo)}</div></div>
+      <div class="cap">${fmtN(y26.ord)} orders · <span class="num ${pace>=0?"up":"dn"}">${fmtPct(pace)}</span> vs the same point of 2025 (${fmt$(y25pace.cpo)} through Aug 18)</div></div>
     ${[
-      ["Current 12-month sales", fmt$(cur.cpo), `${fmtN(cur.ord)} orders`],
-      ["Previous 12-month sales", fmt$(prev.cpo), `${fmtN(prev.ord)} orders`],
-      ["12-month growth", fmtPct(growth), `${fmt$(cur.cpo-prev.cpo)} vs previous`, growth>=0?"up":"dn"],
+      ["Full 2025 sales", fmt$(y25.cpo), `${fmtN(y25.ord)} orders · matches the RSD team dashboard’s 2025 total`],
+      ["Fall 2024 campaign", fmt$(fall24.cpo), `Sep–Dec · ${fmtN(fall24.ord)} orders · ${fmt$(fall24ev.cpo)} of it at events`],
+      ["12-month growth", fmtPct(growth), `${fmt$(cur.cpo-prev.cpo)} — details in section 02`, growth>=0?"up":"dn"],
       ["Monthly average", fmt$(mAvg), `${fullMonths.length} full months`],
-      ["Average order (CPO)", fmt$c(all.cpo/all.ord), `current: ${fmt$c(cur.cpo/cur.ord)}`],
-      ["Total orders", fmtN(all.ord), `${fmtN(cur.ord)} in the current 12 mo`],
+      ["Average order (CPO)", fmt$c(all.cpo/all.ord), `2026 so far: ${fmt$c(y26.cpo/(y26.ord||1))}`],
+      ["Orders analyzed", fmtN(all.ord), `across both exports, Aug ’24 → Aug ’26`],
       ["Top sales source", top.n.split(" — ")[0], `${fmt$(top.cpo)} · ${(top.cpo/all.cpo*100).toFixed(1)}% of sales`],
       ["Event production", fmt$(byB.find(b=>b.k==="booth").cpo + byB.find(b=>b.k==="eventService").cpo), "booth + event service"],
     ].map(([l,v,d,cls])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num ${cls||""}">${v}</div><div class="d">${d}</div></div>`).join("")}`;
