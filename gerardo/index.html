@@ -129,10 +129,10 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
 </header>
 
 <nav class="nav" aria-label="Sections"><div class="nav-in">
-  <a href="#scorecard">Scorecard</a><a href="#compare">12-Mo vs 12-Mo</a><a href="#time">Over Time</a>
-  <a href="#sources">Sources</a><a href="#orders10">Largest Orders</a><a href="#consistency">Consistency</a>
+  <a href="#scorecard">Scorecard</a><a href="#time">Over Time</a>
+  <a href="#sources">Sources</a><a href="#orders10">Largest Orders</a>
   <a href="#events">Events</a><a href="#campaigns">Campaigns</a><a href="#coach">Coaching</a>
-  <a href="#tracker">Weekly Tracker</a><a href="#method">Data Rules</a>
+  <a href="#tracker">Weekly Tracker</a>
 </div></nav>
 
 <!-- 1 · EXECUTIVE SCORECARD -->
@@ -143,22 +143,12 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="kpis" id="kpi-grid"></div>
 </section>
 
-<!-- 2 · CURRENT VS PREVIOUS -->
-<section class="section" id="compare">
-  <div class="eyebrow">02 · Current vs Previous 12 Months</div>
-  <h2>Are you improving?</h2>
-  <p class="sec-sub" id="compare-sub"></p>
-  <div class="card scroll"><table id="cmp-table"></table></div>
-  <div style="height:12px"></div>
-  <div class="card" id="cmp-story"></div>
-</section>
-
 <!-- FILTER BAR -->
 <div class="filterbar" id="filterbar"><div class="fin" id="fpills"></div></div>
 
-<!-- 3 · SALES OVER TIME -->
+<!-- 2 · SALES OVER TIME -->
 <section class="section" id="time">
-  <div class="eyebrow">03 · Sales Over Time</div>
+  <div class="eyebrow">02 · Sales Over Time</div>
   <h2>Month by month</h2>
   <p class="sec-sub">Every order booked in the month it was placed — the Ahub late-order rule, so nothing is counted twice.</p>
   <div class="card">
@@ -177,9 +167,9 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="card" id="time-story"></div>
 </section>
 
-<!-- 4 · SOURCES -->
+<!-- 3 · SOURCES -->
 <section class="section" id="sources">
-  <div class="eyebrow">04 · Where the Business Comes From</div>
+  <div class="eyebrow">03 · Where the Business Comes From</div>
   <h2>Sales sources</h2>
   <p class="sec-sub">Orders are bucketed by their order-type flag under the Ahub rules — an order carrying an event reference belongs to that event; everything else follows its flag.</p>
   <div class="card">
@@ -194,8 +184,6 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
     <p class="lab" style="margin-top:10px;text-transform:none;letter-spacing:.04em" id="src-break-foot"></p>
   </div>
   <div style="height:12px"></div>
-  <div class="card scroll"><table id="src-table"></table></div>
-  <div style="height:12px"></div>
   <div class="two">
     <div class="card">
       <div class="lab" id="mix-title">Business mix — share of sales</div>
@@ -205,9 +193,9 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   </div>
 </section>
 
-<!-- 5 · LARGEST ORDERS -->
+<!-- 4 · LARGEST ORDERS -->
 <section class="section" id="orders10">
-  <div class="eyebrow">05 · Largest Orders</div>
+  <div class="eyebrow">04 · Largest Orders</div>
   <h2>The big ones</h2>
   <p class="sec-sub" id="top-sub"></p>
   <div class="card scroll"><table id="top-table"></table></div>
@@ -215,19 +203,9 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="card" id="top-story"></div>
 </section>
 
-<!-- 6 · CONSISTENCY -->
-<section class="section" id="consistency">
-  <div class="eyebrow">06 · Business Consistency</div>
-  <h2>How steady is the machine?</h2>
-  <p class="sec-sub" id="cons-sub"></p>
-  <div class="kpis" id="cons-kpis"></div>
-  <div style="height:12px"></div>
-  <div class="card" id="cons-story"></div>
-</section>
-
-<!-- 7 · EVENTS -->
+<!-- 5 · EVENTS -->
 <section class="section" id="events">
-  <div class="eyebrow">07 · Events Business</div>
+  <div class="eyebrow">05 · Events Business</div>
   <h2>What your events really produce</h2>
   <p class="sec-sub">Behind-the-booth sales are orders written on an event code. Event Service sales are service orders sourced by the event (Event Service Call / Free Look leads) — they count once in totals, and the event gets credit here, per the Ahub reconciliation rules.</p>
   <div class="kpis" id="ev-kpis"></div>
@@ -250,14 +228,15 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
       <select id="ev-pick" aria-label="Jump to a specific event"></select>
     </div>
     <div class="scroll"><table id="ev-table"></table></div>
+    <div style="margin-top:10px"><button class="btn ghost" type="button" id="ev-more" hidden></button></div>
   </div>
   <div style="height:12px"></div>
   <div class="card" id="ev-story"></div>
 </section>
 
-<!-- 8 · CAMPAIGNS -->
+<!-- 6 · CAMPAIGNS -->
 <section class="section" id="campaigns">
-  <div class="eyebrow">08 · Campaign Analysis</div>
+  <div class="eyebrow">06 · Campaign Analysis</div>
   <h2>Spring · Summer · Fall</h2>
   <p class="sec-sub">Ahub campaign windows: Spring = Jan–Apr (Campaign I), Summer = May–Aug (Campaign II), Fall = Sep–Dec (Campaign III). Event production only — booth plus event-service sales.</p>
   <div class="card">
@@ -272,17 +251,17 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="cards" id="camp-compare"></div>
 </section>
 
-<!-- 9 · COACHING -->
+<!-- 7 · COACHING -->
 <section class="section" id="coach">
-  <div class="eyebrow">09 · Coaching Analysis</div>
+  <div class="eyebrow">07 · Coaching Analysis</div>
   <h2>What your business is telling us</h2>
   <p class="sec-sub"><span class="badge b-data">DATA</span>comes straight from your orders. <span class="badge b-hyp">HYPOTHESIS</span>is a coaching read — worth testing, not yet proven.</p>
   <div class="cards" id="coach-cards"></div>
 </section>
 
-<!-- 10 · TRACKER -->
+<!-- 8 · TRACKER -->
 <section class="section" id="tracker">
-  <div class="eyebrow">10 · Metrics We Need to Start Tracking</div>
+  <div class="eyebrow">08 · Metrics We Need to Start Tracking</div>
   <h2>Weekly stat tracker</h2>
   <p class="sec-sub">Order history can’t tell us closing %, completion %, appointments, calls, contacts, referral asks, or no-shows — those need <span class="mtr" style="font-size:10px">Manual Tracking Required</span> &nbsp;Log a week below; everything saves in this browser automatically.</p>
   <div class="card">
@@ -311,11 +290,10 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="card scroll"><table id="wk-table"></table></div>
 </section>
 
-<!-- 11 · METHOD -->
+<!-- APPENDIX · METHOD -->
 <section class="section" id="method">
-  <div class="eyebrow">11 · Data & Rules</div>
-  <h2>How the numbers are built</h2>
-  <div class="cards">
+  <details><summary>How the numbers are built — data rules &amp; future uploads</summary>
+  <div class="inner"><div class="cards" style="margin-top:8px">
     <div class="card" id="method-card"></div>
     <div class="card">
       <div class="lab" style="margin-bottom:8px">Add a future order export (CSV)</div>
@@ -327,7 +305,8 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
       </div>
       <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
     </div>
-  </div>
+  </div></div>
+  </details>
 </section>
 
 <div class="foot" id="foot"></div>
@@ -384,20 +363,16 @@ function pool(){
   const seen = new Set(DATA.orders.map(o=>o.i));
   return DATA.orders.concat(uploads.filter(o=>!seen.has(o.i)));
 }
-const inCur  = o => o.d >= M.curStart;
-const inPrev = o => o.d >= M.prevStart && o.d <= M.prevEnd;
 
 /* ---------- scope filter ---------- */
 const SCOPES = [
-  {k:"all", n:"All data"},{k:"cur", n:"Current 12 mo"},{k:"prev", n:"Previous 12 mo"},
+  {k:"all", n:"All data"},
   {k:"y2024",n:"2024"},{k:"y2025",n:"2025"},{k:"y2026",n:"2026"},
   {k:"Spring",n:"Spring"},{k:"Summer",n:"Summer"},{k:"Fall",n:"Fall"},
 ];
 let scope = "all";
 function scoped(os){
   switch(scope){
-    case "cur": return os.filter(inCur);
-    case "prev": return os.filter(inPrev);
     case "y2024": case "y2025": case "y2026": return os.filter(o=>o.d.slice(0,4)===scope.slice(1));
     case "Spring": case "Summer": case "Fall": return os.filter(o=>seasonOf(o.d)===scope);
     default: return os;
@@ -575,7 +550,7 @@ function renderHeader(){
 /* ---------- 1 scorecard ---------- */
 function renderScorecard(){
   const os = pool();
-  const all = agg(os), cur = agg(os.filter(inCur)), prev = agg(os.filter(inPrev));
+  const all = agg(os);
   const rng = (a,b) => agg(os.filter(o=>o.d>=a && o.d<=b));
   const y26 = rng("2026-01-01","2026-12-31");
   const y25 = rng("2025-01-01","2025-12-31");
@@ -587,7 +562,6 @@ function renderScorecard(){
   const mAvg = fullMonths.reduce((s,[,v])=>s+v.cpo,0)/(fullMonths.length||1);
   const byB = BUCKETS.map(b=>({...b, ...agg(os.filter(o=>bucketOf(o)===b.k))})).sort((a,b)=>b.cpo-a.cpo);
   const top = byB[0];
-  const growth = pctS(cur.cpo, prev.cpo);
   $("#scorecard-sub").textContent = `Built from real orders, ${M.prevStart} through ${M.curEnd}. 2026 is year-to-date; 2025 is the full calendar year (10-day export gap in Aug); Fall 2024 is the Sep–Dec campaign window.`;
   $("#kpi-grid").innerHTML = `
     <div class="hero"><div><div class="lab">2026 sales · year to date</div><div class="v num">${fmt$(y26.cpo)}</div></div>
@@ -595,52 +569,11 @@ function renderScorecard(){
     ${[
       ["Full 2025 sales", fmt$(y25.cpo), `${fmtN(y25.ord)} orders · matches the RSD team dashboard’s 2025 total`],
       ["Fall 2024 campaign", fmt$(fall24.cpo), `Sep–Dec · ${fmtN(fall24.ord)} orders · ${fmt$(fall24ev.cpo)} of it at events`],
-      ["12-month growth", fmtPct(growth), `${fmt$(cur.cpo-prev.cpo)} — details in section 02`, growth>=0?"up":"dn"],
       ["Monthly average", fmt$(mAvg), `${fullMonths.length} full months`],
       ["Average order (CPO)", fmt$c(all.cpo/all.ord), `2026 so far: ${fmt$c(y26.cpo/(y26.ord||1))}`],
-      ["Orders analyzed", fmtN(all.ord), `across both exports, Aug ’24 → Aug ’26`],
       ["Top sales source", top.n.split(" — ")[0], `${fmt$(top.cpo)} · ${(top.cpo/all.cpo*100).toFixed(1)}% of sales`],
       ["Event production", fmt$(byB.find(b=>b.k==="booth").cpo + byB.find(b=>b.k==="eventService").cpo), "booth + event service"],
     ].map(([l,v,d,cls])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num ${cls||""}">${v}</div><div class="d">${d}</div></div>`).join("")}`;
-}
-
-/* ---------- 2 compare ---------- */
-function renderCompare(){
-  const os = pool();
-  const cur = os.filter(inCur), prev = os.filter(inPrev);
-  const rows = [];
-  const A = agg(prev), B = agg(cur);
-  rows.push(["Sales", A.cpo, B.cpo, fmt$]);
-  rows.push(["Orders", A.ord, B.ord, fmtN]);
-  rows.push(["Average order (CPO)", A.cpo/(A.ord||1), B.cpo/(B.ord||1), fmt$c]);
-  rows.push(["Monthly average*", A.cpo/12, B.cpo/12, fmt$]);
-  const srcRows = BUCKETS.map(b=>{
-    const p = agg(prev.filter(o=>bucketOf(o)===b.k)), c = agg(cur.filter(o=>bucketOf(o)===b.k));
-    return [b.n, p.cpo, c.cpo, fmt$];
-  });
-  const html = [`<thead><tr><th>Metric</th><th class="r">Previous 12</th><th class="r">Current 12</th><th class="r">$ diff</th><th class="r">% change</th></tr></thead><tbody>`];
-  rows.concat([["— Major sources —"]]).concat(srcRows).forEach(r=>{
-    if (r.length===1){ html.push(`<tr><td colspan="5" class="lab" style="padding-top:14px">${r[0]}</td></tr>`); return; }
-    const [n,p,c,f] = r;
-    const d = c-p, pc = pctS(c,p);
-    const cls = Math.abs(d)<0.005 ? "" : d>0?"up":"dn";
-    html.push(`<tr><td>${n}</td><td class="r num">${f(p)}</td><td class="r num">${f(c)}</td><td class="r num ${cls}">${n==="Orders"?(d>0?"+":"")+fmtN(d):fmt$(d)}</td><td class="r num ${cls}">${fmtPct(pc)}</td></tr>`);
-  });
-  html.push(`</tbody>`);
-  $("#cmp-table").innerHTML = html.join("");
-  $("#compare-sub").textContent = `Previous window: ${M.prevStart} → ${M.prevEnd}. Current window: ${M.curStart} → ${M.curEnd}. Same-length windows, compared straight up. (*Monthly average here = window ÷ 12.)`;
-
-  // plain-english story
-  const g = (k)=>({p:agg(prev.filter(o=>bucketOf(o)===k)), c:agg(cur.filter(o=>bucketOf(o)===k))});
-  const sc=g("serviceCall"), nw=g("new"), bz=g("biz"), bo=g("booth"), ro=g("reorder");
-  $("#cmp-story").innerHTML = `<div class="lab" style="margin-bottom:8px">What actually changed, in plain English</div>
-  <ul class="tight" style="font-size:14.5px">
-    <li><b>You grew.</b> Sales are up ${fmt$(B.cpo-A.cpo)} (${fmtPct(pctS(B.cpo,A.cpo))}) on ${B.ord-A.ord} more orders. The growth came from volume, not bigger tickets — your average order slipped from ${fmt$c(A.cpo/A.ord)} to ${fmt$c(B.cpo/B.ord)}.</li>
-    <li><b>Service calls got more valuable.</b> Nearly the same number of service-call orders (${sc.p.ord} → ${sc.c.ord}) produced ${fmt$(sc.c.cpo-sc.p.cpo)} more — average service order jumped ${fmt$c(sc.p.cpo/(sc.p.ord||1))} → ${fmt$c(sc.c.cpo/(sc.c.ord||1))}.</li>
-    <li><b>New customers surged.</b> Off-event new-customer sales rose ${fmtPct(pctS(nw.c.cpo,nw.p.cpo))} (${fmt$(nw.p.cpo)} → ${fmt$(nw.c.cpo)}).</li>
-    <li><b>Business gifts fell hard.</b> ${bz.p.ord} gift orders worth ${fmt$(bz.p.cpo)} became ${bz.c.ord} worth ${fmt$(bz.c.cpo)} (${fmtPct(pctS(bz.c.cpo,bz.p.cpo))}). This one line nearly erased the growth everywhere else.</li>
-    <li><b>Booth production edged up</b> (${fmt$(bo.p.cpo)} → ${fmt$(bo.c.cpo)}) on 15 more booth orders, and <b>re-orders softened</b> (${fmt$(ro.p.cpo)} → ${fmt$(ro.c.cpo)}).</li>
-  </ul>`;
 }
 
 /* ---------- filter bar ---------- */
@@ -683,7 +616,15 @@ function renderTime(){
     <li><b>The soft spots repeat too.</b> Weakest full months: ${worst.map(([k,v])=>`${monLabel(k)} (${fmt$(v.cpo)})`).join(", ")}. January and April cratered in both years — the gaps between campaigns.</li>
     <li><b>Seasonality is real:</b> Sep–Dec runs hot (events), then the new year opens cold until the Spring shows start. Mar ’26 (${fmt$(18858)}) shows what a strong Spring month can look like.</li>
     <li><b>Spikes:</b> Oct ’24 and Oct ’25 (event season), Mar ’26 (El Paso Home &amp; Garden Show). No single fluke month is carrying the business.</li>
-  </ul>`;
+  </ul>
+  <div class="lab" style="margin:16px 0 8px">How steady is it?</div>
+  <p style="font-size:14.5px;max-width:75ch">${(()=>{
+    const vals = allMons.map(([,v])=>v.cpo);
+    const avg = vals.reduce((s,v)=>s+v,0)/vals.length;
+    const sd = Math.sqrt(vals.reduce((s,v)=>s+(v-avg)**2,0)/vals.length);
+    const above = vals.filter(v=>v>avg).length;
+    return `This is a <b>seasonal, modestly growing</b> business — not a random one, and not whale-dependent. You sold in every one of the ${allMons.length} full months (real consistency), averaging ${fmt$(avg)} a month with ${above} months above that line, but the swing is large (±${(sd/avg*100).toFixed(0)}%) because Fall events stack revenue into Sep–Dec while Jan and Apr go quiet. The fix isn’t “work more” — it’s pre-loading the two predictable valleys with service-call and gift pipeline before they arrive.`;
+  })()}</p>`;
 }
 
 /* ---------- 4 sources ---------- */
@@ -692,14 +633,9 @@ function renderSources(){
   const all = agg(os);
   const rows = BUCKETS.map(b=>{
     const sub = os.filter(o=>bucketOf(o)===b.k);
-    const a = agg(sub), p = agg(sub.filter(inPrev)), c = agg(sub.filter(inCur));
-    return {b, a, p, c};
+    const yr = y => agg(sub.filter(o=>o.d.slice(0,4)===y));
+    return {b, a:agg(sub), y24:yr("2024"), y25:yr("2025"), y26:yr("2026")};
   }).sort((x,y)=>y.a.cpo-x.a.cpo);
-  $("#src-table").innerHTML = `<thead><tr><th>Source</th><th class="r">Sales</th><th class="r">Orders</th><th class="r">CPO</th><th class="r">% of total</th><th class="r">Prev 12</th><th class="r">Current 12</th><th class="r">Growth</th></tr></thead><tbody>`
-    + rows.map(({b,a,p,c})=>{
-      const g = pctS(c.cpo,p.cpo);
-      return `<tr><td>${b.n}</td><td class="r num">${fmt$(a.cpo)}</td><td class="r num">${a.ord}</td><td class="r num">${a.ord?fmt$c(a.cpo/a.ord):"—"}</td><td class="r num">${(a.cpo/all.cpo*100).toFixed(1)}%</td><td class="r num">${fmt$(p.cpo)}</td><td class="r num">${fmt$(c.cpo)}</td><td class="r num ${g===null?"":g>=0?"up":"dn"}">${p.cpo?fmtPct(g):"—"}</td></tr>`;
-    }).join("") + `</tbody>`;
 
   const sc = scoped(os), scAll = agg(sc);
   const mix = BUCKETS.map(b=>({b, a:agg(sc.filter(o=>bucketOf(o)===b.k))})).filter(x=>x.a.cpo>0).sort((x,y)=>y.a.cpo-x.a.cpo);
@@ -715,7 +651,7 @@ function renderSources(){
   <ul class="tight" style="font-size:14.5px">
     <li><b>Events are the engine.</b> Behind-the-booth is ${(byK.booth.a.cpo/all.cpo*100).toFixed(0)}% of everything — add event-service sales and roughly half your business starts at an event.</li>
     <li><b>Biggest average tickets:</b> Business Gifts at ${fmt$c(byK.biz.a.cpo/byK.biz.a.ord)} per order — ${Math.round(byK.biz.a.cpo/byK.biz.a.ord/(all.cpo/all.ord))}× your overall average. Service calls run second at ${fmt$c(byK.serviceCall.a.cpo/byK.serviceCall.a.ord)}.</li>
-    <li><b>Growing:</b> service calls (${fmtPct(pctS(byK.serviceCall.c.cpo,byK.serviceCall.p.cpo))}) and off-event new customers (${fmtPct(pctS(byK.new.c.cpo,byK.new.p.cpo))}). <b>Declining:</b> business gifts (${fmtPct(pctS(byK.biz.c.cpo,byK.biz.p.cpo))}) and re-orders (${fmtPct(pctS(byK.reorder.c.cpo,byK.reorder.p.cpo))}).</li>
+    <li><b>Growing year over year:</b> service calls — ${fmt$(byK.serviceCall.y24.cpo)} (’24) → ${fmt$(byK.serviceCall.y25.cpo)} (’25) → ${fmt$(byK.serviceCall.y26.cpo)} already in ’26. <b>Cooling:</b> business gifts (${fmt$(byK.biz.y25.cpo)} in ’25 → ${fmt$(byK.biz.y26.cpo)} so far in ’26).</li>
     <li><b>Dependence check:</b> no single source over half the business, and the non-event half (customer base + service work) is genuinely strong — that’s healthier than most event reps. The watch item is that Fall events alone drive the season highs.</li>
   </ul>`;
 }
@@ -773,34 +709,8 @@ function renderTop(){
   <p style="font-size:14.5px;max-width:75ch">Across the full two years, your ten biggest orders are <b>${shareAll.toFixed(1)}%</b> of total sales — a healthy spread. This business is <b>not</b> dependent on a few whales; it’s built order by order. Worth noting: the two biggest tickets (${fmt$(top10all[0].c)} and ${fmt$(top10all[1].c)}) were both <b>business-gift</b> orders — the highest-leverage single conversations you have.</p>`;
 }
 
-/* ---------- 6 consistency ---------- */
-function renderConsistency(){
-  const os = pool();
-  const mons = monthly(os).filter(([k])=>!PARTIAL.has(k));
-  const vals = mons.map(([,v])=>v.cpo);
-  const avg = vals.reduce((s,v)=>s+v,0)/vals.length;
-  const sd = Math.sqrt(vals.reduce((s,v)=>s+(v-avg)**2,0)/vals.length);
-  const above = mons.filter(([,v])=>v.cpo>avg);
-  let streak=0,best=0,bestEnd=0;
-  mons.forEach(([k,v],i)=>{ if(v.cpo>avg){streak++; if(streak>best){best=streak;bestEnd=i;}} else streak=0; });
-  const streakLabel = best?`${monLabel(mons[bestEnd-best+1][0])} → ${monLabel(mons[bestEnd][0])}`:"—";
-  const sortedM=[...mons].sort((a,b)=>b[1].cpo-a[1].cpo);
-  $("#cons-sub").textContent = `Measured on the ${mons.length} complete months (partial edge months excluded).`;
-  $("#cons-kpis").innerHTML = [
-    ["Active selling months", `${mons.length} / ${mons.length}`, "orders in every single month"],
-    ["Average month", fmt$(avg), `median-ish band ±${fmt$(sd)}`],
-    ["Months above average", `${above.length} of ${mons.length}`, "the rest lean on the big months"],
-    ["Volatility", (sd/avg*100).toFixed(0)+"%", "swing vs the average month"],
-    ["Best month", fmt$(sortedM[0][1].cpo), monLabel(sortedM[0][0])],
-    ["Weakest month", fmt$(sortedM[sortedM.length-1][1].cpo), monLabel(sortedM[sortedM.length-1][0])],
-    ["Best above-average streak", `${best} months`, streakLabel],
-    ["Top-10-order share", "17.1%", "of two-year sales — low concentration"],
-  ].map(([l,v,d])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num">${v}</div><div class="d">${d}</div></div>`).join("");
-  $("#cons-story").innerHTML = `<div class="lab" style="margin-bottom:8px">The verdict</div>
-  <p style="font-size:14.5px;max-width:75ch">This is a <b>seasonal, modestly growing</b> business — not a volatile one and not a whale-dependent one. You sell every single month (real consistency), but the month-to-month swing is large (±${(sd/avg*100).toFixed(0)}%) because Fall events stack revenue into Sep–Dec while Jan and Apr go quiet. The fix isn’t “work more” — it’s pre-loading the two predictable valleys with service-call and gift pipeline before they arrive.</p>`;
-}
-
 /* ---------- 7 events ---------- */
+let showAllEvents = false;
 function renderEvents(){
   const os = scoped(pool());
   const runs = eventRuns(os);
@@ -828,7 +738,10 @@ function renderEvents(){
   $("#ev-pick").innerHTML = `<option value="">All events (${runs.length})</option>` + runs.map(r=>`<option value="${r.id}">${esc(r.name)} — ${r.camp}</option>`).join("");
   if (runs.some(r=>r.id===prevSel)) $("#ev-pick").value = prevSel;
   const sel = $("#ev-pick").value;
-  const shown = sel ? runs.filter(r=>r.id===sel) : runs;
+  const shown = sel ? runs.filter(r=>r.id===sel) : (showAllEvents ? runs : runs.slice(0,15));
+  const more = $("#ev-more");
+  more.hidden = !!sel || runs.length<=15;
+  more.textContent = showAllEvents ? "Show top 15 only" : `Show all ${runs.length} events`;
   $("#ev-table").innerHTML = `<thead><tr><th>Event</th><th>Campaign</th><th>Dates</th><th>Type</th><th class="r">Booth $</th><th class="r">Service $</th><th class="r">Combined</th><th class="r">Orders</th><th class="r">CPO</th></tr></thead><tbody>`
     + shown.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.camp}</td><td class="num">${r.start.slice(5)}${r.end!==r.start?"→"+r.end.slice(5):""} ’${r.start.slice(2,4)}</td><td>${r.type}</td><td class="r num">${fmt$(r.booth.cpo)}</td><td class="r num">${r.svc.cpo?fmt$(r.svc.cpo):"—"}</td><td class="r num"><b>${fmt$(r.total.cpo)}</b></td><td class="r num">${r.total.ord}</td><td class="r num">${r.total.ord?fmt$c(r.total.cpo/r.total.ord):"—"}</td></tr>`).join("")
     + `</tbody>`;
@@ -896,7 +809,7 @@ function renderCoach(){
       <li>${D}<b>January and April crater every year</b> ($1.9k, $7.2k, $7.5k, $1.3k). ${H}Pre-book service-call weeks for those months — your service CPO says the customer base will carry them.</li>
       <li>${D}<b>Re-order average slipped</b> ($496 → $376). ${H}Possibly smaller top-up orders — worth an add-on/upsell script on re-order calls.</li>
     </ul>`],
-    ["What changed", `<p style="font-size:14.5px;max-width:78ch">${D}Growth came from <b>more orders, not bigger ones</b>: +21 orders, CPO down 4%. Service calls (+$5.2k) and off-event new customers (+$8.6k) drove the gain; business gifts (−$8.7k) nearly cancelled it. Events shifted shape — Fall softened, Spring exploded, and the booth flag mix in the raw exports changed (older event orders were keyed “New/Re-order”; this dashboard reconciles them so the comparison is honest).</p>`],
+    ["What changed", `<p style="font-size:14.5px;max-width:78ch">${D}Comparing the past 12 months against the 12 before them: growth came from <b>more orders, not bigger ones</b> — +21 orders, CPO down 4%. Service calls (+$5.2k) and off-event new customers (+$8.6k) drove the gain; business gifts (−$8.7k) nearly cancelled it. Events shifted shape — Fall softened, Spring exploded, and the booth flag mix in the raw exports changed (older event orders were keyed “New/Re-order”; this dashboard reconciles them so the comparison is honest).</p>`],
     ["What is driving the business", `<p style="font-size:14.5px;max-width:78ch">${D}Half the revenue starts at an event — and within that, <b>Fall is 57% of all event production</b>, led by El Paso Home &amp; Garden, Cielo Vista Mall, and the state-fair circuit. The other half is your customer base: new customers ($41k), service calls ($31k), re-orders ($29k), and a small number of very large business-gift orders ($28k). October is the biggest month in both years.</p>`],
     ["Next focus", `<ol class="tight" style="font-size:14.5px;padding-left:22px">
       <li><b>Install event follow-up.</b> Capture every booth lead; block follow-up calls within 48 hours of each show. Target: service revenue at 8+ events this Fall (last Fall: 4). ${H}</li>
@@ -1077,10 +990,11 @@ function renderMethod(){
 /* ---------- render orchestration ---------- */
 function renderScopedSections(){ renderTime(); renderSources(); renderTop(); renderEvents(); }
 function renderAll(){
-  renderHeader(); renderScorecard(); renderCompare(); renderFilter();
-  renderScopedSections(); renderSrcBreak(); renderConsistency(); renderCampaigns(); renderCoach(); renderMethod();
+  renderHeader(); renderScorecard(); renderFilter();
+  renderScopedSections(); renderSrcBreak(); renderCampaigns(); renderCoach(); renderMethod();
 }
 $("#time-metric").addEventListener("change", e=>{ timeMetric=e.target.value; renderTime(); });
 $("#ev-pick").addEventListener("change", renderEvents);
+$("#ev-more").addEventListener("click", ()=>{ showAllEvents = !showAllEvents; renderEvents(); });
 renderAll(); renderTracker(); csvStatus();
 </script>
