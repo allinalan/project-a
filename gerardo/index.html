@@ -1,0 +1,1031 @@
+<!-- Sales Rep Stat Tracker — Gerardo Ramirez · built from order exports Aug 2024–Aug 2026 -->
+<title>Gerardo Ramirez Stat Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#FAF9F5; --card:#FFFFFF; --card2:#F4F1E9;
+  --ink:#1F1B16; --ink2:#5C564D; --muted:#8B8579;
+  --line:#E8E4DA; --line2:#DDD8CB;
+  --amber:#B45309; --amber-soft:#F3E3CE; --blue:#2A78D6; --blue-soft:#DCE9F9;
+  --good:#0A7A2F; --bad:#C03434; --warnbg:#FBF3E4;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#151310; --card:#1E1B17; --card2:#24201A;
+    --ink:#F2EFE8; --ink2:#B7B1A4; --muted:#8B8579;
+    --line:#2E2A24; --line2:#3A352C;
+    --amber:#C9772A; --amber-soft:#3A2C1B; --blue:#3987E5; --blue-soft:#1D2C40;
+    --good:#3FB950; --bad:#E66767; --warnbg:#2A2317;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#151310; --card:#1E1B17; --card2:#24201A;
+  --ink:#F2EFE8; --ink2:#B7B1A4; --muted:#8B8579;
+  --line:#2E2A24; --line2:#3A352C;
+  --amber:#C9772A; --amber-soft:#3A2C1B; --blue:#3987E5; --blue-soft:#1D2C40;
+  --good:#3FB950; --bad:#E66767; --warnbg:#2A2317;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px 96px}
+a{color:var(--amber)}
+h1,h2,h3{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.15}
+.eyebrow{font:600 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.section{margin-top:56px;scroll-margin-top:76px}
+.section>h2{font-size:clamp(24px,4vw,32px);margin:6px 0 4px}
+.sec-sub{color:var(--ink2);max-width:68ch;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.cards{display:grid;gap:12px}
+.mono{font-family:var(--mono)}
+.lab{font:600 10.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .dn{color:var(--bad)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{font:600 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+td.r,th.r{text-align:right}
+td.num{font-size:13px}
+tbody tr:last-child td{border-bottom:none}
+.hdr{padding:34px 0 6px}
+.hdr h1{font-size:clamp(30px,6vw,46px);margin:8px 0 6px}
+.hdr .who{color:var(--ink2);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font:500 12px/1 var(--mono);border:1px solid var(--line2);border-radius:999px;padding:7px 12px;color:var(--ink2);background:var(--card)}
+.nav{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 0;margin-top:18px}
+.nav-in{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink2);border:1px solid var(--line2);border-radius:999px;padding:8px 12px;white-space:nowrap;background:var(--card)}
+.nav a:hover{color:var(--amber);border-color:var(--amber)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi .v{font-family:var(--serif);font-weight:600;font-size:clamp(20px,3vw,27px);margin-top:6px}
+.kpi .d{font:500 12px/1.4 var(--mono);margin-top:4px;color:var(--ink2)}
+.hero{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 22px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px}
+.hero .v{font-family:var(--serif);font-weight:700;font-size:clamp(38px,7vw,58px);line-height:1}
+.hero .cap{color:var(--ink2);font-size:14px}
+.filterbar{position:sticky;top:49px;z-index:30;background:var(--paper);padding:10px 0;border-bottom:1px solid var(--line);margin-top:40px}
+.filterbar .fin{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.filterbar .fin::-webkit-scrollbar{display:none}
+.fpill{font:600 11px/1 var(--mono);letter-spacing:.05em;border:1px solid var(--line2);background:var(--card);color:var(--ink2);border-radius:999px;padding:8px 13px;cursor:pointer;white-space:nowrap}
+.fpill.on{background:var(--amber);border-color:var(--amber);color:#fff}
+:root[data-theme="dark"] .fpill.on{color:#151310}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fpill.on{color:#151310}}
+.fnote{font:500 11px/1.4 var(--mono);color:var(--muted);white-space:nowrap;margin-left:auto;padding-left:10px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font:500 12px/1 var(--mono);color:var(--ink2);margin:10px 2px 0}
+.legend .k{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.badge{display:inline-block;font:700 9.5px/1 var(--mono);letter-spacing:.1em;border-radius:4px;padding:4px 6px;vertical-align:2px;margin-right:8px}
+.b-data{background:var(--amber);color:#fff}
+:root[data-theme="dark"] .b-data{color:#151310}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .b-data{color:#151310}}
+.b-hyp{border:1px solid var(--amber);color:var(--amber);background:transparent}
+.note{background:var(--warnbg);border:1px solid var(--line2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--ink2)}
+.mtr{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bad);border:1px solid var(--bad);border-radius:999px;padding:6px 10px;display:inline-block}
+ul.tight{padding-left:20px;display:grid;gap:10px}
+ul.tight li{max-width:75ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.svgwrap{width:100%}
+.svgwrap svg{display:block;width:100%;height:auto}
+.tip{position:fixed;z-index:90;pointer-events:none;background:var(--ink);color:var(--paper);font:500 12px/1.5 var(--mono);border-radius:6px;padding:7px 10px;max-width:260px;white-space:normal;opacity:0;transition:opacity .1s}
+details{border:1px solid var(--line);border-radius:8px;background:var(--card)}
+details summary{cursor:pointer;font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);padding:10px 14px;list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+details .inner{padding:0 14px 14px}
+select,input[type=number],input[type=text],input[type=week],input[type=date]{font:14px var(--sans);color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:7px;padding:8px 10px;max-width:100%}
+button.btn{font:600 12px/1 var(--mono);letter-spacing:.05em;background:var(--amber);color:#fff;border:none;border-radius:7px;padding:10px 14px;cursor:pointer}
+:root[data-theme="dark"] button.btn{color:#151310}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) button.btn{color:#151310}}
+button.btn.ghost{background:transparent;color:var(--amber);border:1px solid var(--amber)}
+button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:860px){.formgrid{grid-template-columns:repeat(2,1fr)}}
+.formgrid label{display:grid;gap:5px;font:600 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tk-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:640px){.tk-kpis{grid-template-columns:repeat(2,1fr)}}
+.foot{margin-top:64px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font:500 12px/1.7 var(--mono)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header class="hdr">
+  <div class="eyebrow">Sales Rep Stat Tracker · All in Alan</div>
+  <h1>Gerardo Ramirez</h1>
+  <div class="who" id="who"></div>
+  <div class="chips" id="hdrchips"></div>
+</header>
+
+<nav class="nav" aria-label="Sections"><div class="nav-in">
+  <a href="#scorecard">Scorecard</a><a href="#compare">12-Mo vs 12-Mo</a><a href="#time">Over Time</a>
+  <a href="#sources">Sources</a><a href="#orders10">Largest Orders</a><a href="#consistency">Consistency</a>
+  <a href="#events">Events</a><a href="#campaigns">Campaigns</a><a href="#coach">Coaching</a>
+  <a href="#tracker">Weekly Tracker</a><a href="#method">Data Rules</a>
+</div></nav>
+
+<!-- 1 · EXECUTIVE SCORECARD -->
+<section class="section" id="scorecard">
+  <div class="eyebrow">01 · Executive Scorecard</div>
+  <h2>The whole business at a glance</h2>
+  <p class="sec-sub" id="scorecard-sub"></p>
+  <div class="kpis" id="kpi-grid"></div>
+</section>
+
+<!-- 2 · CURRENT VS PREVIOUS -->
+<section class="section" id="compare">
+  <div class="eyebrow">02 · Current vs Previous 12 Months</div>
+  <h2>Are you improving?</h2>
+  <p class="sec-sub" id="compare-sub"></p>
+  <div class="card scroll"><table id="cmp-table"></table></div>
+  <div style="height:12px"></div>
+  <div class="card" id="cmp-story"></div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filterbar" id="filterbar"><div class="fin" id="fpills"></div></div>
+
+<!-- 3 · SALES OVER TIME -->
+<section class="section" id="time">
+  <div class="eyebrow">03 · Sales Over Time</div>
+  <h2>Month by month</h2>
+  <p class="sec-sub">Every order booked in the month it was placed — the Ahub late-order rule, so nothing is counted twice.</p>
+  <div class="card">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
+      <div class="lab" id="time-title">Monthly sales</div>
+      <select id="time-metric" aria-label="Chart metric">
+        <option value="cpo">Sales ($)</option><option value="ord">Orders</option><option value="avg">CPO (avg order)</option>
+      </select>
+    </div>
+    <div class="svgwrap" id="time-chart" style="margin-top:12px"></div>
+    <p class="lab" style="margin-top:10px;letter-spacing:.06em;text-transform:none" id="time-foot"></p>
+  </div>
+  <div style="height:12px"></div>
+  <details><summary>View as table</summary><div class="inner scroll"><table id="time-table"></table></div></details>
+  <div style="height:12px"></div>
+  <div class="card" id="time-story"></div>
+</section>
+
+<!-- 4 · SOURCES -->
+<section class="section" id="sources">
+  <div class="eyebrow">04 · Where the Business Comes From</div>
+  <h2>Sales sources</h2>
+  <p class="sec-sub">Orders are bucketed by their order-type flag under the Ahub rules — an order carrying an event reference belongs to that event; everything else follows its flag.</p>
+  <div class="card scroll"><table id="src-table"></table></div>
+  <div style="height:12px"></div>
+  <div class="two">
+    <div class="card">
+      <div class="lab" id="mix-title">Business mix — share of sales</div>
+      <div class="svgwrap" id="mix-chart" style="margin-top:12px"></div>
+    </div>
+    <div class="card" id="src-story"></div>
+  </div>
+</section>
+
+<!-- 5 · LARGEST ORDERS -->
+<section class="section" id="orders10">
+  <div class="eyebrow">05 · Largest Orders</div>
+  <h2>The big ones</h2>
+  <p class="sec-sub" id="top-sub"></p>
+  <div class="card scroll"><table id="top-table"></table></div>
+  <div style="height:12px"></div>
+  <div class="card" id="top-story"></div>
+</section>
+
+<!-- 6 · CONSISTENCY -->
+<section class="section" id="consistency">
+  <div class="eyebrow">06 · Business Consistency</div>
+  <h2>How steady is the machine?</h2>
+  <p class="sec-sub" id="cons-sub"></p>
+  <div class="kpis" id="cons-kpis"></div>
+  <div style="height:12px"></div>
+  <div class="card" id="cons-story"></div>
+</section>
+
+<!-- 7 · EVENTS -->
+<section class="section" id="events">
+  <div class="eyebrow">07 · Events Business</div>
+  <h2>What your events really produce</h2>
+  <p class="sec-sub">Behind-the-booth sales are orders written on an event code. Event Service sales are service orders sourced by the event (Event Service Call / Free Look leads) — they count once in totals, and the event gets credit here, per the Ahub reconciliation rules.</p>
+  <div class="kpis" id="ev-kpis"></div>
+  <div style="height:12px"></div>
+  <div class="card">
+    <div class="lab">Behind the booth vs event service — share of event production</div>
+    <div class="svgwrap" id="ev-split" style="margin-top:12px"></div>
+    <div class="legend"><span class="k"><span class="sw" style="background:var(--amber)"></span>Behind the Booth</span><span class="k"><span class="sw" style="background:var(--blue)"></span>Event Service</span></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="card">
+    <div class="lab">Top events by combined production</div>
+    <div class="svgwrap" id="ev-chart" style="margin-top:12px"></div>
+    <div class="legend"><span class="k"><span class="sw" style="background:var(--amber)"></span>Behind the Booth</span><span class="k"><span class="sw" style="background:var(--blue)"></span>Event Service</span></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="card">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="lab">Every event, ranked by combined sales</div>
+      <select id="ev-pick" aria-label="Jump to a specific event"></select>
+    </div>
+    <div class="scroll"><table id="ev-table"></table></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="card" id="ev-story"></div>
+</section>
+
+<!-- 8 · CAMPAIGNS -->
+<section class="section" id="campaigns">
+  <div class="eyebrow">08 · Campaign Analysis</div>
+  <h2>Spring · Summer · Fall</h2>
+  <p class="sec-sub">Ahub campaign windows: Spring = Jan–Apr (Campaign I), Summer = May–Aug (Campaign II), Fall = Sep–Dec (Campaign III). Event production only — booth plus event-service sales.</p>
+  <div class="card">
+    <div class="lab">Event production by campaign</div>
+    <div class="svgwrap" id="camp-chart" style="margin-top:12px"></div>
+    <div class="legend"><span class="k"><span class="sw" style="background:var(--amber)"></span>Behind the Booth</span><span class="k"><span class="sw" style="background:var(--blue)"></span>Event Service</span></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="card scroll"><table id="camp-table"></table></div>
+  <div style="height:12px"></div>
+  <h3 style="font-size:20px;margin:18px 0 10px">Same campaign, year over year</h3>
+  <div class="cards" id="camp-compare"></div>
+</section>
+
+<!-- 9 · COACHING -->
+<section class="section" id="coach">
+  <div class="eyebrow">09 · Coaching Analysis</div>
+  <h2>What your business is telling us</h2>
+  <p class="sec-sub"><span class="badge b-data">DATA</span>comes straight from your orders. <span class="badge b-hyp">HYPOTHESIS</span>is a coaching read — worth testing, not yet proven.</p>
+  <div class="cards" id="coach-cards"></div>
+</section>
+
+<!-- 10 · TRACKER -->
+<section class="section" id="tracker">
+  <div class="eyebrow">10 · Metrics We Need to Start Tracking</div>
+  <h2>Weekly stat tracker</h2>
+  <p class="sec-sub">Order history can’t tell us closing %, completion %, appointments, calls, contacts, referral asks, or no-shows — those need <span class="mtr" style="font-size:10px">Manual Tracking Required</span> &nbsp;Log a week below; everything saves in this browser automatically.</p>
+  <div class="card">
+    <div class="lab" style="margin-bottom:10px">Add / edit a week</div>
+    <form id="wk-form" class="formgrid">
+      <label>Week starting<input type="date" name="wk" required></label>
+      <label>Calls / contacts<input type="number" name="calls" min="0" inputmode="numeric" placeholder="—"></label>
+      <label>Appts scheduled<input type="number" name="sched" min="0" inputmode="numeric" placeholder="—"></label>
+      <label>Appts completed<input type="number" name="comp" min="0" inputmode="numeric" placeholder="—"></label>
+      <label>Orders<input type="number" name="orders" min="0" inputmode="numeric" placeholder="—"></label>
+      <label>Sales ($)<input type="number" name="sales" min="0" step="0.01" inputmode="decimal" placeholder="—"></label>
+      <label>Referrals asked<input type="number" name="refAsk" min="0" inputmode="numeric" placeholder="—"></label>
+      <label>Referrals received<input type="number" name="refGot" min="0" inputmode="numeric" placeholder="—"></label>
+      <label style="grid-column:1/-1">Notes<input type="text" name="notes" maxlength="240" placeholder="What happened this week?"></label>
+      <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" type="submit">Save week</button>
+        <button class="btn ghost" type="button" id="wk-export">Export data</button>
+        <button class="btn ghost" type="button" id="wk-import-btn">Import data</button>
+        <input type="file" id="wk-import" accept=".json" hidden>
+      </div>
+    </form>
+  </div>
+  <div style="height:12px"></div>
+  <div class="tk-kpis" id="tk-kpis"></div>
+  <div style="height:12px"></div>
+  <div class="card scroll"><table id="wk-table"></table></div>
+</section>
+
+<!-- 11 · METHOD -->
+<section class="section" id="method">
+  <div class="eyebrow">11 · Data & Rules</div>
+  <h2>How the numbers are built</h2>
+  <div class="cards">
+    <div class="card" id="method-card"></div>
+    <div class="card">
+      <div class="lab" style="margin-bottom:8px">Add a future order export (CSV)</div>
+      <p style="font-size:13.5px;color:var(--ink2);max-width:70ch">Drop in the same order-history export as a CSV (save the XLSX as CSV first). It’s processed entirely in this browser — nothing is uploaded anywhere. New orders join “All data” and the monthly view; duplicates are skipped by order number; the same exclusion rules apply automatically.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+        <button class="btn ghost" type="button" id="csv-btn">Choose CSV file</button>
+        <button class="btn danger" type="button" id="csv-clear" hidden>Remove uploaded orders</button>
+        <span class="lab" id="csv-status" style="text-transform:none;letter-spacing:.04em"></span>
+      </div>
+      <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+    </div>
+  </div>
+</section>
+
+<div class="foot" id="foot"></div>
+</div>
+<div class="tip" id="tip" role="status"></div>
+
+<script>
+"use strict";
+const DATA = {"meta":{"rep":"Gerardo Ramirez","generated":"2026-08-19","curStart":"2025-08-20","curEnd":"2026-08-18","prevStart":"2024-08-19","prevEnd":"2025-08-09","gapNote":"No export coverage Aug 10-19, 2025 (between the two source files).","excluded":{"self_zero":117,"cancelled":2}},"rsd":{"source":"RSD Events Team dashboard (data through Campaign 1, 2026)","career_cpo":729425.5,"contract":"2019-03-23","title":"CSP","office":"7599 - Scottsdale","shifts":{"2024":{"shifts":42,"cpo":67405.0,"avg":1604.88},"2025":{"shifts":37,"cpo":51428.0,"avg":1389.95},"2026":{"shifts":11,"cpo":20743.0,"avg":1885.73,"partial":true}},"c1_total_sales":{"2024":41184.0,"2025":24917.0,"2026":36834.0}},"orders":[{"i":"72671760","d":"2024-08-19","c":299.0,"f":"New","t":"REG","e":"","en":""},{"i":"72672073","d":"2024-08-19","c":409.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72673246","d":"2024-08-21","c":1182.0,"f":"New","t":"BIZ","e":"","en":""},{"i":"72673253","d":"2024-08-21","c":1836.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"72677003","d":"2024-08-24","c":1144.0,"f":"Re-order","t":"REG","e":"00071120","en":"El-Zaribah Cornfest & Arts & Crafts Show"},{"i":"72677035","d":"2024-08-24","c":902.0,"f":"New","t":"REG","e":"00071120","en":"El-Zaribah Cornfest & Arts & Crafts Show"},{"i":"72677682","d":"2024-08-25","c":1200.0,"f":"New","t":"REG","e":"00071120","en":"El-Zaribah Cornfest & Arts & Crafts Show"},{"i":"72683379","d":"2024-08-31","c":81.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72683684","d":"2024-08-31","c":896.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72684361","d":"2024-09-01","c":972.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686013","d":"2024-09-02","c":305.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686033","d":"2024-09-02","c":404.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686049","d":"2024-09-02","c":409.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686053","d":"2024-09-02","c":104.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686147","d":"2024-09-02","c":1238.0,"f":"New","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72686521","d":"2024-09-02","c":1618.0,"f":"Re-order","t":"REG","e":"00074396","en":"Hatch Chile Festival"},{"i":"72687664","d":"2024-09-04","c":257.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72693370","d":"2024-09-10","c":1372.0,"f":"New","t":"REG","e":"","en":""},{"i":"72693937","d":"2024-09-11","c":283.0,"f":"New","t":"REG","e":"","en":""},{"i":"72698718","d":"2024-09-16","c":849.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72699012","d":"2024-09-16","c":585.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72702739","d":"2024-09-20","c":194.0,"f":"New","t":"REG","e":"","en":""},{"i":"72706036","d":"2024-09-23","c":861.0,"f":"New","t":"REG","e":"","en":""},{"i":"72712171","d":"2024-09-29","c":156.0,"f":"New","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712173","d":"2024-09-29","c":285.0,"f":"New","t":"REG","e":"","en":""},{"i":"72712180","d":"2024-09-29","c":130.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712192","d":"2024-09-29","c":439.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712198","d":"2024-09-29","c":195.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712203","d":"2024-09-29","c":617.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712209","d":"2024-09-29","c":403.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712215","d":"2024-09-29","c":1352.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712770","d":"2024-09-30","c":370.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72712890","d":"2024-09-30","c":543.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72713117","d":"2024-09-30","c":486.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072117","en":"Southern New Mexico State Fair & Rodeo"},{"i":"72716307","d":"2024-10-04","c":1023.0,"f":"New","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72716486","d":"2024-10-04","c":116.0,"f":"New","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72718754","d":"2024-10-06","c":4409.0,"f":"New","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72718857","d":"2024-10-06","c":156.0,"f":"New","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72718917","d":"2024-10-06","c":144.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719266","d":"2024-10-06","c":1000.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719269","d":"2024-10-06","c":3426.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719271","d":"2024-10-07","c":409.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719272","d":"2024-10-07","c":330.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719273","d":"2024-10-07","c":229.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719274","d":"2024-10-07","c":52.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719458","d":"2024-10-07","c":211.0,"f":"Service Call","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719538","d":"2024-10-07","c":221.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72719853","d":"2024-10-07","c":110.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72720057","d":"2024-10-07","c":94.0,"f":"Booth Sale/New Customer","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72720473","d":"2024-10-08","c":177.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72721985","d":"2024-10-10","c":547.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00072519","en":"El Paso Home & Garden Show"},{"i":"72724221","d":"2024-10-12","c":3457.0,"f":"Booth Sale/New Customer","t":"REG","e":"00075708","en":"Patagonia Fall Festival"},{"i":"72724232","d":"2024-10-12","c":201.0,"f":"Booth Sale/New Customer","t":"REG","e":"00075708","en":"Patagonia Fall Festival"},{"i":"72724246","d":"2024-10-12","c":415.0,"f":"Booth Sale/New Customer","t":"REG","e":"00075708","en":"Patagonia Fall Festival"},{"i":"72724251","d":"2024-10-12","c":110.0,"f":"Booth Sale/New Customer","t":"REG","e":"00075708","en":"Patagonia Fall Festival"},{"i":"72724255","d":"2024-10-12","c":262.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72725541","d":"2024-10-14","c":120.0,"f":"New","t":"REG","e":"","en":""},{"i":"72725552","d":"2024-10-14","c":50.25,"f":"New","t":"REG","e":"","en":""},{"i":"72731493","d":"2024-10-20","c":1920.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72734658","d":"2024-10-24","c":29.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72736685","d":"2024-10-26","c":537.0,"f":"New","t":"REG","e":"00076466","en":"Bullhead City Balloon Festival"},{"i":"72737255","d":"2024-10-27","c":233.0,"f":"New","t":"REG","e":"00076466","en":"Bullhead City Balloon Festival"},{"i":"72737311","d":"2024-10-27","c":1254.0,"f":"New","t":"REG","e":"00076466","en":"Bullhead City Balloon Festival"},{"i":"72737317","d":"2024-10-27","c":2437.0,"f":"New","t":"REG","e":"00076466","en":"Bullhead City Balloon Festival"},{"i":"72739536","d":"2024-10-30","c":112.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72741882","d":"2024-11-02","c":605.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72743458","d":"2024-11-03","c":170.0,"f":"New","t":"REG","e":"","en":""},{"i":"72745892","d":"2024-11-06","c":8715.0,"f":"New","t":"BIZ","e":"","en":""},{"i":"72748924","d":"2024-11-09","c":99.0,"f":"New","t":"REG","e":"00077567","en":"Four Corner States Bluegrass Festival"},{"i":"72749023","d":"2024-11-09","c":573.0,"f":"New","t":"REG","e":"00077567","en":"Four Corner States Bluegrass Festival"},{"i":"72749091","d":"2024-11-09","c":200.0,"f":"New","t":"REG","e":"00077567","en":"Four Corner States Bluegrass Festival"},{"i":"72749984","d":"2024-11-10","c":99.0,"f":"New","t":"REG","e":"00077567","en":"Four Corner States Bluegrass Festival"},{"i":"72750025","d":"2024-11-10","c":325.5,"f":"New","t":"REG","e":"00077567","en":"Four Corner States Bluegrass Festival"},{"i":"72755338","d":"2024-11-15","c":232.0,"f":"New","t":"REG","e":"","en":""},{"i":"72756903","d":"2024-11-16","c":383.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72757927","d":"2024-11-17","c":93.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00079954","en":"Lake Havasu Service & Sales Event"},{"i":"72758077","d":"2024-11-17","c":126.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72758794","d":"2024-11-18","c":207.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72759016","d":"2024-11-18","c":926.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72759496","d":"2024-11-18","c":225.0,"f":"New","t":"REG","e":"","en":""},{"i":"72763469","d":"2024-11-22","c":312.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00073321","en":"A Christmas Fair"},{"i":"72764836","d":"2024-11-23","c":265.0,"f":"Booth Sale/New Customer","t":"REG","e":"00073321","en":"A Christmas Fair"},{"i":"72767001","d":"2024-11-25","c":0.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00080832","en":"El Paso Service & Sales Event"},{"i":"72767131","d":"2024-11-25","c":103.0,"f":"Re-order","t":"REG","e":"00080832","en":"El Paso Service & Sales Event"},{"i":"72767160","d":"2024-11-25","c":89.25,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00080832","en":"El Paso Service & Sales Event"},{"i":"72767269","d":"2024-11-25","c":1821.75,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00080832","en":"El Paso Service & Sales Event"},{"i":"72768548","d":"2024-11-26","c":74.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72775154","d":"2024-12-02","c":213.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72775469","d":"2024-12-02","c":983.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72775508","d":"2024-12-02","c":902.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"94194380","d":"2024-12-03","c":443.0,"f":"Other","t":"REG","e":"","en":""},{"i":"72780621","d":"2024-12-06","c":119.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72780694","d":"2024-12-06","c":637.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72782595","d":"2024-12-07","c":286.5,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72782840","d":"2024-12-07","c":130.0,"f":"Re-order","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72782858","d":"2024-12-07","c":130.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72783001","d":"2024-12-07","c":439.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72783041","d":"2024-12-07","c":89.25,"f":"New","t":"REG","e":"","en":""},{"i":"72783836","d":"2024-12-08","c":256.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72783882","d":"2024-12-08","c":156.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72784076","d":"2024-12-08","c":1318.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72784519","d":"2024-12-08","c":420.0,"f":"New","t":"REG","e":"00077148","en":"Tempe Fall Festival of the Arts"},{"i":"72785847","d":"2024-12-09","c":303.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00080878","en":"Chandler Service & Sales Event"},{"i":"72786826","d":"2024-12-09","c":2286.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72787248","d":"2024-12-10","c":229.25,"f":"Re-order","t":"REG","e":"00079679","en":"Cielo Vista Mall"},{"i":"94205254","d":"2024-12-10","c":131.0,"f":"Other","t":"REG","e":"","en":""},{"i":"72788320","d":"2024-12-10","c":172.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72790857","d":"2024-12-12","c":216.0,"f":"New","t":"REG","e":"00079679","en":"Cielo Vista Mall"},{"i":"72790920","d":"2024-12-12","c":1115.0,"f":"New","t":"REG","e":"00079679","en":"Cielo Vista Mall"},{"i":"72796410","d":"2024-12-15","c":892.0,"f":"New","t":"REG","e":"00079679","en":"Cielo Vista Mall"},{"i":"72798109","d":"2024-12-16","c":454.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72799557","d":"2024-12-17","c":222.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72803455","d":"2024-12-19","c":251.0,"f":"New","t":"REG","e":"","en":""},{"i":"72809024","d":"2024-12-22","c":192.0,"f":"Booth Sale/New Customer","t":"REG","e":"00079679","en":"Cielo Vista Mall"},{"i":"72811844","d":"2024-12-25","c":156.0,"f":"Booth Sale/Customer Reorder","t":"FSC","e":"00079679","en":"Cielo Vista Mall"},{"i":"72818120","d":"2025-01-02","c":199.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72827098","d":"2025-01-11","c":234.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72829749","d":"2025-01-13","c":130.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00082073","en":"Lake Havasu Service & Sales Event - Jan"},{"i":"72829864","d":"2025-01-13","c":261.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00068960","en":"Maricopa County Home & Garden Show"},{"i":"72831152","d":"2025-01-14","c":116.0,"f":"New","t":"REG","e":"","en":""},{"i":"72834036","d":"2025-01-18","c":77.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72834422","d":"2025-01-18","c":20.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72835010","d":"2025-01-18","c":387.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72840853","d":"2025-01-25","c":270.0,"f":"New","t":"REG","e":"","en":""},{"i":"72842667","d":"2025-01-27","c":111.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"94231512","d":"2025-01-31","c":156.0,"f":"Other","t":"REG","e":"","en":""},{"i":"72847604","d":"2025-02-01","c":99.0,"f":"New","t":"REG","e":"00076804","en":"Waterfront Fine Art & Wine Festival"},{"i":"72847826","d":"2025-02-01","c":154.0,"f":"New","t":"REG","e":"00076804","en":"Waterfront Fine Art & Wine Festival"},{"i":"94231917","d":"2025-02-02","c":241.0,"f":"Other","t":"REG","e":"","en":""},{"i":"72850186","d":"2025-02-03","c":368.0,"f":"New","t":"REG","e":"00076804","en":"Waterfront Fine Art & Wine Festival"},{"i":"72850204","d":"2025-02-03","c":379.0,"f":"New","t":"REG","e":"00076804","en":"Waterfront Fine Art & Wine Festival"},{"i":"72851108","d":"2025-02-05","c":46.0,"f":"New","t":"REG","e":"","en":""},{"i":"72854199","d":"2025-02-08","c":1617.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854216","d":"2025-02-08","c":489.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854226","d":"2025-02-08","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854230","d":"2025-02-08","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854233","d":"2025-02-08","c":339.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854245","d":"2025-02-08","c":114.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854248","d":"2025-02-08","c":154.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854250","d":"2025-02-08","c":102.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854251","d":"2025-02-08","c":102.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854252","d":"2025-02-08","c":161.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72854731","d":"2025-02-09","c":434.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077151","en":"Tubac Festival of the Arts"},{"i":"72856573","d":"2025-02-11","c":3676.0,"f":"New","t":"REG","e":"","en":""},{"i":"72857935","d":"2025-02-14","c":304.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860523","d":"2025-02-16","c":302.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860749","d":"2025-02-16","c":193.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860758","d":"2025-02-16","c":255.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860773","d":"2025-02-16","c":134.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860780","d":"2025-02-16","c":405.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72860802","d":"2025-02-16","c":256.0,"f":"Booth Sale/New Customer","t":"REG","e":"00077621","en":"Gold Rush Days"},{"i":"72861390","d":"2025-02-17","c":164.0,"f":"New","t":"REG","e":"","en":""},{"i":"72861856","d":"2025-02-17","c":233.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72864655","d":"2025-02-21","c":422.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00077601","en":"Fountain Hills Festival of Fine Arts & Crafts"},{"i":"72866820","d":"2025-02-23","c":226.0,"f":"Re-order","t":"REG","e":"00077194","en":"Scottsdale Arabian Horse Show"},{"i":"72869946","d":"2025-02-27","c":0.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72870965","d":"2025-02-28","c":412.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72871108","d":"2025-03-01","c":218.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72871289","d":"2025-03-01","c":279.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72879022","d":"2025-03-08","c":1009.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72879023","d":"2025-03-08","c":91.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72880356","d":"2025-03-10","c":197.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72884921","d":"2025-03-15","c":369.0,"f":"Booth Sale/New Customer","t":"REG","e":"00076807","en":"Spring Carefree Fine Art & Wine Festival"},{"i":"72888107","d":"2025-03-19","c":346.0,"f":"Service Call","t":"REG","e":"00084375","en":"North Scottsdale Service & Sales Event"},{"i":"72888217","d":"2025-03-19","c":367.0,"f":"Service Call","t":"REG","e":"00084375","en":"North Scottsdale Service & Sales Event"},{"i":"72888287","d":"2025-03-19","c":396.0,"f":"Service Call","t":"REG","e":"00084375","en":"North Scottsdale Service & Sales Event"},{"i":"72889749","d":"2025-03-21","c":544.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72901083","d":"2025-04-05","c":239.0,"f":"New","t":"REG","e":"","en":""},{"i":"72902174","d":"2025-04-07","c":163.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72902372","d":"2025-04-07","c":249.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72903724","d":"2025-04-10","c":830.0,"f":"New","t":"REG","e":"","en":""},{"i":"72906319","d":"2025-04-14","c":370.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72908534","d":"2025-04-17","c":138.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72908895","d":"2025-04-18","c":675.0,"f":"New","t":"REG","e":"","en":""},{"i":"72908902","d":"2025-04-18","c":306.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72909006","d":"2025-04-18","c":2021.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72912440","d":"2025-04-25","c":239.0,"f":"New","t":"BIZ","e":"","en":""},{"i":"72913189","d":"2025-04-26","c":1375.0,"f":"Service Call","t":"BIZ","e":"","en":""},{"i":"72913347","d":"2025-04-26","c":361.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72915474","d":"2025-04-28","c":237.0,"f":"New","t":"REG","e":"","en":""},{"i":"72924156","d":"2025-05-10","c":2365.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72926659","d":"2025-05-13","c":685.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"72929150","d":"2025-05-16","c":80.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72929255","d":"2025-05-16","c":643.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72929263","d":"2025-05-16","c":449.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72930387","d":"2025-05-17","c":642.0,"f":"New","t":"REG","e":"","en":""},{"i":"72930524","d":"2025-05-17","c":293.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72930552","d":"2025-05-17","c":70.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72930665","d":"2025-05-17","c":2376.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72930775","d":"2025-05-17","c":541.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72930822","d":"2025-05-17","c":60.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72932093","d":"2025-05-18","c":306.0,"f":"New","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72932208","d":"2025-05-18","c":184.0,"f":"Re-order","t":"REG","e":"00073055","en":"Maricopa County Home & Flower Show"},{"i":"72932380","d":"2025-05-18","c":161.0,"f":"New","t":"REG","e":"","en":""},{"i":"72941291","d":"2025-05-25","c":1061.0,"f":"New","t":"REG","e":"","en":""},{"i":"72942912","d":"2025-05-26","c":167.0,"f":"New","t":"REG","e":"","en":""},{"i":"72943671","d":"2025-05-27","c":304.0,"f":"New","t":"REG","e":"","en":""},{"i":"72955107","d":"2025-06-03","c":397.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72959499","d":"2025-06-06","c":327.0,"f":"New","t":"REG","e":"","en":""},{"i":"72968089","d":"2025-06-10","c":1465.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72974210","d":"2025-06-14","c":273.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72977297","d":"2025-06-16","c":131.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72977309","d":"2025-06-16","c":289.0,"f":"Re-order","t":"RLT","e":"","en":""},{"i":"72980253","d":"2025-06-17","c":139.0,"f":"New","t":"REG","e":"","en":""},{"i":"72980350","d":"2025-06-17","c":621.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72986647","d":"2025-06-21","c":411.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72990372","d":"2025-06-23","c":114.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72997654","d":"2025-06-27","c":343.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72998357","d":"2025-06-28","c":447.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72998763","d":"2025-06-28","c":215.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"72999115","d":"2025-06-28","c":126.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"72999773","d":"2025-06-28","c":609.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73000793","d":"2025-06-29","c":737.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"73001224","d":"2025-06-29","c":233.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73005495","d":"2025-07-02","c":251.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73010427","d":"2025-07-06","c":3614.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"73026589","d":"2025-07-16","c":3516.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089195","en":"Family RV Association"},{"i":"73028046","d":"2025-07-17","c":543.0,"f":"New","t":"REG","e":"","en":""},{"i":"73029823","d":"2025-07-18","c":443.0,"f":"New","t":"REG","e":"","en":""},{"i":"73031398","d":"2025-07-19","c":198.0,"f":"New","t":"REG","e":"","en":""},{"i":"73031568","d":"2025-07-19","c":107.0,"f":"New","t":"REG","e":"","en":""},{"i":"73042579","d":"2025-07-24","c":60.0,"f":"New","t":"REG","e":"","en":""},{"i":"73044771","d":"2025-07-25","c":366.0,"f":"New","t":"REG","e":"","en":""},{"i":"73044867","d":"2025-07-25","c":141.0,"f":"New","t":"REG","e":"","en":""},{"i":"73048933","d":"2025-07-28","c":215.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73050147","d":"2025-07-28","c":11.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73050945","d":"2025-07-28","c":544.0,"f":"New","t":"REG","e":"","en":""},{"i":"73069597","d":"2025-08-09","c":439.0,"f":"New","t":"REG","e":"","en":""},{"i":"73080706","d":"2025-08-20","c":290.0,"f":"New","t":"REG","e":"","en":""},{"i":"73081463","d":"2025-08-21","c":187.0,"f":"New","t":"REG","e":"","en":""},{"i":"73086300","d":"2025-08-25","c":364.0,"f":"New","t":"REG","e":"00086676","en":"Great American Duck Race"},{"i":"73086305","d":"2025-08-25","c":936.0,"f":"Re-order","t":"REG","e":"00086676","en":"Great American Duck Race"},{"i":"73086845","d":"2025-08-26","c":135.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73092092","d":"2025-08-31","c":1667.0,"f":"Re-order","t":"REG","e":"00086415","en":"Hatch Chile Festival"},{"i":"73092096","d":"2025-08-31","c":237.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73092676","d":"2025-08-31","c":1039.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73092679","d":"2025-08-31","c":1424.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73093281","d":"2025-09-01","c":2061.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73093573","d":"2025-09-01","c":400.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73093664","d":"2025-09-01","c":113.0,"f":"Re-order","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73093765","d":"2025-09-01","c":391.0,"f":"Re-order","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73094067","d":"2025-09-01","c":631.0,"f":"Re-order","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73094322","d":"2025-09-02","c":538.0,"f":"New","t":"REG","e":"00086674","en":"Las Cruces Harvest Wine & Music Festival"},{"i":"73094699","d":"2025-09-02","c":534.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73095488","d":"2025-09-04","c":125.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73096269","d":"2025-09-05","c":418.0,"f":"New","t":"REG","e":"","en":""},{"i":"73102067","d":"2025-09-11","c":904.0,"f":"New","t":"REG","e":"","en":""},{"i":"73102413","d":"2025-09-12","c":2521.0,"f":"New","t":"REG","e":"","en":""},{"i":"73112893","d":"2025-09-22","c":345.0,"f":"New","t":"REG","e":"","en":""},{"i":"73114844","d":"2025-09-24","c":53.25,"f":"New","t":"REG","e":"","en":""},{"i":"73117484","d":"2025-09-27","c":134.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117489","d":"2025-09-27","c":227.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117734","d":"2025-09-27","c":336.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117781","d":"2025-09-27","c":427.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117807","d":"2025-09-27","c":520.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117870","d":"2025-09-27","c":408.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117905","d":"2025-09-27","c":440.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73117916","d":"2025-09-27","c":440.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73119107","d":"2025-09-28","c":247.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73119269","d":"2025-09-28","c":788.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73119585","d":"2025-09-29","c":679.0,"f":"Booth Sale/New Customer","t":"REG","e":"00078800","en":"Maricopa County Home & Garden Show"},{"i":"73120079","d":"2025-09-29","c":80.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73120465","d":"2025-09-29","c":236.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73122704","d":"2025-10-02","c":1109.0,"f":"New","t":"REG","e":"","en":""},{"i":"73122840","d":"2025-10-02","c":1815.0,"f":"New","t":"REG","e":"","en":""},{"i":"73123657","d":"2025-10-03","c":652.0,"f":"New","t":"REG","e":"","en":""},{"i":"73124561","d":"2025-10-04","c":320.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00081207","en":"Southern Arizona Home Show"},{"i":"73125210","d":"2025-10-04","c":77.0,"f":"Booth Sale/New Customer","t":"REG","e":"00079500","en":"Eastern New Mexico State Fair"},{"i":"73125518","d":"2025-10-04","c":2471.0,"f":"New","t":"REG","e":"","en":""},{"i":"73125556","d":"2025-10-04","c":916.0,"f":"New","t":"REG","e":"","en":""},{"i":"73127343","d":"2025-10-06","c":1039.0,"f":"New","t":"REG","e":"","en":""},{"i":"73129230","d":"2025-10-08","c":396.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73129351","d":"2025-10-08","c":586.0,"f":"New","t":"REG","e":"","en":""},{"i":"73129387","d":"2025-10-08","c":2130.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73129404","d":"2025-10-08","c":7600.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"73130280","d":"2025-10-09","c":178.0,"f":"New","t":"REG","e":"","en":""},{"i":"73131140","d":"2025-10-10","c":2147.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089988","en":"Graham County Fair"},{"i":"73131436","d":"2025-10-11","c":113.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00088140","en":"Patagonia Fall Festival"},{"i":"73131462","d":"2025-10-11","c":93.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089988","en":"Graham County Fair"},{"i":"73132078","d":"2025-10-11","c":158.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089988","en":"Graham County Fair"},{"i":"73132256","d":"2025-10-11","c":125.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089988","en":"Graham County Fair"},{"i":"73132430","d":"2025-10-11","c":641.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089988","en":"Graham County Fair"},{"i":"73133426","d":"2025-10-13","c":387.0,"f":"New","t":"REG","e":"","en":""},{"i":"73143899","d":"2025-10-24","c":102.0,"f":"New","t":"REG","e":"","en":""},{"i":"73143981","d":"2025-10-24","c":113.0,"f":"New","t":"REG","e":"","en":""},{"i":"73143984","d":"2025-10-24","c":92.25,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73144386","d":"2025-10-25","c":441.0,"f":"New","t":"REG","e":"","en":""},{"i":"73144423","d":"2025-10-25","c":509.0,"f":"New","t":"REG","e":"","en":""},{"i":"73144585","d":"2025-10-25","c":387.0,"f":"New","t":"REG","e":"","en":""},{"i":"73145608","d":"2025-10-26","c":178.0,"f":"New","t":"REG","e":"","en":""},{"i":"73145617","d":"2025-10-26","c":102.0,"f":"New","t":"REG","e":"","en":""},{"i":"73146585","d":"2025-10-27","c":233.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73149201","d":"2025-10-31","c":138.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73149366","d":"2025-10-31","c":287.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73149842","d":"2025-11-01","c":102.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73149939","d":"2025-11-01","c":80.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73150062","d":"2025-11-01","c":47.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73150108","d":"2025-11-01","c":74.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73150182","d":"2025-11-01","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73150895","d":"2025-11-02","c":2061.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73151664","d":"2025-11-03","c":1333.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73151699","d":"2025-11-03","c":92.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73151707","d":"2025-11-03","c":74.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73151719","d":"2025-11-03","c":100.5,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73152185","d":"2025-11-03","c":153.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73152233","d":"2025-11-03","c":113.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73152342","d":"2025-11-03","c":102.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00089095","en":"A Christmas Fair"},{"i":"73154515","d":"2025-11-06","c":102.0,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73154526","d":"2025-11-06","c":133.5,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73154550","d":"2025-11-06","c":238.0,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73154928","d":"2025-11-06","c":257.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155309","d":"2025-11-07","c":205.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155342","d":"2025-11-07","c":154.0,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155355","d":"2025-11-07","c":134.0,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155514","d":"2025-11-07","c":92.25,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155533","d":"2025-11-07","c":113.0,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73155878","d":"2025-11-07","c":166.5,"f":"Booth Sale/New Customer","t":"REG","e":"00082311","en":"Quilt, Craft & Sewing Festival - Tucson"},{"i":"73156806","d":"2025-11-08","c":355.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73160238","d":"2025-11-11","c":189.75,"f":"New","t":"REG","e":"","en":""},{"i":"73160458","d":"2025-11-11","c":310.0,"f":"New","t":"REG","e":"","en":""},{"i":"73162195","d":"2025-11-13","c":146.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73165275","d":"2025-11-16","c":353.0,"f":"New","t":"REG","e":"","en":""},{"i":"73166495","d":"2025-11-17","c":277.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73178259","d":"2025-11-28","c":161.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089978","en":"Scottsdale Sparkle Black Friday Weekend"},{"i":"73180321","d":"2025-11-29","c":101.25,"f":"Booth Sale/New Customer","t":"REG","e":"00089978","en":"Scottsdale Sparkle Black Friday Weekend"},{"i":"73189114","d":"2025-12-06","c":131.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73189136","d":"2025-12-06","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73189492","d":"2025-12-06","c":91.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73189548","d":"2025-12-06","c":360.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73189581","d":"2025-12-06","c":102.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73189750","d":"2025-12-06","c":162.75,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73190100","d":"2025-12-06","c":138.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73190452","d":"2025-12-06","c":1189.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73190938","d":"2025-12-07","c":203.25,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73190946","d":"2025-12-07","c":43.5,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73190965","d":"2025-12-07","c":134.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73191166","d":"2025-12-07","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73191275","d":"2025-12-07","c":335.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73192846","d":"2025-12-08","c":178.5,"f":"Booth Sale/New Customer","t":"REG","e":"00088142","en":"Oro Valley Holiday Festival of the Arts"},{"i":"73194803","d":"2025-12-09","c":293.0,"f":"Booth Sale/Customer Reorder","t":"FSC","e":"00092849","en":"Cielo Vista Mall"},{"i":"73198954","d":"2025-12-12","c":248.0,"f":"New","t":"REG","e":"","en":""},{"i":"73199121","d":"2025-12-12","c":3110.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73201077","d":"2025-12-13","c":453.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73201216","d":"2025-12-13","c":817.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73206439","d":"2025-12-16","c":140.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00093954","en":"Cielo Vista Service & Sales Event"},{"i":"73212285","d":"2025-12-20","c":471.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73212418","d":"2025-12-20","c":1458.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73214670","d":"2025-12-21","c":1723.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73215967","d":"2025-12-22","c":199.0,"f":"Booth Sale/New Customer","t":"REG","e":"00092849","en":"Cielo Vista Mall"},{"i":"73216369","d":"2025-12-22","c":567.0,"f":"Booth Sale/New Customer","t":"FSC","e":"00092849","en":"Cielo Vista Mall"},{"i":"73216379","d":"2025-12-22","c":336.0,"f":"Booth Sale/Customer Reorder","t":"FSC","e":"00092849","en":"Cielo Vista Mall"},{"i":"73216404","d":"2025-12-22","c":80.0,"f":"Booth Sale/New Customer","t":"FSC","e":"00092849","en":"Cielo Vista Mall"},{"i":"73218998","d":"2025-12-27","c":462.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00092850","en":"El Paso Service & Sales Event"},{"i":"73231355","d":"2026-01-09","c":91.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73232105","d":"2026-01-10","c":913.0,"f":"Re-order","t":"BIZ","e":"","en":""},{"i":"73232437","d":"2026-01-10","c":1192.0,"f":"Service Call","t":"BIZ","e":"","en":""},{"i":"73236863","d":"2026-01-15","c":823.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73243750","d":"2026-01-24","c":280.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73246349","d":"2026-01-27","c":1377.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73247065","d":"2026-01-28","c":175.0,"f":"New","t":"REG","e":"","en":""},{"i":"73248038","d":"2026-01-30","c":470.0,"f":"New","t":"REG","e":"00090913","en":"Quilt, Craft & Sewing Festival - Phoenix"},{"i":"73248178","d":"2026-01-30","c":171.0,"f":"Re-order","t":"REG","e":"00090913","en":"Quilt, Craft & Sewing Festival - Phoenix"},{"i":"73249363","d":"2026-01-31","c":2049.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73250426","d":"2026-02-01","c":0.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73250572","d":"2026-02-01","c":239.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73250841","d":"2026-02-01","c":1763.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73251135","d":"2026-02-02","c":182.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73251136","d":"2026-02-02","c":176.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73251137","d":"2026-02-02","c":134.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089754","en":"Lake Havasu Winterfest"},{"i":"73253376","d":"2026-02-04","c":239.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73255187","d":"2026-02-07","c":218.0,"f":"Booth Sale/New Customer","t":"REG","e":"00088212","en":"Tubac Festival of the Arts"},{"i":"73256327","d":"2026-02-08","c":736.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00088212","en":"Tubac Festival of the Arts"},{"i":"73256910","d":"2026-02-08","c":207.0,"f":"New","t":"REG","e":"","en":""},{"i":"73258052","d":"2026-02-11","c":172.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73258135","d":"2026-02-11","c":1456.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73262436","d":"2026-02-17","c":429.0,"f":"New","t":"REG","e":"","en":""},{"i":"73262795","d":"2026-02-17","c":312.0,"f":"Re-order","t":"RLT","e":"","en":""},{"i":"73263711","d":"2026-02-19","c":407.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73265394","d":"2026-02-21","c":377.0,"f":"Booth Sale/New Customer","t":"REG","e":"00089901","en":"Tucson Rodeo"},{"i":"73267477","d":"2026-02-23","c":2100.0,"f":"Booth Sale/New Customer","t":"RLT","e":"00089901","en":"Tucson Rodeo"},{"i":"73276359","d":"2026-03-06","c":117.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73276371","d":"2026-03-06","c":276.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73276453","d":"2026-03-06","c":151.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277058","d":"2026-03-07","c":935.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277350","d":"2026-03-07","c":357.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277365","d":"2026-03-07","c":117.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277643","d":"2026-03-07","c":1094.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277692","d":"2026-03-07","c":1179.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277805","d":"2026-03-07","c":1568.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73277966","d":"2026-03-07","c":1075.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73278876","d":"2026-03-08","c":158.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73278952","d":"2026-03-08","c":3121.0,"f":"Booth Sale/New Customer","t":"REG","e":"00087821","en":"El Paso Home & Garden Show"},{"i":"73279451","d":"2026-03-09","c":392.0,"f":"Booth Sale/New Customer","t":"REG","e":"00097166","en":"El Paso Service & Sales Event"},{"i":"73279601","d":"2026-03-09","c":206.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00097166","en":"El Paso Service & Sales Event"},{"i":"73279691","d":"2026-03-09","c":628.0,"f":"Event Service Call Lead/Customer Reorder","t":"REG","e":"00097166","en":"El Paso Service & Sales Event"},{"i":"73279773","d":"2026-03-09","c":778.0,"f":"Event Service Call Lead/New Customer","t":"REG","e":"00097166","en":"El Paso Service & Sales Event"},{"i":"73279925","d":"2026-03-09","c":424.0,"f":"Event Free Look Lead/New Customer","t":"REG","e":"00097166","en":"El Paso Service & Sales Event"},{"i":"73280607","d":"2026-03-10","c":324.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73282664","d":"2026-03-13","c":2672.0,"f":"New","t":"REG","e":"","en":""},{"i":"73288630","d":"2026-03-21","c":2948.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73294960","d":"2026-03-30","c":338.0,"f":"New","t":"REG","e":"","en":""},{"i":"73299799","d":"2026-04-08","c":405.0,"f":"New","t":"REG","e":"","en":""},{"i":"94378572","d":"2026-04-10","c":124.0,"f":"Other","t":"REG","e":"","en":""},{"i":"73306102","d":"2026-04-18","c":116.0,"f":"Booth Sale/New Customer","t":"REG","e":"00090941","en":"Pima County Fair"},{"i":"73306210","d":"2026-04-18","c":315.0,"f":"Booth Sale/New Customer","t":"REG","e":"00090941","en":"Pima County Fair"},{"i":"73306566","d":"2026-04-19","c":328.0,"f":"Booth Sale/New Customer","t":"REG","e":"00090941","en":"Pima County Fair"},{"i":"73316286","d":"2026-05-04","c":368.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73319413","d":"2026-05-09","c":374.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73319571","d":"2026-05-09","c":619.0,"f":"New","t":"REG","e":"","en":""},{"i":"73324120","d":"2026-05-15","c":1277.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73326858","d":"2026-05-17","c":806.0,"f":"New","t":"REG","e":"","en":""},{"i":"73329626","d":"2026-05-20","c":386.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73333067","d":"2026-05-23","c":0.0,"f":"New","t":"REG","e":"","en":""},{"i":"73336273","d":"2026-05-26","c":222.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73337755","d":"2026-05-27","c":990.0,"f":"New","t":"REG","e":"","en":""},{"i":"73341323","d":"2026-05-30","c":220.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73341388","d":"2026-05-30","c":423.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73343889","d":"2026-06-01","c":268.0,"f":"New","t":"REG","e":"","en":""},{"i":"73345559","d":"2026-06-01","c":423.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73349878","d":"2026-06-05","c":179.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73369914","d":"2026-06-16","c":416.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"94394738","d":"2026-06-16","c":423.0,"f":"Other","t":"REG","e":"","en":""},{"i":"73370358","d":"2026-06-17","c":423.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73372590","d":"2026-06-18","c":137.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73372815","d":"2026-06-18","c":449.0,"f":"New","t":"REG","e":"","en":""},{"i":"73373677","d":"2026-06-19","c":405.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73373814","d":"2026-06-19","c":1513.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73373844","d":"2026-06-19","c":172.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73375347","d":"2026-06-20","c":1314.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73375366","d":"2026-06-20","c":100.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73375779","d":"2026-06-20","c":784.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73375828","d":"2026-06-20","c":423.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73375863","d":"2026-06-20","c":363.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73377288","d":"2026-06-21","c":426.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73377300","d":"2026-06-21","c":135.0,"f":"Booth Sale/Customer Reorder","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73377335","d":"2026-06-21","c":179.0,"f":"Booth Sale/New Customer","t":"REG","e":"00100640","en":"Cherry Festival"},{"i":"73379536","d":"2026-06-22","c":253.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73381492","d":"2026-06-24","c":620.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73382122","d":"2026-06-24","c":597.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"94397701","d":"2026-06-26","c":179.0,"f":"Other","t":"REG","e":"","en":""},{"i":"73384849","d":"2026-06-26","c":239.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73385322","d":"2026-06-26","c":207.0,"f":"New","t":"REG","e":"","en":""},{"i":"73385371","d":"2026-06-26","c":364.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73388819","d":"2026-06-28","c":590.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73389238","d":"2026-06-29","c":846.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73390175","d":"2026-06-29","c":105.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73390907","d":"2026-06-30","c":158.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"94399413","d":"2026-06-30","c":100.0,"f":"Other","t":"REG","e":"","en":""},{"i":"73396415","d":"2026-07-04","c":171.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73400753","d":"2026-07-08","c":316.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73414236","d":"2026-07-17","c":231.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73414570","d":"2026-07-17","c":219.0,"f":"New","t":"REG","e":"","en":""},{"i":"73417279","d":"2026-07-18","c":508.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73418520","d":"2026-07-19","c":447.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73418552","d":"2026-07-19","c":175.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73420001","d":"2026-07-20","c":375.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73421498","d":"2026-07-21","c":117.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73422040","d":"2026-07-21","c":86.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73424758","d":"2026-07-23","c":1179.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73425605","d":"2026-07-23","c":452.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73426850","d":"2026-07-24","c":34.0,"f":"New","t":"REG","e":"","en":""},{"i":"73435741","d":"2026-07-29","c":231.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73437968","d":"2026-07-30","c":132.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73440980","d":"2026-08-01","c":418.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73441904","d":"2026-08-02","c":694.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73442048","d":"2026-08-02","c":892.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73442260","d":"2026-08-02","c":1946.0,"f":"Service Call","t":"REG","e":"","en":""},{"i":"73442335","d":"2026-08-02","c":1179.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"94407485","d":"2026-08-03","c":62.0,"f":"Other","t":"REG","e":"","en":""},{"i":"73442938","d":"2026-08-03","c":312.0,"f":"New","t":"REG","e":"","en":""},{"i":"73443235","d":"2026-08-03","c":246.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73443914","d":"2026-08-04","c":72.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73444536","d":"2026-08-04","c":79.0,"f":"Re-order","t":"REG","e":"","en":""},{"i":"73449498","d":"2026-08-09","c":85.0,"f":"Booth Sale/New Customer","t":"REG","e":"00099372","en":"Art & Wine In The Cool Pines"},{"i":"73449684","d":"2026-08-09","c":190.0,"f":"Booth Sale/New Customer","t":"REG","e":"00099372","en":"Art & Wine In The Cool Pines"},{"i":"73449748","d":"2026-08-09","c":153.0,"f":"Booth Sale/New Customer","t":"REG","e":"00099372","en":"Art & Wine In The Cool Pines"},{"i":"73449774","d":"2026-08-09","c":260.0,"f":"Booth Sale/New Customer","t":"REG","e":"00099372","en":"Art & Wine In The Cool Pines"}]};
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const M = DATA.meta;
+const fmt$ = n => (n<0?"−$":"$") + Math.abs(Math.round(n)).toLocaleString("en-US");
+const fmt$c = n => "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtN = n => n.toLocaleString("en-US");
+const pctS = (a,b) => b ? ((a-b)/b*100) : null;
+const fmtPct = p => p===null ? "—" : (p>0?"+":p<0?"−":"") + Math.abs(p).toFixed(1) + "%";
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const monLabel = ym => MONTHS[+ym.slice(5,7)-1] + " ’" + ym.slice(2,4);
+
+function bucketOf(o){
+  if (o.e){
+    if (o.f.startsWith("Booth Sale") || o.f==="New" || o.f==="Re-order") return "booth";
+    return "eventService";
+  }
+  if (o.t==="BIZ") return "biz";
+  if (o.f==="Service Call") return "serviceCall";
+  if (o.f==="New") return "new";
+  if (o.f==="Re-order") return "reorder";
+  return "other";
+}
+const BUCKETS = [
+  {k:"booth",        n:"Events — Behind the Booth"},
+  {k:"new",          n:"New Customers (off-event)"},
+  {k:"serviceCall",  n:"Service Calls"},
+  {k:"reorder",      n:"Re-orders (off-event)"},
+  {k:"biz",          n:"Business Gifts"},
+  {k:"eventService", n:"Event Service Sales"},
+  {k:"other",        n:"Other"},
+];
+const BNAME = Object.fromEntries(BUCKETS.map(b=>[b.k,b.n]));
+function seasonOf(d){ const m=+d.slice(5,7); return m<=4?"Spring":(m<=8?"Summer":"Fall"); }
+function campLabel(d){ return seasonOf(d)+" "+d.slice(0,4); }
+const agg = os => ({cpo: os.reduce((s,o)=>s+o.c,0), ord: os.length});
+
+/* ---------- order pool (embedded + uploaded) ---------- */
+const LS_UP = "grst_uploads_v1", LS_WK = "grst_weeks_v1";
+function lsGet(k,fb){ try{ return JSON.parse(localStorage.getItem(k)) ?? fb; }catch(e){ return fb; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+let uploads = lsGet(LS_UP, []);
+function pool(){
+  const seen = new Set(DATA.orders.map(o=>o.i));
+  return DATA.orders.concat(uploads.filter(o=>!seen.has(o.i)));
+}
+const inCur  = o => o.d >= M.curStart;
+const inPrev = o => o.d >= M.prevStart && o.d <= M.prevEnd;
+
+/* ---------- scope filter ---------- */
+const SCOPES = [
+  {k:"all", n:"All data"},{k:"cur", n:"Current 12 mo"},{k:"prev", n:"Previous 12 mo"},
+  {k:"y2024",n:"2024"},{k:"y2025",n:"2025"},{k:"y2026",n:"2026"},
+  {k:"Spring",n:"Spring"},{k:"Summer",n:"Summer"},{k:"Fall",n:"Fall"},
+];
+let scope = "all";
+function scoped(os){
+  switch(scope){
+    case "cur": return os.filter(inCur);
+    case "prev": return os.filter(inPrev);
+    case "y2024": case "y2025": case "y2026": return os.filter(o=>o.d.slice(0,4)===scope.slice(1));
+    case "Spring": case "Summer": case "Fall": return os.filter(o=>seasonOf(o.d)===scope);
+    default: return os;
+  }
+}
+const scopeName = () => SCOPES.find(s=>s.k===scope).n;
+
+/* ---------- tooltip ---------- */
+const tip = $("#tip");
+function tipShow(html, x, y){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(Math.max(8, x - r.width/2), innerWidth - r.width - 8) + "px";
+  tip.style.top  = (y - r.height - 12 < 8 ? y + 16 : y - r.height - 12) + "px";
+}
+const tipHide = () => tip.style.opacity = 0;
+function bindTips(svgEl){
+  svgEl.querySelectorAll("[data-tip]").forEach(el=>{
+    el.addEventListener("pointerenter", e=>tipShow(el.dataset.tip, e.clientX, e.clientY));
+    el.addEventListener("pointermove",  e=>tipShow(el.dataset.tip, e.clientX, e.clientY));
+    el.addEventListener("pointerleave", tipHide);
+  });
+}
+
+/* ---------- SVG chart builders ---------- */
+function niceMax(v){
+  if (v<=0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  for (const m of [1,2,2.5,5,10]) if (m*p >= v) return m*p;
+  return 10*p;
+}
+function columnChart(el, pts, opts){
+  // pts: [{label, value, tip, muted}]
+  const W=940, H=280, padL=46, padR=8, padT=14, padB=34;
+  const iw = W-padL-padR, ih = H-padT-padB;
+  const max = niceMax(Math.max(...pts.map(p=>p.value), 1));
+  const bw = Math.min(24, iw/pts.length - 2);
+  const step = iw/pts.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"chart")}">`;
+  for (let g=0; g<=4; g++){
+    const y = padT + ih - ih*g/4;
+    s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;
+    s += `<text x="${padL-6}" y="${y+4}" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--muted)">${opts.fmtAxis(max*g/4)}</text>`;
+  }
+  const maxIdx = pts.reduce((mi,p,i)=>p.value>pts[mi].value?i:mi, 0);
+  pts.forEach((p,i)=>{
+    const h = Math.max(p.value>0?2:0, ih*p.value/max);
+    const x = padL + step*i + (step-bw)/2, y = padT+ih-h;
+    const fill = p.muted ? "var(--line2)" : "var(--amber)";
+    s += `<path d="M${x} ${padT+ih} V${y+4} Q${x} ${y} ${x+4} ${y} H${x+bw-4} Q${x+bw} ${y} ${x+bw} ${y+4} V${padT+ih} Z" fill="${fill}" data-tip="${esc(p.tip)}"/>`;
+    s += `<rect x="${padL+step*i}" y="${padT}" width="${step}" height="${ih}" fill="transparent" data-tip="${esc(p.tip)}"/>`;
+    if (i===maxIdx && p.value>0)
+      s += `<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-family="var(--mono)" font-size="10.5" font-weight="600" fill="var(--ink2)">${opts.fmtAxis(p.value)}</text>`;
+    if (p.showLabel)
+      s += `<text x="${padL+step*i+step/2}" y="${H-10}" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">${esc(p.label)}</text>`;
+  });
+  s += `<line x1="${padL}" y1="${padT+ih}" x2="${W-padR}" y2="${padT+ih}" stroke="var(--line2)" stroke-width="1"/></svg>`;
+  el.innerHTML = s; bindTips(el);
+}
+function hBarChart(el, rows, opts){
+  // rows: [{label, sub, parts:[{v, color}], tip}]  stacked horizontal
+  const W=940, rowH=34, padL=opts.padL||230, padR=70, padT=6;
+  const H = padT + rows.length*rowH + 8;
+  const iw = W-padL-padR;
+  const max = niceMax(Math.max(...rows.map(r=>r.parts.reduce((s,p)=>s+p.v,0)), 1));
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"chart")}">`;
+  rows.forEach((r,i)=>{
+    const y = padT + i*rowH, bh = 18, by = y + (rowH-bh)/2;
+    const total = r.parts.reduce((s,p)=>s+p.v,0);
+    s += `<text x="${padL-10}" y="${by+bh-5}" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--ink2)">${esc(r.label)}</text>`;
+    let x = padL;
+    const drawn = r.parts.filter(p=>p.v>0);
+    drawn.forEach((p,pi)=>{
+      let w = iw*p.v/max;
+      const last = pi===drawn.length-1;
+      const wAdj = Math.max(1, w - (last?0:2)); // 2px surface gap between segments
+      if (last && w>=5)
+        s += `<path d="M${x} ${by} H${x+wAdj-4} Q${x+wAdj} ${by} ${x+wAdj} ${by+4} V${by+bh-4} Q${x+wAdj} ${by+bh} ${x+wAdj-4} ${by+bh} H${x} Z" fill="${p.color}" data-tip="${esc(r.tip)}"/>`;
+      else
+        s += `<rect x="${x}" y="${by}" width="${wAdj}" height="${bh}" fill="${p.color}" data-tip="${esc(r.tip)}"/>`;
+      x += w;
+    });
+    s += `<text x="${x+8}" y="${by+bh-5}" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--ink2)">${opts.fmtVal(total)}</text>`;
+    s += `<rect x="0" y="${y}" width="${W}" height="${rowH}" fill="transparent" data-tip="${esc(r.tip)}"/>`;
+  });
+  s += `</svg>`;
+  el.innerHTML = s; bindTips(el);
+}
+function splitBar(el, a, b, labA, labB){
+  const W=940, H=64, bh=26, y=8;
+  const total = a+b || 1;
+  const wa = (W)*a/total;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(labA)} versus ${esc(labB)}">`;
+  s += `<rect x="0" y="${y}" width="${Math.max(1,wa-2)}" height="${bh}" rx="4" fill="var(--amber)" data-tip="${esc(labA)}: ${fmt$(a)} (${(a/total*100).toFixed(1)}%)"/>`;
+  s += `<rect x="${wa}" y="${y}" width="${Math.max(1,W-wa)}" height="${bh}" rx="4" fill="var(--blue)" data-tip="${esc(labB)}: ${fmt$(b)} (${(b/total*100).toFixed(1)}%)"/>`;
+  s += `<text x="0" y="${y+bh+20}" font-family="var(--mono)" font-size="11.5" font-weight="600" fill="var(--ink2)">${esc(labA)} · ${fmt$(a)} · ${(a/total*100).toFixed(1)}%</text>`;
+  s += `<text x="${W}" y="${y+bh+20}" text-anchor="end" font-family="var(--mono)" font-size="11.5" font-weight="600" fill="var(--ink2)">${(b/total*100).toFixed(1)}% · ${fmt$(b)} · ${esc(labB)}</text>`;
+  s += `</svg>`;
+  el.innerHTML = s; bindTips(el);
+}
+
+/* ---------- derived structures ---------- */
+function monthly(os){
+  const m = new Map();
+  os.forEach(o=>{
+    const k = o.d.slice(0,7);
+    if(!m.has(k)) m.set(k,{cpo:0,ord:0});
+    const v = m.get(k); v.cpo+=o.c; v.ord++;
+  });
+  return [...m.entries()].sort((a,b)=>a[0]<b[0]?-1:1);
+}
+const PARTIAL = new Set(["2024-08","2025-08","2026-08"]);
+function eventRuns(os){
+  // one row per event id (an event id = one run of one event)
+  const m = new Map();
+  os.forEach(o=>{
+    if(!o.e) return;
+    if(!m.has(o.e)) m.set(o.e,{id:o.e,name:o.en,orders:[]});
+    m.get(o.e).orders.push(o);
+  });
+  return [...m.values()].map(r=>{
+    const booth = r.orders.filter(o=>bucketOf(o)==="booth");
+    const svc   = r.orders.filter(o=>bucketOf(o)==="eventService");
+    const dates = r.orders.map(o=>o.d).sort();
+    const refD  = booth.length ? booth.map(o=>o.d).sort()[0] : dates[0];
+    return {
+      id:r.id, name:r.name, start:dates[0], end:dates[dates.length-1],
+      camp: seasonOf(refD)+" "+refD.slice(0,4), season:seasonOf(refD), year:+refD.slice(0,4),
+      booth:agg(booth), svc:agg(svc),
+      total:{cpo:agg(booth).cpo+agg(svc).cpo, ord:booth.length+svc.length},
+      type: /service/i.test(r.name) ? "Service Event" : (/mall/i.test(r.name) ? "Mall" : "Traditional"),
+    };
+  }).sort((a,b)=>b.total.cpo-a.total.cpo);
+}
+function campaignRollup(os){
+  const m = new Map();
+  os.forEach(o=>{
+    if(!o.e) return;
+    const k = seasonOf(o.d)+" "+o.d.slice(0,4);
+    if(!m.has(k)) m.set(k,{key:k, season:seasonOf(o.d), year:+o.d.slice(0,4), booth:{cpo:0,ord:0}, svc:{cpo:0,ord:0}, events:new Set(), evTotals:new Map()});
+    const v = m.get(k);
+    const b = bucketOf(o)==="booth" ? v.booth : v.svc;
+    b.cpo+=o.c; b.ord++;
+    v.events.add(o.e);
+    v.evTotals.set(o.e,(v.evTotals.get(o.e)||0)+o.c);
+    if(!v.evNames) v.evNames = new Map();
+    v.evNames.set(o.e, o.en);
+  });
+  const seasonOrd = {Spring:1,Summer:2,Fall:3};
+  return [...m.values()].map(v=>{
+    let bestId=null,best=0;
+    v.evTotals.forEach((val,id)=>{ if(val>best){best=val;bestId=id;} });
+    return {...v, total:{cpo:v.booth.cpo+v.svc.cpo, ord:v.booth.ord+v.svc.ord},
+      nEvents:v.events.size, bestEvent:bestId?{name:v.evNames.get(bestId), cpo:best}:null};
+  }).sort((a,b)=> a.year-b.year || seasonOrd[a.season]-seasonOrd[b.season]);
+}
+const CAMP_FLAGS = {
+  "Summer 2024":"partial — data starts Aug 19, 2024",
+  "Summer 2025":"near-complete — 10-day export gap in Aug",
+  "Summer 2026":"in progress — through Aug 18, 2026",
+};
+
+/* ---------- header ---------- */
+function renderHeader(){
+  const os = pool();
+  $("#who").textContent = `${DATA.rsd.title} · ${DATA.rsd.office.replace(/^\d+\s*-\s*/,"")} office · selling since ${DATA.rsd.contract.slice(0,4)}`;
+  $("#hdrchips").innerHTML = [
+    `Orders analyzed: ${fmtN(os.length)}`,
+    `Window: Aug 2024 → Aug 2026`,
+    `Career CPO: ${fmt$(DATA.rsd.career_cpo)} <span style="color:var(--muted)">(RSD team dashboard)</span>`,
+    `Updated ${M.generated}`,
+  ].map(c=>`<span class="chip">${c}</span>`).join("");
+}
+
+/* ---------- 1 scorecard ---------- */
+function renderScorecard(){
+  const os = pool();
+  const all = agg(os), cur = agg(os.filter(inCur)), prev = agg(os.filter(inPrev));
+  const fullMonths = monthly(os).filter(([k])=>!PARTIAL.has(k));
+  const mAvg = fullMonths.reduce((s,[,v])=>s+v.cpo,0)/(fullMonths.length||1);
+  const byB = BUCKETS.map(b=>({...b, ...agg(os.filter(o=>bucketOf(o)===b.k))})).sort((a,b)=>b.cpo-a.cpo);
+  const top = byB[0];
+  const growth = pctS(cur.cpo, prev.cpo);
+  $("#scorecard-sub").textContent = `Two years of real orders — ${M.prevStart} through ${M.curEnd}. Current 12 months = ${M.curStart} → ${M.curEnd}; previous = ${M.prevStart} → ${M.prevEnd}.`;
+  $("#kpi-grid").innerHTML = `
+    <div class="hero"><div><div class="lab">Total sales · 24 months</div><div class="v num">${fmt$(all.cpo)}</div></div>
+      <div class="cap">${fmtN(all.ord)} orders · average order ${fmt$c(all.cpo/all.ord)}</div></div>
+    ${[
+      ["Current 12-month sales", fmt$(cur.cpo), `${fmtN(cur.ord)} orders`],
+      ["Previous 12-month sales", fmt$(prev.cpo), `${fmtN(prev.ord)} orders`],
+      ["12-month growth", fmtPct(growth), `${fmt$(cur.cpo-prev.cpo)} vs previous`, growth>=0?"up":"dn"],
+      ["Monthly average", fmt$(mAvg), `${fullMonths.length} full months`],
+      ["Average order (CPO)", fmt$c(all.cpo/all.ord), `current: ${fmt$c(cur.cpo/cur.ord)}`],
+      ["Total orders", fmtN(all.ord), `${fmtN(cur.ord)} in the current 12 mo`],
+      ["Top sales source", top.n.split(" — ")[0], `${fmt$(top.cpo)} · ${(top.cpo/all.cpo*100).toFixed(1)}% of sales`],
+      ["Event production", fmt$(byB.find(b=>b.k==="booth").cpo + byB.find(b=>b.k==="eventService").cpo), "booth + event service"],
+    ].map(([l,v,d,cls])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num ${cls||""}">${v}</div><div class="d">${d}</div></div>`).join("")}`;
+}
+
+/* ---------- 2 compare ---------- */
+function renderCompare(){
+  const os = pool();
+  const cur = os.filter(inCur), prev = os.filter(inPrev);
+  const rows = [];
+  const A = agg(prev), B = agg(cur);
+  rows.push(["Sales", A.cpo, B.cpo, fmt$]);
+  rows.push(["Orders", A.ord, B.ord, fmtN]);
+  rows.push(["Average order (CPO)", A.cpo/(A.ord||1), B.cpo/(B.ord||1), fmt$c]);
+  rows.push(["Monthly average*", A.cpo/12, B.cpo/12, fmt$]);
+  const srcRows = BUCKETS.map(b=>{
+    const p = agg(prev.filter(o=>bucketOf(o)===b.k)), c = agg(cur.filter(o=>bucketOf(o)===b.k));
+    return [b.n, p.cpo, c.cpo, fmt$];
+  });
+  const html = [`<thead><tr><th>Metric</th><th class="r">Previous 12</th><th class="r">Current 12</th><th class="r">$ diff</th><th class="r">% change</th></tr></thead><tbody>`];
+  rows.concat([["— Major sources —"]]).concat(srcRows).forEach(r=>{
+    if (r.length===1){ html.push(`<tr><td colspan="5" class="lab" style="padding-top:14px">${r[0]}</td></tr>`); return; }
+    const [n,p,c,f] = r;
+    const d = c-p, pc = pctS(c,p);
+    const cls = Math.abs(d)<0.005 ? "" : d>0?"up":"dn";
+    html.push(`<tr><td>${n}</td><td class="r num">${f(p)}</td><td class="r num">${f(c)}</td><td class="r num ${cls}">${n==="Orders"?(d>0?"+":"")+fmtN(d):fmt$(d)}</td><td class="r num ${cls}">${fmtPct(pc)}</td></tr>`);
+  });
+  html.push(`</tbody>`);
+  $("#cmp-table").innerHTML = html.join("");
+  $("#compare-sub").textContent = `Previous window: ${M.prevStart} → ${M.prevEnd}. Current window: ${M.curStart} → ${M.curEnd}. Same-length windows, compared straight up. (*Monthly average here = window ÷ 12.)`;
+
+  // plain-english story
+  const g = (k)=>({p:agg(prev.filter(o=>bucketOf(o)===k)), c:agg(cur.filter(o=>bucketOf(o)===k))});
+  const sc=g("serviceCall"), nw=g("new"), bz=g("biz"), bo=g("booth"), ro=g("reorder");
+  $("#cmp-story").innerHTML = `<div class="lab" style="margin-bottom:8px">What actually changed, in plain English</div>
+  <ul class="tight" style="font-size:14.5px">
+    <li><b>You grew.</b> Sales are up ${fmt$(B.cpo-A.cpo)} (${fmtPct(pctS(B.cpo,A.cpo))}) on ${B.ord-A.ord} more orders. The growth came from volume, not bigger tickets — your average order slipped from ${fmt$c(A.cpo/A.ord)} to ${fmt$c(B.cpo/B.ord)}.</li>
+    <li><b>Service calls got more valuable.</b> Nearly the same number of service-call orders (${sc.p.ord} → ${sc.c.ord}) produced ${fmt$(sc.c.cpo-sc.p.cpo)} more — average service order jumped ${fmt$c(sc.p.cpo/(sc.p.ord||1))} → ${fmt$c(sc.c.cpo/(sc.c.ord||1))}.</li>
+    <li><b>New customers surged.</b> Off-event new-customer sales rose ${fmtPct(pctS(nw.c.cpo,nw.p.cpo))} (${fmt$(nw.p.cpo)} → ${fmt$(nw.c.cpo)}).</li>
+    <li><b>Business gifts fell hard.</b> ${bz.p.ord} gift orders worth ${fmt$(bz.p.cpo)} became ${bz.c.ord} worth ${fmt$(bz.c.cpo)} (${fmtPct(pctS(bz.c.cpo,bz.p.cpo))}). This one line nearly erased the growth everywhere else.</li>
+    <li><b>Booth production edged up</b> (${fmt$(bo.p.cpo)} → ${fmt$(bo.c.cpo)}) on 15 more booth orders, and <b>re-orders softened</b> (${fmt$(ro.p.cpo)} → ${fmt$(ro.c.cpo)}).</li>
+  </ul>`;
+}
+
+/* ---------- filter bar ---------- */
+function renderFilter(){
+  $("#fpills").innerHTML = SCOPES.map(s=>`<button class="fpill${s.k===scope?" on":""}" data-k="${s.k}">${s.n}</button>`).join("")
+    + `<span class="fnote">filters the sections below ↓</span>`;
+  $("#fpills").querySelectorAll(".fpill").forEach(b=>b.addEventListener("click",()=>{
+    scope = b.dataset.k; renderFilter(); renderScopedSections();
+  }));
+}
+
+/* ---------- 3 time ---------- */
+let timeMetric = "cpo";
+function renderTime(){
+  const os = scoped(pool());
+  const mons = monthly(os);
+  const pts = mons.map(([k,v])=>{
+    const val = timeMetric==="cpo"?v.cpo : timeMetric==="ord"?v.ord : v.cpo/(v.ord||1);
+    return {label:monLabel(k), value:val, muted:PARTIAL.has(k),
+      showLabel: mons.length<=14 || ["01","04","07","10"].includes(k.slice(5,7)),
+      tip:`<b>${monLabel(k)}${PARTIAL.has(k)?" (partial)":""}</b><br>${fmt$(v.cpo)} · ${v.ord} orders · avg ${fmt$c(v.cpo/(v.ord||1))}`};
+  });
+  const fmtAxis = timeMetric==="ord" ? (n=>fmtN(Math.round(n))) : (n=>"$"+(n>=1000?(n/1000).toFixed(n%1000?1:0)+"k":Math.round(n)));
+  const names = {cpo:"Monthly sales",ord:"Orders per month",avg:"Average order by month"};
+  $("#time-title").textContent = `${names[timeMetric]} — ${scopeName()}`;
+  if (pts.length){ columnChart($("#time-chart"), pts, {fmtAxis, aria:names[timeMetric]}); }
+  else $("#time-chart").innerHTML = `<p class="lab">No orders in this slice.</p>`;
+  $("#time-foot").textContent = "Light bars are partial months (window edges + a 10-day export gap in Aug 2025).";
+  $("#time-table").innerHTML = `<thead><tr><th>Month</th><th class="r">Sales</th><th class="r">Orders</th><th class="r">Avg order</th></tr></thead><tbody>`
+    + mons.map(([k,v])=>`<tr><td>${monLabel(k)}${PARTIAL.has(k)?" ◦":""}</td><td class="r num">${fmt$(v.cpo)}</td><td class="r num">${v.ord}</td><td class="r num">${fmt$c(v.cpo/(v.ord||1))}</td></tr>`).join("")
+    + `</tbody>`;
+
+  // story only for all-data view (fixed numbers)
+  const allMons = monthly(pool()).filter(([k])=>!PARTIAL.has(k));
+  const sorted = [...allMons].sort((a,b)=>b[1].cpo-a[1].cpo);
+  const best = sorted.slice(0,3), worst = sorted.slice(-3).reverse();
+  $("#time-story").innerHTML = `<div class="lab" style="margin-bottom:8px">Reading the shape</div>
+  <ul class="tight" style="font-size:14.5px">
+    <li><b>October is your monster month — twice in a row.</b> Best full months: ${best.map(([k,v])=>`${monLabel(k)} (${fmt$(v.cpo)})`).join(", ")}. Both Octobers lead the board — that’s the Fall event season landing.</li>
+    <li><b>The soft spots repeat too.</b> Weakest full months: ${worst.map(([k,v])=>`${monLabel(k)} (${fmt$(v.cpo)})`).join(", ")}. January and April cratered in both years — the gaps between campaigns.</li>
+    <li><b>Seasonality is real:</b> Sep–Dec runs hot (events), then the new year opens cold until the Spring shows start. Mar ’26 (${fmt$(18858)}) shows what a strong Spring month can look like.</li>
+    <li><b>Spikes:</b> Oct ’24 and Oct ’25 (event season), Mar ’26 (El Paso Home &amp; Garden Show). No single fluke month is carrying the business.</li>
+  </ul>`;
+}
+
+/* ---------- 4 sources ---------- */
+function renderSources(){
+  const os = pool();
+  const all = agg(os);
+  const rows = BUCKETS.map(b=>{
+    const sub = os.filter(o=>bucketOf(o)===b.k);
+    const a = agg(sub), p = agg(sub.filter(inPrev)), c = agg(sub.filter(inCur));
+    return {b, a, p, c};
+  }).sort((x,y)=>y.a.cpo-x.a.cpo);
+  $("#src-table").innerHTML = `<thead><tr><th>Source</th><th class="r">Sales</th><th class="r">Orders</th><th class="r">CPO</th><th class="r">% of total</th><th class="r">Prev 12</th><th class="r">Current 12</th><th class="r">Growth</th></tr></thead><tbody>`
+    + rows.map(({b,a,p,c})=>{
+      const g = pctS(c.cpo,p.cpo);
+      return `<tr><td>${b.n}</td><td class="r num">${fmt$(a.cpo)}</td><td class="r num">${a.ord}</td><td class="r num">${a.ord?fmt$c(a.cpo/a.ord):"—"}</td><td class="r num">${(a.cpo/all.cpo*100).toFixed(1)}%</td><td class="r num">${fmt$(p.cpo)}</td><td class="r num">${fmt$(c.cpo)}</td><td class="r num ${g===null?"":g>=0?"up":"dn"}">${p.cpo?fmtPct(g):"—"}</td></tr>`;
+    }).join("") + `</tbody>`;
+
+  const sc = scoped(os), scAll = agg(sc);
+  const mix = BUCKETS.map(b=>({b, a:agg(sc.filter(o=>bucketOf(o)===b.k))})).filter(x=>x.a.cpo>0).sort((x,y)=>y.a.cpo-x.a.cpo);
+  $("#mix-title").textContent = `Business mix — share of sales · ${scopeName()}`;
+  hBarChart($("#mix-chart"), mix.map(({b,a})=>({
+    label: b.n.length>26 ? b.n.slice(0,25)+"…" : b.n,
+    parts:[{v:a.cpo, color:"var(--amber)"}],
+    tip:`<b>${esc(b.n)}</b><br>${fmt$(a.cpo)} · ${a.ord} orders · ${(a.cpo/(scAll.cpo||1)*100).toFixed(1)}% of ${esc(scopeName())}`,
+  })), {fmtVal:v=>(v/(scAll.cpo||1)*100).toFixed(1)+"%", aria:"Business mix", padL:220});
+
+  const byK = Object.fromEntries(rows.map(r=>[r.b.k, r]));
+  $("#src-story").innerHTML = `<div class="lab" style="margin-bottom:8px">What this says</div>
+  <ul class="tight" style="font-size:14.5px">
+    <li><b>Events are the engine.</b> Behind-the-booth is ${(byK.booth.a.cpo/all.cpo*100).toFixed(0)}% of everything — add event-service sales and roughly half your business starts at an event.</li>
+    <li><b>Biggest average tickets:</b> Business Gifts at ${fmt$c(byK.biz.a.cpo/byK.biz.a.ord)} per order — ${Math.round(byK.biz.a.cpo/byK.biz.a.ord/(all.cpo/all.ord))}× your overall average. Service calls run second at ${fmt$c(byK.serviceCall.a.cpo/byK.serviceCall.a.ord)}.</li>
+    <li><b>Growing:</b> service calls (${fmtPct(pctS(byK.serviceCall.c.cpo,byK.serviceCall.p.cpo))}) and off-event new customers (${fmtPct(pctS(byK.new.c.cpo,byK.new.p.cpo))}). <b>Declining:</b> business gifts (${fmtPct(pctS(byK.biz.c.cpo,byK.biz.p.cpo))}) and re-orders (${fmtPct(pctS(byK.reorder.c.cpo,byK.reorder.p.cpo))}).</li>
+    <li><b>Dependence check:</b> no single source over half the business, and the non-event half (customer base + service work) is genuinely strong — that’s healthier than most event reps. The watch item is that Fall events alone drive the season highs.</li>
+  </ul>`;
+}
+
+/* ---------- 5 largest orders ---------- */
+function renderTop(){
+  const os = scoped(pool());
+  const all = agg(os);
+  const top = [...os].sort((a,b)=>b.c-a.c).slice(0,10);
+  const share = all.cpo ? top.reduce((s,o)=>s+o.c,0)/all.cpo*100 : 0;
+  $("#top-sub").textContent = `Top 10 orders in “${scopeName()}” — ${share.toFixed(1)}% of that slice’s sales.`;
+  $("#top-table").innerHTML = `<thead><tr><th>#</th><th>Date</th><th class="r">Amount</th><th>Order type</th><th>Source bucket</th><th>Event</th></tr></thead><tbody>`
+    + top.map((o,i)=>`<tr><td class="num">${i+1}</td><td class="num">${o.d}</td><td class="r num"><b>${fmt$(o.c)}</b></td><td>${esc(o.f)}${o.t==="BIZ"?" · BIZ":""}</td><td>${BNAME[bucketOf(o)]}</td><td>${esc(o.en||"—")}</td></tr>`).join("")
+    + `</tbody>`;
+  const allOs = pool(); const allAgg = agg(allOs);
+  const top10all = [...allOs].sort((a,b)=>b.c-a.c).slice(0,10);
+  const shareAll = top10all.reduce((s,o)=>s+o.c,0)/allAgg.cpo*100;
+  $("#top-story").innerHTML = `<div class="lab" style="margin-bottom:8px">Concentration check</div>
+  <p style="font-size:14.5px;max-width:75ch">Across the full two years, your ten biggest orders are <b>${shareAll.toFixed(1)}%</b> of total sales — a healthy spread. This business is <b>not</b> dependent on a few whales; it’s built order by order. Worth noting: the two biggest tickets (${fmt$(top10all[0].c)} and ${fmt$(top10all[1].c)}) were both <b>business-gift</b> orders — the highest-leverage single conversations you have.</p>`;
+}
+
+/* ---------- 6 consistency ---------- */
+function renderConsistency(){
+  const os = pool();
+  const mons = monthly(os).filter(([k])=>!PARTIAL.has(k));
+  const vals = mons.map(([,v])=>v.cpo);
+  const avg = vals.reduce((s,v)=>s+v,0)/vals.length;
+  const sd = Math.sqrt(vals.reduce((s,v)=>s+(v-avg)**2,0)/vals.length);
+  const above = mons.filter(([,v])=>v.cpo>avg);
+  let streak=0,best=0,bestEnd=0;
+  mons.forEach(([k,v],i)=>{ if(v.cpo>avg){streak++; if(streak>best){best=streak;bestEnd=i;}} else streak=0; });
+  const streakLabel = best?`${monLabel(mons[bestEnd-best+1][0])} → ${monLabel(mons[bestEnd][0])}`:"—";
+  const sortedM=[...mons].sort((a,b)=>b[1].cpo-a[1].cpo);
+  $("#cons-sub").textContent = `Measured on the ${mons.length} complete months (partial edge months excluded).`;
+  $("#cons-kpis").innerHTML = [
+    ["Active selling months", `${mons.length} / ${mons.length}`, "orders in every single month"],
+    ["Average month", fmt$(avg), `median-ish band ±${fmt$(sd)}`],
+    ["Months above average", `${above.length} of ${mons.length}`, "the rest lean on the big months"],
+    ["Volatility", (sd/avg*100).toFixed(0)+"%", "swing vs the average month"],
+    ["Best month", fmt$(sortedM[0][1].cpo), monLabel(sortedM[0][0])],
+    ["Weakest month", fmt$(sortedM[sortedM.length-1][1].cpo), monLabel(sortedM[sortedM.length-1][0])],
+    ["Best above-average streak", `${best} months`, streakLabel],
+    ["Top-10-order share", "17.1%", "of two-year sales — low concentration"],
+  ].map(([l,v,d])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num">${v}</div><div class="d">${d}</div></div>`).join("");
+  $("#cons-story").innerHTML = `<div class="lab" style="margin-bottom:8px">The verdict</div>
+  <p style="font-size:14.5px;max-width:75ch">This is a <b>seasonal, modestly growing</b> business — not a volatile one and not a whale-dependent one. You sell every single month (real consistency), but the month-to-month swing is large (±${(sd/avg*100).toFixed(0)}%) because Fall events stack revenue into Sep–Dec while Jan and Apr go quiet. The fix isn’t “work more” — it’s pre-loading the two predictable valleys with service-call and gift pipeline before they arrive.</p>`;
+}
+
+/* ---------- 7 events ---------- */
+function renderEvents(){
+  const os = scoped(pool());
+  const runs = eventRuns(os);
+  const booth = runs.reduce((s,r)=>s+r.booth.cpo,0), bOrd = runs.reduce((s,r)=>s+r.booth.ord,0);
+  const svc = runs.reduce((s,r)=>s+r.svc.cpo,0), sOrd = runs.reduce((s,r)=>s+r.svc.ord,0);
+  const combined = booth+svc, allS = agg(os);
+  $("#ev-kpis").innerHTML = [
+    ["Total event production", fmt$(combined), `${(allS.cpo?combined/allS.cpo*100:0).toFixed(1)}% of ${scopeName().toLowerCase()} sales`],
+    ["Behind-the-booth", fmt$(booth), `${bOrd} orders · CPO ${bOrd?fmt$c(booth/bOrd):"—"}`],
+    ["Event service sales", fmt$(svc), `${sOrd} orders · CPO ${sOrd?fmt$c(svc/sOrd):"—"}`],
+    ["Event runs", fmtN(runs.length), `avg ${runs.length?fmt$(combined/runs.length):"—"} per event`],
+  ].map(([l,v,d])=>`<div class="kpi"><div class="lab">${l}</div><div class="v num">${v}</div><div class="d">${d}</div></div>`).join("");
+
+  if (combined>0) splitBar($("#ev-split"), booth, svc, "Behind the Booth", "Event Service");
+  else $("#ev-split").innerHTML = `<p class="lab">No event sales in this slice.</p>`;
+
+  const topRuns = runs.slice(0,10);
+  hBarChart($("#ev-chart"), topRuns.map(r=>({
+    label:(r.name.length>30?r.name.slice(0,29)+"…":r.name),
+    parts:[{v:r.booth.cpo,color:"var(--amber)"},{v:r.svc.cpo,color:"var(--blue)"}],
+    tip:`<b>${esc(r.name)}</b> · ${r.camp}<br>Booth ${fmt$(r.booth.cpo)} (${r.booth.ord} ord) + Service ${fmt$(r.svc.cpo)} (${r.svc.ord} ord)<br>Combined ${fmt$(r.total.cpo)}`,
+  })), {fmtVal:fmt$, aria:"Top events by combined sales", padL:250});
+
+  const prevSel = $("#ev-pick").value;
+  $("#ev-pick").innerHTML = `<option value="">All events (${runs.length})</option>` + runs.map(r=>`<option value="${r.id}">${esc(r.name)} — ${r.camp}</option>`).join("");
+  if (runs.some(r=>r.id===prevSel)) $("#ev-pick").value = prevSel;
+  const sel = $("#ev-pick").value;
+  const shown = sel ? runs.filter(r=>r.id===sel) : runs;
+  $("#ev-table").innerHTML = `<thead><tr><th>Event</th><th>Campaign</th><th>Dates</th><th>Type</th><th class="r">Booth $</th><th class="r">Service $</th><th class="r">Combined</th><th class="r">Orders</th><th class="r">CPO</th></tr></thead><tbody>`
+    + shown.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.camp}</td><td class="num">${r.start.slice(5)}${r.end!==r.start?"→"+r.end.slice(5):""} ’${r.start.slice(2,4)}</td><td>${r.type}</td><td class="r num">${fmt$(r.booth.cpo)}</td><td class="r num">${r.svc.cpo?fmt$(r.svc.cpo):"—"}</td><td class="r num"><b>${fmt$(r.total.cpo)}</b></td><td class="r num">${r.total.ord}</td><td class="r num">${r.total.ord?fmt$c(r.total.cpo/r.total.ord):"—"}</td></tr>`).join("")
+    + `</tbody>`;
+
+  const withSvc = runs.filter(r=>r.svc.cpo>0).length;
+  $("#ev-story").innerHTML = `<div class="lab" style="margin-bottom:8px">Booth vs follow-up — where event money comes from</div>
+  <p style="font-size:14.5px;max-width:75ch">In this slice, <b>${combined?(booth/combined*100).toFixed(0):0}%</b> of event production happens behind the booth and <b>${combined?(svc/combined*100).toFixed(0):0}%</b> comes from event-sourced service sales. Only <b>${withSvc} of ${runs.length}</b> event runs show any service follow-up revenue at all. The booth game is strong; the second sale after the show is where money is being left on the table. When it does happen — A Christmas Fair ’25 pulled ${fmt$(1793)} in service sales on top of ${fmt$(2964)} booth — it adds 30–60% to an event’s true value.</p>`;
+}
+
+/* ---------- 8 campaigns ---------- */
+function renderCampaigns(){
+  const os = pool(); // campaigns always full data — comparison integrity
+  const rolls = campaignRollup(os);
+  hBarChart($("#camp-chart"), rolls.map(r=>({
+    label:r.key + (CAMP_FLAGS[r.key]?" ◦":""),
+    parts:[{v:r.booth.cpo,color:"var(--amber)"},{v:r.svc.cpo,color:"var(--blue)"}],
+    tip:`<b>${r.key}</b>${CAMP_FLAGS[r.key]?"<br>◦ "+CAMP_FLAGS[r.key]:""}<br>Booth ${fmt$(r.booth.cpo)} + Service ${fmt$(r.svc.cpo)}<br>${r.nEvents} events · ${r.total.ord} orders`,
+  })), {fmtVal:fmt$, aria:"Event production by campaign", padL:170});
+
+  const yearTotals = {};
+  rolls.forEach(r=>{ yearTotals[r.year]=(yearTotals[r.year]||0)+r.total.cpo; });
+  $("#camp-table").innerHTML = `<thead><tr><th>Campaign</th><th class="r">Event sales</th><th class="r">Booth $</th><th class="r">Service $</th><th class="r">Events</th><th class="r">Orders</th><th class="r">CPO</th><th class="r">Avg / event</th><th>Best event</th><th class="r">% of yr’s event $</th></tr></thead><tbody>`
+    + rolls.map(r=>`<tr><td>${r.key}${CAMP_FLAGS[r.key]?" ◦":""}</td><td class="r num"><b>${fmt$(r.total.cpo)}</b></td><td class="r num">${fmt$(r.booth.cpo)}</td><td class="r num">${r.svc.cpo?fmt$(r.svc.cpo):"—"}</td><td class="r num">${r.nEvents}</td><td class="r num">${r.total.ord}</td><td class="r num">${r.total.ord?fmt$c(r.total.cpo/r.total.ord):"—"}</td><td class="r num">${fmt$(r.total.cpo/r.nEvents)}</td><td>${r.bestEvent?esc(r.bestEvent.name)+" ("+fmt$(r.bestEvent.cpo)+")":"—"}</td><td class="r num">${(r.total.cpo/yearTotals[r.year]*100).toFixed(0)}%</td></tr>`).join("")
+    + `</tbody><tfoot><tr><td colspan="10" style="border:none;padding-top:10px" class="lab">◦ ${Object.entries(CAMP_FLAGS).map(([k,v])=>`${k}: ${v}`).join(" · ")}</td></tr></tfoot>`;
+
+  const byKey = Object.fromEntries(rolls.map(r=>[r.key,r]));
+  const pairs = [
+    ["Fall 2024","Fall 2025","Both Falls fully covered — a clean comparison.",
+     "Production fell even though you worked one MORE event. The yield per event dropped — Fall ’24 had four events over $4k (El Paso H&G, So. NM State Fair, Bullhead City, Patagonia); Fall ’25’s board was deeper but thinner, topped by Cielo Vista Mall. This is an event-selection problem, not an effort problem."],
+    ["Spring 2025","Spring 2026","Both Springs fully covered — a clean comparison.",
+     "The breakout. Fewer events, 2.5× the production — El Paso Home & Garden moved onto the Spring board and delivered $10.1k, and average per-event yield went from under $1k to over $3k. Better events, better results."],
+    ["Summer 2025","Summer 2026","◦ Summer ’26 is still in progress (through Aug 18) and Summer ’25 has a 10-day export gap — read directionally, not as a verdict.",
+     "Tracking behind: two events so far vs five, and no repeat yet of a Family RV–style $3.5k pop. Cherry Festival ($5.8k) is carrying the campaign."],
+  ];
+  $("#camp-compare").innerHTML = pairs.map(([a,b,cav,story])=>{
+    const A=byKey[a], B=byKey[b];
+    if(!A||!B) return "";
+    const rows=[["Total event sales",A.total.cpo,B.total.cpo,fmt$],["Events",A.nEvents,B.nEvents,fmtN],
+      ["Sales per event",A.total.cpo/A.nEvents,B.total.cpo/B.nEvents,fmt$],
+      ["CPO",A.total.cpo/(A.total.ord||1),B.total.cpo/(B.total.ord||1),fmt$c],
+      ["Booth $",A.booth.cpo,B.booth.cpo,fmt$],["Service $",A.svc.cpo,B.svc.cpo,fmt$]];
+    return `<div class="card"><div class="lab" style="margin-bottom:8px">${a} → ${b}</div>
+      <div class="scroll"><table><thead><tr><th></th><th class="r">${a}</th><th class="r">${b}</th><th class="r">Change</th></tr></thead><tbody>
+      ${rows.map(([n,p,c,f])=>{const d=pctS(c,p);return `<tr><td>${n}</td><td class="r num">${f(p)}</td><td class="r num">${f(c)}</td><td class="r num ${d===null?"":d>=0?"up":"dn"}">${fmtPct(d)}</td></tr>`;}).join("")}
+      </tbody></table></div>
+      <p style="font-size:13.5px;color:var(--ink2);margin-top:10px;max-width:75ch">${cav} <b>What happened:</b> ${story}</p></div>`;
+  }).join("");
+}
+
+/* ---------- 9 coaching ---------- */
+function renderCoach(){
+  const D = `<span class="badge b-data">DATA</span>`, H = `<span class="badge b-hyp">HYPOTHESIS</span>`;
+  $("#coach-cards").innerHTML = [
+    ["Strengths", `<ul class="tight" style="font-size:14.5px">
+      <li>${D}<b>You’re growing while staying diversified.</b> +4.9% year over year, ~50% events / ~50% customer base, and your top-10 orders are only 17% of sales. That’s a durable shape.</li>
+      <li>${D}<b>The booth game works.</b> $120k behind the booth across 43 event runs, booth production up year over year, and El Paso Home &amp; Garden delivered $10–12k in <em>both</em> seasons it ran.</li>
+      <li>${D}<b>Service calls are getting bigger.</b> Same order count, +40% revenue — your average service order jumped from ~$417 to ~$603.</li>
+      <li>${D}<b>Business gifts are your highest-leverage sale.</b> Eleven orders, $28k, ~$2,554 average — nearly 5× your normal ticket, including your two biggest orders ever in this window ($8,715 and $7,600).</li>
+      <li>${D}<b>Spring 2026 proved you can rebuild a campaign.</b> +147% vs Spring 2025 on fewer, better events.</li>
+    </ul>`],
+    ["Biggest opportunities", `<ul class="tight" style="font-size:14.5px">
+      <li>${D}<b>Event service follow-up barely exists.</b> Only 7% of event production is service sales, and 36 of 43 event runs show zero follow-up revenue. ${H}A lead-capture sheet at every booth plus a 48-hour call block after each event could add 20–40% to event totals — A Christmas Fair ’25 (+$1.8k service on $3k booth) is the proof of concept.</li>
+      <li>${D}<b>Business gifts collapsed −47%</b> ($18.4k → $9.7k, 8 orders → 3). ${H}Nothing in the data says demand dropped — it looks unworked. A September gift campaign to business owners would land before the holiday window.</li>
+      <li>${D}<b>Fall went backwards −24% despite more events</b> — per-event yield fell $3,486 → $2,461. ${H}Rebook Fall ’24’s $4k+ producers (So. NM State Fair, Bullhead City, Patagonia) instead of adding thinner shows.</li>
+      <li>${D}<b>January and April crater every year</b> ($1.9k, $7.2k, $7.5k, $1.3k). ${H}Pre-book service-call weeks for those months — your service CPO says the customer base will carry them.</li>
+      <li>${D}<b>Re-order average slipped</b> ($496 → $376). ${H}Possibly smaller top-up orders — worth an add-on/upsell script on re-order calls.</li>
+    </ul>`],
+    ["What changed", `<p style="font-size:14.5px;max-width:78ch">${D}Growth came from <b>more orders, not bigger ones</b>: +21 orders, CPO down 4%. Service calls (+$5.2k) and off-event new customers (+$8.6k) drove the gain; business gifts (−$8.7k) nearly cancelled it. Events shifted shape — Fall softened, Spring exploded, and the booth flag mix in the raw exports changed (older event orders were keyed “New/Re-order”; this dashboard reconciles them so the comparison is honest).</p>`],
+    ["What is driving the business", `<p style="font-size:14.5px;max-width:78ch">${D}Half the revenue starts at an event — and within that, <b>Fall is 57% of all event production</b>, led by El Paso Home &amp; Garden, Cielo Vista Mall, and the state-fair circuit. The other half is your customer base: new customers ($41k), service calls ($31k), re-orders ($29k), and a small number of very large business-gift orders ($28k). October is the biggest month in both years.</p>`],
+    ["Next focus", `<ol class="tight" style="font-size:14.5px;padding-left:22px">
+      <li><b>Install event follow-up.</b> Capture every booth lead; block follow-up calls within 48 hours of each show. Target: service revenue at 8+ events this Fall (last Fall: 4). ${H}</li>
+      <li><b>Restart the business-gift pipeline in September.</b> Ten conversations with past gift buyers + business owners from your customer list before Nov 1. ${H}</li>
+      <li><b>Start the weekly tracker below.</b> Until calls, appointments, and referral asks are tracked, closing % and completion % are unknowable — and they’re the levers everything above depends on. ${D}</li>
+    </ol>`],
+  ].map(([t,b])=>`<div class="card"><h3 style="font-size:19px;margin-bottom:10px">${t}</h3>${b}</div>`).join("");
+}
+
+/* ---------- 10 tracker ---------- */
+let weeks = lsGet(LS_WK, []);
+const nz = v => v===""||v===null||v===undefined ? null : +v;
+function wkSave(){ lsSet(LS_WK, weeks); }
+function ratio(n,d){ return (n===null||d===null||!d) ? null : n/d; }
+function fmtRatio(r,kind){
+  if(r===null) return `<span class="mtr" style="font-size:9px;padding:4px 8px">Not enough data — begin tracking</span>`;
+  if(kind==="pct") return (r*100).toFixed(0)+"%";
+  if(kind==="$") return fmt$c(r);
+  return r.toFixed(2);
+}
+function renderTracker(){
+  const sum = k => weeks.some(w=>w[k]!==null&&w[k]!==undefined) ? weeks.reduce((s,w)=>s+(w[k]||0),0) : null;
+  const t = {calls:sum("calls"),sched:sum("sched"),comp:sum("comp"),orders:sum("orders"),sales:sum("sales"),refAsk:sum("refAsk"),refGot:sum("refGot")};
+  $("#tk-kpis").innerHTML = [
+    ["Completion %", fmtRatio(ratio(t.comp,t.sched),"pct"), "appts completed ÷ scheduled"],
+    ["Closing %", fmtRatio(ratio(t.orders,t.comp),"pct"), "orders ÷ completed appts"],
+    ["CPO", fmtRatio(ratio(t.sales,t.orders),"$"), "sales ÷ orders"],
+    ["Sales / appointment", fmtRatio(ratio(t.sales,t.comp),"$"), "sales ÷ completed appts"],
+    ["Referral ask rate", fmtRatio(ratio(t.refAsk,t.comp),"pct"), "asks ÷ completed appts"],
+    ["Referrals / appointment", fmtRatio(ratio(t.refGot,t.comp),""), "received ÷ completed appts"],
+  ].map(([l,v,d])=>`<div class="kpi"><div class="lab">${l}</div><div class="v" style="font-size:19px">${v}</div><div class="d">${d}</div></div>`).join("");
+
+  if (!weeks.length){
+    $("#wk-table").innerHTML = `<tbody><tr><td style="border:none;color:var(--ink2)">No weeks logged yet. The historical exports can’t supply these numbers — add your first week above and the ratios light up.</td></tr></tbody>`;
+    return;
+  }
+  const rows = [...weeks].sort((a,b)=>a.wk<b.wk?1:-1);
+  const c = v => v===null||v===undefined ? "—" : fmtN(v);
+  $("#wk-table").innerHTML = `<thead><tr><th>Week</th><th class="r">Calls</th><th class="r">Sched</th><th class="r">Comp</th><th class="r">Orders</th><th class="r">Sales</th><th class="r">Close %</th><th class="r">CPO</th><th class="r">Refs A/R</th><th>Notes</th><th></th></tr></thead><tbody>`
+    + rows.map(w=>{
+      const close = ratio(w.orders??null, w.comp??null), cpo = ratio(w.sales??null, w.orders??null);
+      return `<tr><td class="num">${w.wk}</td><td class="r num">${c(w.calls)}</td><td class="r num">${c(w.sched)}</td><td class="r num">${c(w.comp)}</td><td class="r num">${c(w.orders)}</td><td class="r num">${w.sales!=null?fmt$(w.sales):"—"}</td><td class="r num">${close!==null?(close*100).toFixed(0)+"%":"—"}</td><td class="r num">${cpo!==null?fmt$c(cpo):"—"}</td><td class="r num">${c(w.refAsk)}/${c(w.refGot)}</td><td style="white-space:normal;min-width:140px">${esc(w.notes||"")}</td>
+      <td><button class="btn ghost" data-edit="${w.wk}" style="padding:6px 9px">Edit</button> <button class="btn danger" data-del="${w.wk}" style="padding:6px 9px">✕</button></td></tr>`;
+    }).join("") + `</tbody>`;
+  $("#wk-table").querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{
+    if(!confirm("Delete week "+b.dataset.del+"?")) return;
+    weeks = weeks.filter(w=>w.wk!==b.dataset.del); wkSave(); renderTracker();
+  }));
+  $("#wk-table").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>{
+    const w = weeks.find(x=>x.wk===b.dataset.edit); if(!w) return;
+    const f = $("#wk-form");
+    for (const k of ["wk","calls","sched","comp","orders","sales","refAsk","refGot","notes"])
+      f.elements[k].value = w[k]??"";
+    f.scrollIntoView({behavior:"smooth",block:"center"});
+  }));
+}
+$("#wk-form").addEventListener("submit", e=>{
+  e.preventDefault();
+  const f = e.target;
+  const w = {wk:f.elements.wk.value,
+    calls:nz(f.elements.calls.value), sched:nz(f.elements.sched.value), comp:nz(f.elements.comp.value),
+    orders:nz(f.elements.orders.value), sales:nz(f.elements.sales.value),
+    refAsk:nz(f.elements.refAsk.value), refGot:nz(f.elements.refGot.value),
+    notes:f.elements.notes.value.trim()};
+  weeks = weeks.filter(x=>x.wk!==w.wk).concat([w]);
+  wkSave(); renderTracker(); f.reset();
+});
+$("#wk-export").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify({exported:new Date().toISOString().slice(0,10), weeks},null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "gerardo-weekly-stats.json"; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$("#wk-import-btn").addEventListener("click", ()=>$("#wk-import").click());
+$("#wk-import").addEventListener("change", e=>{
+  const file = e.target.files[0]; if(!file) return;
+  file.text().then(txt=>{
+    try{
+      const j = JSON.parse(txt);
+      const inWeeks = Array.isArray(j) ? j : j.weeks;
+      if(!Array.isArray(inWeeks)) throw 0;
+      const byWk = new Map(weeks.map(w=>[w.wk,w]));
+      inWeeks.forEach(w=>{ if(w && w.wk) byWk.set(w.wk,w); });
+      weeks = [...byWk.values()]; wkSave(); renderTracker();
+      alert("Imported "+inWeeks.length+" week(s).");
+    }catch(err){ alert("That file isn’t a valid export from this tracker."); }
+    e.target.value="";
+  });
+});
+
+/* ---------- CSV upload ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], cell="", inQ=false;
+  for (let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(inQ){ if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else inQ=false; } else cell+=ch; }
+    else if(ch==='"') inQ=true;
+    else if(ch===','){ row.push(cell); cell=""; }
+    else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n')i++; row.push(cell); cell=""; if(row.some(c=>c!=="")) rows.push(row); row=[]; }
+    else cell+=ch;
+  }
+  if(cell!==""||row.length){ row.push(cell); if(row.some(c=>c!=="")) rows.push(row); }
+  return rows;
+}
+function normDate(s){
+  s=s.trim();
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){ let y=+m[3]; if(y<100)y+=2000; return `${y}-${String(+m[1]).padStart(2,"0")}-${String(+m[2]).padStart(2,"0")}`; }
+  return null;
+}
+function ingestCSV(text){
+  const rows = parseCSV(text);
+  const hi = rows.findIndex(r=>r.some(c=>c.trim()==="Order #"));
+  if(hi<0) return {err:"Couldn’t find an “Order #” header row — is this the standard order export?"};
+  const hdr = rows[hi].map(c=>c.trim());
+  const col = n => hdr.indexOf(n);
+  const need = ["Order #","Billing Name","CPO","Order Date","Order Flag"];
+  for(const n of need) if(col(n)<0) return {err:`Missing required column “${n}”.`};
+  const existing = new Set(pool().map(o=>o.i));
+  let added=0, dup=0, excl=0, bad=0;
+  const out=[];
+  for(const r of rows.slice(hi+1)){
+    const id = (r[col("Order #")]||"").trim(); if(!id) continue;
+    const name = (r[col("Billing Name")]||"").trim();
+    const cpo = parseFloat(String(r[col("CPO")]||"0").replace(/[$,]/g,""))||0;
+    const date = normDate(r[col("Order Date")]||"");
+    const status = col("Status")>=0 ? (r[col("Status")]||"").trim() : "";
+    if(!date){ bad++; continue; }
+    if((/^(jerry|gerardo) ramirez$/i.test(name) && cpo===0) || /cancel/i.test(status)){ excl++; continue; }
+    if(existing.has(id)){ dup++; continue; }
+    const evRaw = col("Event")>=0 ? (r[col("Event")]||"").trim() : "";
+    let e="",en="";
+    if(evRaw){ const p=evRaw.split(" - "); e=p[0].trim(); en=(p.slice(1).join(" - ")||evRaw).trim(); }
+    out.push({i:id, d:date, c:Math.round(cpo*100)/100, f:(r[col("Order Flag")]||"").trim(),
+      t:col("Type")>=0?(r[col("Type")]||"").trim():"", e, en});
+    existing.add(id); added++;
+  }
+  uploads = uploads.concat(out); lsSet(LS_UP, uploads);
+  return {added, dup, excl, bad};
+}
+function csvStatus(){
+  $("#csv-status").textContent = uploads.length ? `${uploads.length} uploaded order(s) active in this browser.` : "";
+  $("#csv-clear").hidden = !uploads.length;
+}
+$("#csv-btn").addEventListener("click", ()=>$("#csv-file").click());
+$("#csv-file").addEventListener("change", e=>{
+  const file=e.target.files[0]; if(!file) return;
+  file.text().then(txt=>{
+    const res = ingestCSV(txt);
+    if(res.err){ alert(res.err); return; }
+    alert(`Added ${res.added} new orders. Skipped ${res.dup} duplicates, ${res.excl} excluded by the data rules${res.bad?", "+res.bad+" unreadable rows":""}.`);
+    renderAll(); csvStatus();
+    e.target.value="";
+  });
+});
+$("#csv-clear").addEventListener("click", ()=>{
+  if(!confirm("Remove all uploaded orders from this browser? The built-in two-year dataset is unaffected.")) return;
+  uploads=[]; lsSet(LS_UP,uploads); renderAll(); csvStatus();
+});
+
+/* ---------- 11 method + foot ---------- */
+function renderMethod(){
+  $("#method-card").innerHTML = `<div class="lab" style="margin-bottom:8px">The rules this page follows (Project Ahub)</div>
+  <ul class="tight" style="font-size:13.5px;color:var(--ink2)">
+    <li><b>Never invent a stat.</b> Everything here is computed from ${fmtN(pool().length)} real orders across two 12-month exports (${M.prevStart} → ${M.prevEnd} and ${M.curStart} → ${M.curEnd}). Metrics the exports can’t support are marked “Manual Tracking Required.”</li>
+    <li><b>No double counting.</b> Each order appears in exactly one export and one bucket, booked in the week it was placed. Event-service revenue is credited to its event for attribution but counted once in totals. The two export files have zero overlapping order numbers (verified).</li>
+    <li><b>Excluded:</b> ${M.excluded.self_zero} zero-dollar sample/demo orders billed to Gerardo/Jerry Ramirez (per Alan’s rule) and ${M.excluded.cancelled} cancelled orders. Other customers’ $0 orders (free replacements) remain and count as orders.</li>
+    <li><b>Buckets follow the order flag</b> (Ahub classification). One reconciliation: in the older export, orders written on an event code were flagged “New/Re-order” — the newer export keys them “Booth Sale.” Both count as behind-the-booth so year-over-year event numbers compare honestly. Event Service Call / Free Look lead orders count as event service sales.</li>
+    <li><b>Campaigns</b> use the Ahub windows — Spring = Jan–Apr (CI), Summer = May–Aug (CII), Fall = Sep–Dec (CIII) — always with a year attached.</li>
+    <li><b>Known gaps:</b> ${esc(M.gapNote)} Edge months (Aug ’24, Aug ’25, Aug ’26) are partial and excluded from monthly-average and consistency math.</li>
+    <li><b>Context figures</b> (career CPO, shifts per year) come from the RSD Events Team dashboard and are shown for context only — never added into this page’s totals.</li>
+  </ul>
+  <div style="margin-top:12px" class="note"><b>Shift context from the team dashboard:</b> 2024 — 42 event shifts, ${fmt$(1605)}/shift · 2025 — 37 shifts, ${fmt$(1390)}/shift · 2026 through Campaign 1 — 11 shifts, ${fmt$(1886)}/shift (best rate of the three years). Shift counts aren’t in the order exports, so per-shift math for the 12-month windows would be invented — tracked here as context instead.</div>`;
+  $("#foot").innerHTML = `Sales Rep Stat Tracker · Gerardo Ramirez · built ${M.generated} from order exports + RSD Events Team dashboard · data processed entirely in this browser — nothing leaves this page.`;
+}
+
+/* ---------- render orchestration ---------- */
+function renderScopedSections(){ renderTime(); renderSources(); renderTop(); renderEvents(); }
+function renderAll(){
+  renderHeader(); renderScorecard(); renderCompare(); renderFilter();
+  renderScopedSections(); renderConsistency(); renderCampaigns(); renderCoach(); renderMethod();
+}
+$("#time-metric").addEventListener("change", e=>{ timeMetric=e.target.value; renderTime(); });
+$("#ev-pick").addEventListener("change", renderEvents);
+renderAll(); renderTracker(); csvStatus();
+</script>
