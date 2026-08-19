@@ -182,6 +182,18 @@ button.btn.danger{background:transparent;color:var(--bad);border:1px solid var(-
   <div class="eyebrow">04 · Where the Business Comes From</div>
   <h2>Sales sources</h2>
   <p class="sec-sub">Orders are bucketed by their order-type flag under the Ahub rules — an order carrying an event reference belongs to that event; everything else follows its flag.</p>
+  <div class="card">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="lab">Every source, split up</div>
+      <div style="display:flex;gap:6px">
+        <button class="fpill on" type="button" data-bm="year">By year</button>
+        <button class="fpill" type="button" data-bm="camp">By campaign</button>
+      </div>
+    </div>
+    <div class="scroll"><table id="src-break"></table></div>
+    <p class="lab" style="margin-top:10px;text-transform:none;letter-spacing:.04em" id="src-break-foot"></p>
+  </div>
+  <div style="height:12px"></div>
   <div class="card scroll"><table id="src-table"></table></div>
   <div style="height:12px"></div>
   <div class="two">
@@ -708,6 +720,42 @@ function renderSources(){
   </ul>`;
 }
 
+/* ---------- 4b sources by year / campaign ---------- */
+let breakMode = "year";
+const YEAR_FLAGS = {"2024":"from Aug 19","2026":"through Aug 18"};
+function renderSrcBreak(){
+  const os = pool();
+  let cols;
+  if (breakMode==="year"){
+    const years = [...new Set(os.map(o=>o.d.slice(0,4)))].sort();
+    cols = years.map(y=>({lab:y+(YEAR_FLAGS[y]?" ◦":""), f:o=>o.d.slice(0,4)===y}));
+  } else {
+    const so = {Spring:1,Summer:2,Fall:3};
+    const keys = [...new Set(os.map(o=>campLabel(o.d)))]
+      .sort((a,b)=>{ const [sa,ya]=a.split(" "),[sb,yb]=b.split(" "); return (+ya-+yb)||(so[sa]-so[sb]); });
+    cols = keys.map(k=>({lab:k+(CAMP_FLAGS[k]?" ◦":""), f:o=>campLabel(o.d)===k}));
+  }
+  const rows = BUCKETS.map(b=>({b, sub:os.filter(o=>bucketOf(o)===b.k)}))
+    .sort((x,y)=>agg(y.sub).cpo-agg(x.sub).cpo);
+  const cell = a => a.ord ? `${fmt$(a.cpo)}<span style="color:var(--muted)"> · ${a.ord}</span>` : `<span style="color:var(--muted)">—</span>`;
+  let html = `<thead><tr><th>Source</th>${cols.map(c=>`<th class="r">${c.lab}</th>`).join("")}</tr></thead><tbody>`;
+  rows.forEach(({b,sub})=>{
+    html += `<tr><td>${b.n}</td>${cols.map(c=>`<td class="r num">${cell(agg(sub.filter(c.f)))}</td>`).join("")}</tr>`;
+  });
+  html += `<tr style="border-top:2px solid var(--line2)"><td><b>Total</b></td>${cols.map(c=>{
+    const a = agg(os.filter(c.f));
+    return `<td class="r num"><b>${fmt$(a.cpo)}</b><span style="color:var(--muted)"> · ${a.ord}</span></td>`;
+  }).join("")}</tr></tbody>`;
+  $("#src-break").innerHTML = html;
+  $("#src-break-foot").textContent = "Each cell: sales · orders. ◦ Partial coverage — data starts Aug 19, 2024 and runs through Aug 18, 2026, with a 10-day export gap in Aug 2025."
+    + (breakMode==="camp" ? " Campaigns follow the Ahub windows (Spring Jan–Apr · Summer May–Aug · Fall Sep–Dec)." : "");
+}
+document.querySelectorAll("[data-bm]").forEach(btn=>btn.addEventListener("click",()=>{
+  breakMode = btn.dataset.bm;
+  document.querySelectorAll("[data-bm]").forEach(x=>x.classList.toggle("on", x===btn));
+  renderSrcBreak();
+}));
+
 /* ---------- 5 largest orders ---------- */
 function renderTop(){
   const os = scoped(pool());
@@ -1030,7 +1078,7 @@ function renderMethod(){
 function renderScopedSections(){ renderTime(); renderSources(); renderTop(); renderEvents(); }
 function renderAll(){
   renderHeader(); renderScorecard(); renderCompare(); renderFilter();
-  renderScopedSections(); renderConsistency(); renderCampaigns(); renderCoach(); renderMethod();
+  renderScopedSections(); renderSrcBreak(); renderConsistency(); renderCampaigns(); renderCoach(); renderMethod();
 }
 $("#time-metric").addEventListener("change", e=>{ timeMetric=e.target.value; renderTime(); });
 $("#ev-pick").addEventListener("change", renderEvents);
