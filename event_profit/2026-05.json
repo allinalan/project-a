@@ -1,6 +1,6 @@
 {
   "month": "2026-05",
-  "pulledAt": "2026-08-20T02:19:32.773Z",
+  "pulledAt": "2026-08-20T02:28:13.215Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,11 +11,11 @@
   "totals": {
     "sales": 29163,
     "charges": 2815.42,
-    "travel": 0,
-    "net": 26347.58
+    "travel": 1326,
+    "net": 25021.58
   },
   "outsideSales": 0,
-  "travelPendingCount": 3,
+  "travelPendingCount": 0,
   "eventCount": 4,
   "events": [
     {
@@ -52,49 +52,21 @@
       "overageCost": 60,
       "totalCharges": 385,
       "chargeCount": 2,
-      "net": 8516,
-      "roi": 23.12,
+      "net": 7990,
+      "roi": 9.77,
       "calendarMatch": "Pasadena Strawberry Festival",
       "worked": true,
       "outOfTown": true,
       "travel": {
-        "flight": null,
+        "flight": 291,
         "hotel": null,
-        "rentalCar": null,
+        "rentalCar": 235,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 385
-    },
-    {
-      "id": "00098493",
-      "name": "Rockin' the Rim",
-      "sales": 1563,
-      "orders": 4,
-      "firstOrderDate": "2026-05-22",
-      "lastOrderDate": "2026-06-01",
-      "homeMonth": "2026-05",
-      "attribution": "first order",
-      "boothCost": 175,
-      "overageCost": 22,
-      "totalCharges": 197,
-      "chargeCount": 3,
-      "net": 1366,
-      "roi": 7.93,
-      "calendarMatch": null,
-      "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify",
-      "outOfTown": true,
-      "travel": {
-        "flight": null,
-        "hotel": null,
-        "rentalCar": null,
-        "other": null
-      },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 197
+      "travelTotal": 526,
+      "travelStatus": "recorded",
+      "travelNote": "Pasadena TX (not CA)",
+      "totalCost": 911
     },
     {
       "id": "00090305",
@@ -109,20 +81,51 @@
       "overageCost": 22,
       "totalCharges": 1022,
       "chargeCount": 2,
-      "net": 1298,
-      "roi": 2.27,
+      "net": 1148,
+      "roi": 1.98,
       "calendarMatch": "Prescott Mother's Day Fest",
       "worked": true,
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 150,
         "rentalCar": null,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 1022
+      "travelTotal": 150,
+      "travelStatus": "recorded",
+      "travelNote": "Prescott lodging $150 (confirmed by Alan 2026-08-19)",
+      "totalCost": 1172
+    },
+    {
+      "id": "00098493",
+      "name": "Rockin' the Rim",
+      "sales": 1563,
+      "orders": 4,
+      "firstOrderDate": "2026-05-22",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 175,
+      "overageCost": 22,
+      "totalCharges": 197,
+      "chargeCount": 3,
+      "net": 716,
+      "roi": 1.85,
+      "calendarMatch": null,
+      "worked": true,
+      "workedNote": "booth charges but no matching calendar banner — verify",
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": 650,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 650,
+      "travelStatus": "recorded",
+      "travelNote": "Rockin' the Rim",
+      "totalCost": 847
     }
   ],
   "outsideOrders": []
