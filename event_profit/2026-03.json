@@ -1,19 +1,20 @@
 {
   "month": "2026-03",
-  "pulledAt": "2026-08-20T00:11:36.644Z",
+  "pulledAt": "2026-08-20T00:20:18.336Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
     "end": 202634
   },
   "totals": {
-    "sales": 21151,
+    "sales": 20966,
     "charges": 3498.48,
-    "net": 17652.52
+    "net": 17467.52
   },
-  "eventCount": 6,
+  "outsideSales": 185,
+  "eventCount": 5,
   "events": [
     {
       "id": "00085944",
@@ -29,7 +30,9 @@
       "totalCharges": 1829.5,
       "chargeCount": 7,
       "net": 10941.5,
-      "roi": 6.98
+      "roi": 6.98,
+      "calendarMatch": "Southern Arizona Home Show",
+      "worked": true
     },
     {
       "id": "00083759",
@@ -45,7 +48,9 @@
       "totalCharges": 1550.66,
       "chargeCount": 5,
       "net": 3737.34,
-      "roi": 3.41
+      "roi": 3.41,
+      "calendarMatch": "Maricopa Home & Garden Show",
+      "worked": true
     },
     {
       "id": "00095873",
@@ -61,7 +66,9 @@
       "totalCharges": 51.65,
       "chargeCount": 4,
       "net": 1712.35,
-      "roi": 34.15
+      "roi": 34.15,
+      "calendarMatch": "Service Event - Surprise/Avondale",
+      "worked": true
     },
     {
       "id": "00097758",
@@ -77,22 +84,9 @@
       "totalCharges": 66.67,
       "chargeCount": 1,
       "net": 971.33,
-      "roi": 15.57
-    },
-    {
-      "id": "00089678",
-      "name": "4th Avenue Spring Street Fair",
-      "sales": 185,
-      "orders": 1,
-      "firstOrderDate": "2026-03-20",
-      "lastOrderDate": "2026-03-20",
-      "homeMonth": "2026-03",
-      "attribution": "first order",
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 185,
-      "roi": null
+      "roi": 15.57,
+      "calendarMatch": "East or West Valley - SC",
+      "worked": true
     },
     {
       "id": "00088150",
@@ -107,7 +101,20 @@
       "overageCost": 0,
       "totalCharges": 0,
       "net": 105,
-      "roi": null
+      "roi": null,
+      "calendarMatch": "East or West Valley - SC",
+      "worked": true
+    }
+  ],
+  "outsideOrders": [
+    {
+      "id": "00089678",
+      "name": "4th Avenue Spring Street Fair",
+      "sales": 185,
+      "orders": 1,
+      "firstOrderDate": "2026-03-20",
+      "lastOrderDate": "2026-03-20",
+      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
     }
   ]
 }
