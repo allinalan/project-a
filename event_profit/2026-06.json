@@ -1,6 +1,6 @@
 {
   "month": "2026-06",
-  "pulledAt": "2026-08-20T18:32:11.798Z",
+  "pulledAt": "2026-08-20T21:13:45.950Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -22,7 +22,7 @@
   },
   "outsideSales": 0,
   "outsideCommission": 0,
-  "travelPendingCount": 0,
+  "travelPendingCount": 1,
   "eventCount": 5,
   "events": [
     {
@@ -42,7 +42,9 @@
       "net": 2398.95,
       "roi": 4.37,
       "calendarMatch": "Texas Blueberry Festival",
+      "shifts": 1,
       "worked": true,
+      "workedSource": "calendar banner \"Texas Blueberry Festival\" (1d)",
       "outOfTown": true,
       "travel": {
         "flight": 291,
@@ -72,7 +74,9 @@
       "net": 2215.12,
       "roi": 10.74,
       "calendarMatch": "Prescott Bluegrass Festival",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Prescott Bluegrass Festival\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -102,7 +106,9 @@
       "net": 611.3,
       "roi": 1.76,
       "calendarMatch": "Territorial Days",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Territorial Days\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -132,7 +138,9 @@
       "net": 63.93,
       "roi": 1.13,
       "calendarMatch": "Prescott Bluegrass Festival",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Prescott Bluegrass Festival\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -162,18 +170,19 @@
       "net": -121.19,
       "roi": 0,
       "calendarMatch": null,
+      "shifts": 1,
       "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify",
+      "workedSource": "manual override — Worked one shift, no orders — a genuine flop; no calendar banner exists (confirmed 2026-08-20)",
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": 0,
+        "hotel": null,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "recorded",
-      "travelNote": "No travel cost — covered with service event trip — per Alan 2026-08-19",
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelNote": "Worked one shift, no orders — a genuine flop; no calendar banner exists (confirmed 2026-08-20)",
       "totalCost": 121.19
     }
   ],
