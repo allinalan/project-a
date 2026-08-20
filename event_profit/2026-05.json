@@ -1,0 +1,83 @@
+{
+  "month": "2026-05",
+  "pulledAt": "2026-08-20T00:12:12.468Z",
+  "salesAsOf": "2026-08-19",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "orderLookbackSince": "2025-06-01",
+  "chargeWindow": {
+    "start": 202601,
+    "end": 202634
+  },
+  "totals": {
+    "sales": 29163,
+    "charges": 3015.42,
+    "net": 26147.58
+  },
+  "eventCount": 4,
+  "events": [
+    {
+      "id": "00087217",
+      "name": "Maricopa County Home & Flower Show",
+      "sales": 16379,
+      "orders": 13,
+      "firstOrderDate": "2026-05-01",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 1178.42,
+      "overageCost": 33,
+      "totalCharges": 1211.42,
+      "chargeCount": 2,
+      "net": 15167.58,
+      "roi": 13.52
+    },
+    {
+      "id": "00091806",
+      "name": "Pasadena Strawberry Festival",
+      "sales": 8901,
+      "orders": 12,
+      "firstOrderDate": "2026-05-14",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 325,
+      "overageCost": 60,
+      "totalCharges": 385,
+      "chargeCount": 2,
+      "net": 8516,
+      "roi": 23.12
+    },
+    {
+      "id": "00090305",
+      "name": "Prescott Mother's Day Fine Art & Wine Festival",
+      "sales": 2320,
+      "orders": 8,
+      "firstOrderDate": "2026-05-09",
+      "lastOrderDate": "2026-05-10",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 1000,
+      "overageCost": 22,
+      "totalCharges": 1022,
+      "chargeCount": 2,
+      "net": 1298,
+      "roi": 2.27
+    },
+    {
+      "id": "00098493",
+      "name": "Rockin' the Rim",
+      "sales": 1563,
+      "orders": 4,
+      "firstOrderDate": "2026-05-22",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 375,
+      "overageCost": 22,
+      "totalCharges": 397,
+      "chargeCount": 3,
+      "net": 1166,
+      "roi": 3.94
+    }
+  ]
+}
