@@ -1,6 +1,6 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T18:32:32.258Z",
+  "pulledAt": "2026-08-20T21:14:05.409Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -42,7 +42,9 @@
       "net": 6709.65,
       "roi": 6.16,
       "calendarMatch": "Maricopa Home Show",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Maricopa Home Show\" (2d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 1301.25
@@ -56,7 +58,7 @@
       "orders": 1,
       "firstOrderDate": "2026-07-22",
       "lastOrderDate": "2026-07-22",
-      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
     },
     {
       "id": "00098104",
@@ -65,7 +67,7 @@
       "orders": 1,
       "firstOrderDate": "2026-07-25",
       "lastOrderDate": "2026-07-25",
-      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
     }
   ]
 }
