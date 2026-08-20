@@ -1,6 +1,6 @@
 {
   "month": "2026-02",
-  "pulledAt": "2026-08-20T21:16:02.300Z",
+  "pulledAt": "2026-08-20T21:19:14.147Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -112,9 +112,9 @@
       "net": 765.45,
       "roi": null,
       "calendarMatch": "Barrett-Jackson",
-      "shifts": 6,
+      "shifts": 0,
       "worked": true,
-      "workedSource": "calendar banner \"Barrett-Jackson\" (6d)",
+      "workedSource": "calendar banner \"Barrett-Jackson\" (6d) — shifts credited to the earlier record for this banner",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 0
@@ -168,9 +168,9 @@
       "net": 314,
       "roi": 1.5,
       "calendarMatch": "Chandler Fine Art & Wine Festival",
-      "shifts": 2,
+      "shifts": 0,
       "worked": true,
-      "workedSource": "calendar banner \"Chandler Fine Art & Wine Festival\" (2d)",
+      "workedSource": "calendar banner \"Chandler Fine Art & Wine Festival\" (2d) — shifts credited to the earlier record for this banner",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 622
@@ -191,9 +191,9 @@
       "net": 142.2,
       "roi": null,
       "calendarMatch": "SE - North Mesa",
-      "shifts": 1,
+      "shifts": 0,
       "worked": true,
-      "workedSource": "calendar banner \"SE - North Mesa\" (1d)",
+      "workedSource": "calendar banner \"SE - North Mesa\" (1d) — shifts credited to the earlier record for this banner",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 0
@@ -217,7 +217,7 @@
       "calendarMatch": "Lake Havasu Service Event",
       "shifts": 0,
       "worked": false,
-      "workedSource": "manual override — Showed up late, promoter would not let him in — travelled but worked 0 shifts (confirmed 2026-08-20)",
+      "workedSource": "manual override — Showed up late, promoter would not let him in — travelled but worked 0 shifts (confirmed 2026-08-20) — shifts credited to the earlier record for this banner",
       "outOfTown": true,
       "travel": {
         "flight": null,
