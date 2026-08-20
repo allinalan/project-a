@@ -1,6 +1,6 @@
 {
   "month": "2026-01",
-  "pulledAt": "2026-08-20T18:30:29.046Z",
+  "pulledAt": "2026-08-20T21:12:06.302Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -42,7 +42,9 @@
       "net": 9001.85,
       "roi": 4.52,
       "calendarMatch": "Barrett-Jackson",
+      "shifts": 6,
       "worked": true,
+      "workedSource": "calendar banner \"Barrett-Jackson\" (6d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 2560
@@ -64,7 +66,9 @@
       "net": 2050.97,
       "roi": 2.18,
       "calendarMatch": "Maricopa Home & Garden Show",
+      "shifts": 3,
       "worked": true,
+      "workedSource": "calendar banner \"Maricopa Home & Garden Show\" (3d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 1736.23
@@ -86,7 +90,9 @@
       "net": 1945.7,
       "roi": 3.24,
       "calendarMatch": "Lake Havasu Winterfest",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Lake Havasu Winterfest\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -115,7 +121,9 @@
       "net": 463.05,
       "roi": null,
       "calendarMatch": "Lake Havasu Service Event",
+      "shifts": 1,
       "worked": true,
+      "workedSource": "calendar banner \"Lake Havasu Service Event\" (1d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
