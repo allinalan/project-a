@@ -1,8 +1,8 @@
 {
   "month": "2026-06",
-  "pulledAt": "2026-08-20T00:12:30.638Z",
+  "pulledAt": "2026-08-20T00:21:15.583Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -13,6 +13,7 @@
     "charges": 1590.34,
     "net": 15130.66
   },
+  "outsideSales": 0,
   "eventCount": 5,
   "events": [
     {
@@ -29,7 +30,9 @@
       "totalCharges": 245,
       "chargeCount": 2,
       "net": 6666,
-      "roi": 28.21
+      "roi": 28.21,
+      "calendarMatch": "Texas Blueberry Festival",
+      "worked": true
     },
     {
       "id": "00100833",
@@ -45,7 +48,9 @@
       "totalCharges": 227.48,
       "chargeCount": 1,
       "net": 5200.52,
-      "roi": 23.86
+      "roi": 23.86,
+      "calendarMatch": "Prescott Bluegrass Festival",
+      "worked": true
     },
     {
       "id": "00095362",
@@ -61,7 +66,9 @@
       "totalCharges": 658,
       "chargeCount": 2,
       "net": 2496,
-      "roi": 4.79
+      "roi": 4.79,
+      "calendarMatch": "Territorial Days",
+      "worked": true
     },
     {
       "id": "00099373",
@@ -77,7 +84,9 @@
       "totalCharges": 338.67,
       "chargeCount": 2,
       "net": 889.33,
-      "roi": 3.63
+      "roi": 3.63,
+      "calendarMatch": "Prescott Bluegrass Festival",
+      "worked": true
     },
     {
       "id": "00098307",
@@ -93,7 +102,11 @@
       "homeMonth": "2026-06",
       "attribution": "first charge (no orders ever — charges can post late, month may be approximate)",
       "net": -121.19,
-      "roi": 0
+      "roi": 0,
+      "calendarMatch": null,
+      "worked": true,
+      "workedNote": "booth charges but no matching calendar banner — verify"
     }
-  ]
+  ],
+  "outsideOrders": []
 }
