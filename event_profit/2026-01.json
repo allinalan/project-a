@@ -1,6 +1,6 @@
 {
   "month": "2026-01",
-  "pulledAt": "2026-08-20T21:27:43.929Z",
+  "pulledAt": "2026-08-20T21:36:45.560Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -14,11 +14,11 @@
     "end": 202634
   },
   "totals": {
-    "sales": 41394,
-    "commission": 18627.3,
+    "sales": 43095,
+    "commission": 19392.75,
     "charges": 4605.73,
     "travel": 560,
-    "net": 13461.57
+    "net": 14227.02
   },
   "outsideSales": 0,
   "outsideCommission": 0,
@@ -28,19 +28,29 @@
     {
       "id": "00088216",
       "name": "Barrett-Jackson Car Auction - Scottsdale",
-      "sales": 25693,
-      "orders": 34,
+      "sales": 27394,
+      "orders": 35,
       "firstOrderDate": "2026-01-20",
-      "lastOrderDate": "2026-01-25",
+      "lastOrderDate": "2026-02-23",
       "homeMonth": "2026-01",
       "attribution": "first order",
       "boothCost": 2560,
       "overageCost": 0,
       "totalCharges": 2560,
       "chargeCount": 1,
-      "commission": 11561.85,
-      "net": 9001.85,
-      "roi": 4.52,
+      "mergedFrom": [
+        {
+          "id": "00083374",
+          "name": "Barrett-Jackson Car Auction - Scottsdale",
+          "sales": 1701,
+          "orders": 1,
+          "firstOrderDate": "2026-02-23",
+          "note": "Feb service call off a Barrett-Jackson lead — belongs to the January show (confirmed by Alan 2026-08-20)"
+        }
+      ],
+      "commission": 12327.3,
+      "net": 9767.3,
+      "roi": 4.82,
       "calendarMatch": "Barrett-Jackson",
       "bannerKey": "Barrett-Jackson|2026-01-20",
       "shifts": 6,
