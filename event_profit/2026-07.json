@@ -1,8 +1,13 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T16:56:43.403Z",
+  "pulledAt": "2026-08-20T18:32:32.258Z",
   "salesAsOf": "2026-08-20",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
+  "earnRate": {
+    "commissionRate": 0.5,
+    "mentorShare": 0.05,
+    "effective": 0.45
+  },
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -10,11 +15,13 @@
   },
   "totals": {
     "sales": 17802,
+    "commission": 8010.9,
     "charges": 1301.25,
     "travel": 0,
-    "net": 16500.75
+    "net": 6709.65
   },
   "outsideSales": 2743,
+  "outsideCommission": 1234.35,
   "travelPendingCount": 0,
   "eventCount": 1,
   "events": [
@@ -31,8 +38,9 @@
       "overageCost": 22,
       "totalCharges": 1301.25,
       "chargeCount": 3,
-      "net": 16500.75,
-      "roi": 13.68,
+      "commission": 8010.9,
+      "net": 6709.65,
+      "roi": 6.16,
       "calendarMatch": "Maricopa Home Show",
       "worked": true,
       "outOfTown": false,
