@@ -1,6 +1,6 @@
 {
   "month": "2026-02",
-  "pulledAt": "2026-08-20T21:25:06.595Z",
+  "pulledAt": "2026-08-20T21:28:02.607Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -14,16 +14,16 @@
     "end": 202634
   },
   "totals": {
-    "sales": 19513,
-    "commission": 8780.85,
+    "sales": 17812,
+    "commission": 8015.4,
     "charges": 2686.25,
     "travel": 400,
-    "net": 5694.6
+    "net": 4929.15
   },
-  "outsideSales": 0,
-  "outsideCommission": 0,
+  "outsideSales": 1701,
+  "outsideCommission": 765.45,
   "travelPendingCount": 0,
-  "eventCount": 8,
+  "eventCount": 7,
   "events": [
     {
       "id": "00090302",
@@ -67,9 +67,9 @@
       "roi": null,
       "calendarMatch": "SE - Scottsdale",
       "bannerKey": "SE - Scottsdale|2026-02-27",
-      "shifts": 0,
+      "shifts": 1,
       "worked": true,
-      "workedSource": "calendar banner \"SE - Scottsdale\" (1d) — shifts credited to the earlier record for this banner",
+      "workedSource": "calendar banner \"SE - Scottsdale\" (1d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 0
@@ -98,30 +98,6 @@
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 119.18
-    },
-    {
-      "id": "00083374",
-      "name": "Barrett-Jackson Car Auction - Scottsdale",
-      "sales": 1701,
-      "orders": 1,
-      "firstOrderDate": "2026-02-23",
-      "lastOrderDate": "2026-02-23",
-      "homeMonth": "2026-02",
-      "attribution": "first order",
-      "commission": 765.45,
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 765.45,
-      "roi": null,
-      "calendarMatch": "SE - Scottsdale",
-      "bannerKey": "SE - Scottsdale|2026-02-27",
-      "shifts": 1,
-      "worked": true,
-      "workedSource": "calendar banner \"SE - Scottsdale\" (1d)",
-      "outOfTown": false,
-      "travelTotal": 0,
-      "totalCost": 0
     },
     {
       "id": "00094491",
@@ -239,5 +215,15 @@
       "totalCost": 608
     }
   ],
-  "outsideOrders": []
+  "outsideOrders": [
+    {
+      "id": "00083374",
+      "name": "Barrett-Jackson Car Auction - Scottsdale",
+      "sales": 1701,
+      "orders": 1,
+      "firstOrderDate": "2026-02-23",
+      "lastOrderDate": "2026-02-23",
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
+    }
+  ]
 }
