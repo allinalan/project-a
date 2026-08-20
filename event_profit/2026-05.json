@@ -1,6 +1,6 @@
 {
   "month": "2026-05",
-  "pulledAt": "2026-08-20T18:31:50.441Z",
+  "pulledAt": "2026-08-20T20:56:30.337Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -17,8 +17,8 @@
     "sales": 29163,
     "commission": 13123.35,
     "charges": 2815.42,
-    "travel": 1326,
-    "net": 8981.93
+    "travel": 1123.86,
+    "net": 9184.07
   },
   "outsideSales": 0,
   "outsideCommission": 0,
@@ -78,6 +78,37 @@
       "totalCost": 911
     },
     {
+      "id": "00098493",
+      "name": "Rockin' the Rim",
+      "sales": 1563,
+      "orders": 4,
+      "firstOrderDate": "2026-05-22",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 175,
+      "overageCost": 22,
+      "totalCharges": 197,
+      "chargeCount": 3,
+      "commission": 703.35,
+      "net": 58.49,
+      "roi": 1.09,
+      "calendarMatch": null,
+      "worked": true,
+      "workedNote": "booth charges but no matching calendar banner — verify",
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": 447.86,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 447.86,
+      "travelStatus": "recorded",
+      "travelNote": "Rockin' the Rim lodging — corrected by Alan 2026-08-20 (was mis-stated as 650)",
+      "totalCost": 644.86
+    },
+    {
       "id": "00090305",
       "name": "Prescott Mother's Day Fine Art & Wine Festival",
       "sales": 2320,
@@ -106,37 +137,6 @@
       "travelStatus": "recorded",
       "travelNote": "Prescott lodging $150 (confirmed by Alan 2026-08-19)",
       "totalCost": 1172
-    },
-    {
-      "id": "00098493",
-      "name": "Rockin' the Rim",
-      "sales": 1563,
-      "orders": 4,
-      "firstOrderDate": "2026-05-22",
-      "lastOrderDate": "2026-06-01",
-      "homeMonth": "2026-05",
-      "attribution": "first order",
-      "boothCost": 175,
-      "overageCost": 22,
-      "totalCharges": 197,
-      "chargeCount": 3,
-      "commission": 703.35,
-      "net": -143.65,
-      "roi": 0.83,
-      "calendarMatch": null,
-      "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify",
-      "outOfTown": true,
-      "travel": {
-        "flight": null,
-        "hotel": 650,
-        "rentalCar": null,
-        "other": null
-      },
-      "travelTotal": 650,
-      "travelStatus": "recorded",
-      "travelNote": "Rockin' the Rim",
-      "totalCost": 847
     }
   ],
   "outsideOrders": []
