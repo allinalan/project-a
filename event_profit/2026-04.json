@@ -1,19 +1,20 @@
 {
   "month": "2026-04",
-  "pulledAt": "2026-08-20T00:11:54.775Z",
+  "pulledAt": "2026-08-20T00:20:37.362Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
     "end": 202634
   },
   "totals": {
-    "sales": 21975,
+    "sales": 20285,
     "charges": 671.82,
-    "net": 21303.18
+    "net": 19613.18
   },
-  "eventCount": 4,
+  "outsideSales": 1690,
+  "eventCount": 3,
   "events": [
     {
       "id": "00090304",
@@ -29,7 +30,9 @@
       "totalCharges": 383,
       "chargeCount": 2,
       "net": 17916,
-      "roi": 47.78
+      "roi": 47.78,
+      "calendarMatch": "YCCA Home & Garden Show",
+      "worked": true
     },
     {
       "id": "00096004",
@@ -45,22 +48,9 @@
       "totalCharges": 56.87,
       "chargeCount": 4,
       "net": 1929.13,
-      "roi": 34.92
-    },
-    {
-      "id": "00090941",
-      "name": "Pima County Fair",
-      "sales": 1690,
-      "orders": 2,
-      "firstOrderDate": "2026-04-23",
-      "lastOrderDate": "2026-04-25",
-      "homeMonth": "2026-04",
-      "attribution": "first order",
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 1690,
-      "roi": null
+      "roi": 34.92,
+      "calendarMatch": "Service Event Prescott",
+      "worked": true
     },
     {
       "id": "00096002",
@@ -76,7 +66,20 @@
       "homeMonth": "2026-04",
       "attribution": "first charge (no orders ever — charges can post late, month may be approximate)",
       "net": -231.95,
-      "roi": 0
+      "roi": 0,
+      "calendarMatch": "Tucson SE",
+      "worked": true
+    }
+  ],
+  "outsideOrders": [
+    {
+      "id": "00090941",
+      "name": "Pima County Fair",
+      "sales": 1690,
+      "orders": 2,
+      "firstOrderDate": "2026-04-23",
+      "lastOrderDate": "2026-04-25",
+      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
     }
   ]
 }
