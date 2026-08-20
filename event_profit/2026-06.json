@@ -1,6 +1,6 @@
 {
   "month": "2026-06",
-  "pulledAt": "2026-08-20T02:19:52.031Z",
+  "pulledAt": "2026-08-20T02:28:32.321Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,11 +11,11 @@
   "totals": {
     "sales": 16721,
     "charges": 1590.34,
-    "travel": 0,
-    "net": 15130.66
+    "travel": 766,
+    "net": 14364.66
   },
   "outsideSales": 0,
-  "travelPendingCount": 5,
+  "travelPendingCount": 2,
   "eventCount": 5,
   "events": [
     {
@@ -31,20 +31,21 @@
       "overageCost": 20,
       "totalCharges": 245,
       "chargeCount": 2,
-      "net": 6666,
-      "roi": 28.21,
+      "net": 6200,
+      "roi": 9.72,
       "calendarMatch": "Texas Blueberry Festival",
       "worked": true,
       "outOfTown": true,
       "travel": {
-        "flight": null,
+        "flight": 291,
         "hotel": null,
-        "rentalCar": null,
+        "rentalCar": 175,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 245
+      "travelTotal": 466,
+      "travelStatus": "recorded",
+      "travelNote": "Texas Blueberry",
+      "totalCost": 711
     },
     {
       "id": "00100833",
@@ -87,20 +88,21 @@
       "overageCost": 33,
       "totalCharges": 658,
       "chargeCount": 2,
-      "net": 2496,
-      "roi": 4.79,
+      "net": 2346,
+      "roi": 3.9,
       "calendarMatch": "Territorial Days",
       "worked": true,
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 150,
         "rentalCar": null,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 658
+      "travelTotal": 150,
+      "travelStatus": "recorded",
+      "travelNote": "Prescott lodging $150 (confirmed by Alan 2026-08-19)",
+      "totalCost": 808
     },
     {
       "id": "00099373",
@@ -115,20 +117,21 @@
       "overageCost": 22,
       "totalCharges": 338.67,
       "chargeCount": 2,
-      "net": 889.33,
-      "roi": 3.63,
+      "net": 739.33,
+      "roi": 2.51,
       "calendarMatch": "Prescott Bluegrass Festival",
       "worked": true,
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 150,
         "rentalCar": null,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 338.67
+      "travelTotal": 150,
+      "travelStatus": "recorded",
+      "travelNote": "Prescott lodging $150 (confirmed by Alan 2026-08-19)",
+      "totalCost": 488.67
     },
     {
       "id": "00098307",
