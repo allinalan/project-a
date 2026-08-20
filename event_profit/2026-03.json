@@ -1,6 +1,6 @@
 {
   "month": "2026-03",
-  "pulledAt": "2026-08-20T02:18:54.180Z",
+  "pulledAt": "2026-08-20T02:27:35.779Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -15,7 +15,7 @@
     "net": 17467.52
   },
   "outsideSales": 185,
-  "travelPendingCount": 3,
+  "travelPendingCount": 0,
   "eventCount": 5,
   "events": [
     {
@@ -38,12 +38,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
       "totalCost": 1829.5
     },
     {
@@ -108,12 +109,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
       "totalCost": 66.67
     },
     {
@@ -135,12 +137,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
       "totalCost": 0
     }
   ],
