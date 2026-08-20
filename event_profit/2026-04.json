@@ -1,6 +1,6 @@
 {
   "month": "2026-04",
-  "pulledAt": "2026-08-20T18:31:28.325Z",
+  "pulledAt": "2026-08-20T21:13:06.781Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -42,7 +42,9 @@
       "net": 7504.55,
       "roi": 11.28,
       "calendarMatch": "YCCA Home & Garden Show",
+      "shifts": 3,
       "worked": true,
+      "workedSource": "calendar banner \"YCCA Home & Garden Show\" (3d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -72,7 +74,9 @@
       "net": 836.83,
       "roi": 15.71,
       "calendarMatch": "Service Event Prescott",
+      "shifts": 1,
       "worked": true,
+      "workedSource": "calendar banner \"Service Event Prescott\" (1d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -102,7 +106,9 @@
       "net": -231.95,
       "roi": 0,
       "calendarMatch": "Tucson SE",
-      "worked": true,
+      "shifts": 0,
+      "worked": false,
+      "workedSource": "manual override — Charged because nobody signed up — Alan never worked it (confirmed 2026-08-20)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -112,7 +118,7 @@
       },
       "travelTotal": 0,
       "travelStatus": "recorded",
-      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
+      "travelNote": "Charged because nobody signed up — Alan never worked it (confirmed 2026-08-20)",
       "totalCost": 231.95
     }
   ],
@@ -124,7 +130,7 @@
       "orders": 2,
       "firstOrderDate": "2026-04-23",
       "lastOrderDate": "2026-04-25",
-      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
     }
   ]
 }
