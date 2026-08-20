@@ -1,6 +1,6 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T21:20:49.651Z",
+  "pulledAt": "2026-08-20T21:23:27.507Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -42,6 +42,7 @@
       "net": 6709.65,
       "roi": 6.16,
       "calendarMatch": "Maricopa Home Show",
+      "bannerKey": "Maricopa Home Show|2026-07-17",
       "shifts": 0,
       "worked": true,
       "workedSource": "calendar banner \"Maricopa Home Show\" (2d) — shifts credited to the earlier record for this banner",
