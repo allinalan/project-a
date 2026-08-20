@@ -1,6 +1,6 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T00:21:34.739Z",
+  "pulledAt": "2026-08-20T02:20:11.184Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,9 +11,11 @@
   "totals": {
     "sales": 17802,
     "charges": 1301.25,
+    "travel": 0,
     "net": 16500.75
   },
   "outsideSales": 2743,
+  "travelPendingCount": 0,
   "eventCount": 1,
   "events": [
     {
@@ -32,7 +34,10 @@
       "net": 16500.75,
       "roi": 13.68,
       "calendarMatch": "Maricopa Home Show",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 1301.25
     }
   ],
   "outsideOrders": [
