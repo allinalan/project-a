@@ -1,6 +1,6 @@
 {
   "month": "2026-04",
-  "pulledAt": "2026-08-20T02:19:13.344Z",
+  "pulledAt": "2026-08-20T02:27:53.946Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,11 +11,11 @@
   "totals": {
     "sales": 20285,
     "charges": 671.82,
-    "travel": 0,
-    "net": 19613.18
+    "travel": 347,
+    "net": 19266.18
   },
   "outsideSales": 1690,
-  "travelPendingCount": 3,
+  "travelPendingCount": 1,
   "eventCount": 3,
   "events": [
     {
@@ -31,20 +31,21 @@
       "overageCost": 33,
       "totalCharges": 383,
       "chargeCount": 2,
-      "net": 17916,
-      "roi": 47.78,
+      "net": 17569,
+      "roi": 25.07,
       "calendarMatch": "YCCA Home & Garden Show",
       "worked": true,
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 347,
         "rentalCar": null,
         "other": null
       },
-      "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
-      "totalCost": 383
+      "travelTotal": 347,
+      "travelStatus": "recorded",
+      "travelNote": "YCCA show lodging",
+      "totalCost": 730
     },
     {
       "id": "00096004",
@@ -94,12 +95,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
       "totalCost": 231.95
     }
   ],
