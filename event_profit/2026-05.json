@@ -1,6 +1,6 @@
 {
   "month": "2026-05",
-  "pulledAt": "2026-08-20T20:56:30.337Z",
+  "pulledAt": "2026-08-20T21:13:26.671Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -42,7 +42,9 @@
       "net": 6159.13,
       "roi": 6.08,
       "calendarMatch": "Maricopa Home & Garden Show",
+      "shifts": 3,
       "worked": true,
+      "workedSource": "calendar banner \"Maricopa Home & Garden Show\" (3d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 1211.42
@@ -64,7 +66,9 @@
       "net": 3094.45,
       "roi": 4.4,
       "calendarMatch": "Pasadena Strawberry Festival",
+      "shifts": 4,
       "worked": true,
+      "workedSource": "calendar banner \"Pasadena Strawberry Festival\" (4d)",
       "outOfTown": true,
       "travel": {
         "flight": 291,
@@ -93,9 +97,10 @@
       "commission": 703.35,
       "net": 58.49,
       "roi": 1.09,
-      "calendarMatch": null,
+      "calendarMatch": "Rock n The Rim Show Low",
+      "shifts": 3,
       "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify",
+      "workedSource": "calendar banner \"Rock n The Rim Show Low\" (3d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -125,7 +130,9 @@
       "net": -128,
       "roi": 0.89,
       "calendarMatch": "Prescott Mother's Day Fest",
+      "shifts": 2,
       "worked": true,
+      "workedSource": "calendar banner \"Prescott Mother's Day Fest\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
