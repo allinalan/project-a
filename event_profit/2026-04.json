@@ -1,0 +1,82 @@
+{
+  "month": "2026-04",
+  "pulledAt": "2026-08-20T00:11:54.775Z",
+  "salesAsOf": "2026-08-19",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "orderLookbackSince": "2025-06-01",
+  "chargeWindow": {
+    "start": 202601,
+    "end": 202634
+  },
+  "totals": {
+    "sales": 21975,
+    "charges": 671.82,
+    "net": 21303.18
+  },
+  "eventCount": 4,
+  "events": [
+    {
+      "id": "00090304",
+      "name": "YCCA Home & Garden Show",
+      "sales": 18299,
+      "orders": 16,
+      "firstOrderDate": "2026-04-24",
+      "lastOrderDate": "2026-04-26",
+      "homeMonth": "2026-04",
+      "attribution": "first order",
+      "boothCost": 350,
+      "overageCost": 33,
+      "totalCharges": 383,
+      "chargeCount": 2,
+      "net": 17916,
+      "roi": 47.78
+    },
+    {
+      "id": "00096004",
+      "name": "Prescott Service & Sales Event",
+      "sales": 1986,
+      "orders": 5,
+      "firstOrderDate": "2026-04-27",
+      "lastOrderDate": "2026-04-27",
+      "homeMonth": "2026-04",
+      "attribution": "first order",
+      "boothCost": 56.87,
+      "overageCost": 0,
+      "totalCharges": 56.87,
+      "chargeCount": 4,
+      "net": 1929.13,
+      "roi": 34.92
+    },
+    {
+      "id": "00090941",
+      "name": "Pima County Fair",
+      "sales": 1690,
+      "orders": 2,
+      "firstOrderDate": "2026-04-23",
+      "lastOrderDate": "2026-04-25",
+      "homeMonth": "2026-04",
+      "attribution": "first order",
+      "boothCost": 0,
+      "overageCost": 0,
+      "totalCharges": 0,
+      "net": 1690,
+      "roi": null
+    },
+    {
+      "id": "00096002",
+      "name": "Tucson Service & Sales Event",
+      "sales": 0,
+      "orders": 0,
+      "firstOrderDate": null,
+      "lastOrderDate": null,
+      "boothCost": 231.95,
+      "overageCost": 0,
+      "totalCharges": 231.95,
+      "chargeCount": 1,
+      "homeMonth": "2026-04",
+      "attribution": "first charge (no orders ever — charges can post late, month may be approximate)",
+      "net": -231.95,
+      "roi": 0
+    }
+  ]
+}
