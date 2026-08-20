@@ -1,6 +1,6 @@
 {
   "month": "2026-05",
-  "pulledAt": "2026-08-20T00:20:56.674Z",
+  "pulledAt": "2026-08-20T02:19:32.773Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -10,10 +10,12 @@
   },
   "totals": {
     "sales": 29163,
-    "charges": 3015.42,
-    "net": 26147.58
+    "charges": 2815.42,
+    "travel": 0,
+    "net": 26347.58
   },
   "outsideSales": 0,
+  "travelPendingCount": 3,
   "eventCount": 4,
   "events": [
     {
@@ -32,7 +34,10 @@
       "net": 15167.58,
       "roi": 13.52,
       "calendarMatch": "Maricopa Home & Garden Show",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 1211.42
     },
     {
       "id": "00091806",
@@ -50,7 +55,46 @@
       "net": 8516,
       "roi": 23.12,
       "calendarMatch": "Pasadena Strawberry Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 385
+    },
+    {
+      "id": "00098493",
+      "name": "Rockin' the Rim",
+      "sales": 1563,
+      "orders": 4,
+      "firstOrderDate": "2026-05-22",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-05",
+      "attribution": "first order",
+      "boothCost": 175,
+      "overageCost": 22,
+      "totalCharges": 197,
+      "chargeCount": 3,
+      "net": 1366,
+      "roi": 7.93,
+      "calendarMatch": null,
+      "worked": true,
+      "workedNote": "booth charges but no matching calendar banner — verify",
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 197
     },
     {
       "id": "00090305",
@@ -68,26 +112,17 @@
       "net": 1298,
       "roi": 2.27,
       "calendarMatch": "Prescott Mother's Day Fest",
-      "worked": true
-    },
-    {
-      "id": "00098493",
-      "name": "Rockin' the Rim",
-      "sales": 1563,
-      "orders": 4,
-      "firstOrderDate": "2026-05-22",
-      "lastOrderDate": "2026-06-01",
-      "homeMonth": "2026-05",
-      "attribution": "first order",
-      "boothCost": 375,
-      "overageCost": 22,
-      "totalCharges": 397,
-      "chargeCount": 3,
-      "net": 1166,
-      "roi": 3.94,
-      "calendarMatch": null,
       "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify"
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 1022
     }
   ],
   "outsideOrders": []
