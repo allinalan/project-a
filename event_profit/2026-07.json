@@ -1,19 +1,20 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T00:12:48.447Z",
+  "pulledAt": "2026-08-20T00:21:34.739Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
     "end": 202634
   },
   "totals": {
-    "sales": 20545,
+    "sales": 17802,
     "charges": 1301.25,
-    "net": 19243.75
+    "net": 16500.75
   },
-  "eventCount": 3,
+  "outsideSales": 2743,
+  "eventCount": 1,
   "events": [
     {
       "id": "00088813",
@@ -29,8 +30,12 @@
       "totalCharges": 1301.25,
       "chargeCount": 3,
       "net": 16500.75,
-      "roi": 13.68
-    },
+      "roi": 13.68,
+      "calendarMatch": "Maricopa Home Show",
+      "worked": true
+    }
+  ],
+  "outsideOrders": [
     {
       "id": "00100585",
       "name": "Surprise Service & Sales Event",
@@ -38,13 +43,7 @@
       "orders": 1,
       "firstOrderDate": "2026-07-22",
       "lastOrderDate": "2026-07-22",
-      "homeMonth": "2026-07",
-      "attribution": "first order",
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 2634,
-      "roi": null
+      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
     },
     {
       "id": "00098104",
@@ -53,13 +52,7 @@
       "orders": 1,
       "firstOrderDate": "2026-07-25",
       "lastOrderDate": "2026-07-25",
-      "homeMonth": "2026-07",
-      "attribution": "first order",
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 109,
-      "roi": null
+      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
     }
   ]
 }
