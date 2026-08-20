@@ -1,6 +1,6 @@
 {
   "month": "2026-03",
-  "pulledAt": "2026-08-20T18:31:09.026Z",
+  "pulledAt": "2026-08-20T21:12:47.417Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -14,16 +14,16 @@
     "end": 202634
   },
   "totals": {
-    "sales": 20966,
-    "commission": 9434.7,
+    "sales": 20861,
+    "commission": 9387.45,
     "charges": 3498.48,
     "travel": 0,
-    "net": 5936.22
+    "net": 5888.97
   },
-  "outsideSales": 185,
-  "outsideCommission": 83.25,
+  "outsideSales": 290,
+  "outsideCommission": 130.5,
   "travelPendingCount": 0,
-  "eventCount": 5,
+  "eventCount": 4,
   "events": [
     {
       "id": "00085944",
@@ -42,7 +42,9 @@
       "net": 3917.45,
       "roi": 3.14,
       "calendarMatch": "Southern Arizona Home Show",
+      "shifts": 3,
       "worked": true,
+      "workedSource": "calendar banner \"Southern Arizona Home Show\" (3d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -72,7 +74,9 @@
       "net": 828.94,
       "roi": 1.53,
       "calendarMatch": "Maricopa Home & Garden Show",
+      "shifts": 3,
       "worked": true,
+      "workedSource": "calendar banner \"Maricopa Home & Garden Show\" (3d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 1550.66
@@ -94,7 +98,9 @@
       "net": 742.15,
       "roi": 15.37,
       "calendarMatch": "Service Event - Surprise/Avondale",
+      "shifts": 1,
       "worked": true,
+      "workedSource": "calendar banner \"Service Event - Surprise/Avondale\" (1d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 51.65
@@ -115,8 +121,10 @@
       "commission": 467.1,
       "net": 400.43,
       "roi": 7.01,
-      "calendarMatch": "East or West Valley - SC",
+      "calendarMatch": "Oro Valley SE",
+      "shifts": 1,
       "worked": true,
+      "workedSource": "calendar banner \"Oro Valley SE\" (1d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -128,35 +136,6 @@
       "travelStatus": "recorded",
       "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
       "totalCost": 66.67
-    },
-    {
-      "id": "00088150",
-      "name": "Oro Valley Spring Festival of the Arts",
-      "sales": 105,
-      "orders": 1,
-      "firstOrderDate": "2026-03-09",
-      "lastOrderDate": "2026-03-09",
-      "homeMonth": "2026-03",
-      "attribution": "first order",
-      "commission": 47.25,
-      "boothCost": 0,
-      "overageCost": 0,
-      "totalCharges": 0,
-      "net": 47.25,
-      "roi": null,
-      "calendarMatch": "East or West Valley - SC",
-      "worked": true,
-      "outOfTown": true,
-      "travel": {
-        "flight": null,
-        "hotel": 0,
-        "rentalCar": null,
-        "other": null
-      },
-      "travelTotal": 0,
-      "travelStatus": "recorded",
-      "travelNote": "Tucson trip — free place to stay (per Alan 2026-08-19)",
-      "totalCost": 0
     }
   ],
   "outsideOrders": [
@@ -167,7 +146,16 @@
       "orders": 1,
       "firstOrderDate": "2026-03-20",
       "lastOrderDate": "2026-03-20",
-      "note": "no calendar banner & no booth charges — order via another rep's event (RoR / cross-rep)"
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
+    },
+    {
+      "id": "00088150",
+      "name": "Oro Valley Spring Festival of the Arts",
+      "sales": 105,
+      "orders": 1,
+      "firstOrderDate": "2026-03-09",
+      "lastOrderDate": "2026-03-09",
+      "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
     }
   ]
 }
