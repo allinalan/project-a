@@ -1,8 +1,13 @@
 {
   "month": "2026-04",
-  "pulledAt": "2026-08-20T16:55:42.489Z",
+  "pulledAt": "2026-08-20T18:31:28.325Z",
   "salesAsOf": "2026-08-20",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
+  "earnRate": {
+    "commissionRate": 0.5,
+    "mentorShare": 0.05,
+    "effective": 0.45
+  },
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -10,11 +15,13 @@
   },
   "totals": {
     "sales": 20285,
+    "commission": 9128.25,
     "charges": 671.82,
     "travel": 347,
-    "net": 19266.18
+    "net": 8109.43
   },
   "outsideSales": 1690,
+  "outsideCommission": 760.5,
   "travelPendingCount": 0,
   "eventCount": 3,
   "events": [
@@ -31,8 +38,9 @@
       "overageCost": 33,
       "totalCharges": 383,
       "chargeCount": 2,
-      "net": 17569,
-      "roi": 25.07,
+      "commission": 8234.55,
+      "net": 7504.55,
+      "roi": 11.28,
       "calendarMatch": "YCCA Home & Garden Show",
       "worked": true,
       "outOfTown": true,
@@ -60,8 +68,9 @@
       "overageCost": 0,
       "totalCharges": 56.87,
       "chargeCount": 4,
-      "net": 1929.13,
-      "roi": 34.92,
+      "commission": 893.7,
+      "net": 836.83,
+      "roi": 15.71,
       "calendarMatch": "Service Event Prescott",
       "worked": true,
       "outOfTown": true,
@@ -89,6 +98,7 @@
       "chargeCount": 1,
       "homeMonth": "2026-04",
       "attribution": "first charge (no orders ever — charges can post late, month may be approximate)",
+      "commission": 0,
       "net": -231.95,
       "roi": 0,
       "calendarMatch": "Tucson SE",
