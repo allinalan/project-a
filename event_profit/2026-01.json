@@ -1,8 +1,8 @@
 {
   "month": "2026-01",
-  "pulledAt": "2026-08-20T00:11:00.968Z",
+  "pulledAt": "2026-08-20T00:19:39.688Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -13,6 +13,7 @@
     "charges": 4605.73,
     "net": 36788.27
   },
+  "outsideSales": 0,
   "eventCount": 4,
   "events": [
     {
@@ -29,7 +30,9 @@
       "totalCharges": 2560,
       "chargeCount": 1,
       "net": 23133,
-      "roi": 10.04
+      "roi": 10.04,
+      "calendarMatch": "Barrett-Jackson",
+      "worked": true
     },
     {
       "id": "00081320",
@@ -45,7 +48,9 @@
       "totalCharges": 1736.23,
       "chargeCount": 2,
       "net": 6679.77,
-      "roi": 4.85
+      "roi": 4.85,
+      "calendarMatch": "Maricopa Home & Garden Show",
+      "worked": true
     },
     {
       "id": "00089754",
@@ -61,7 +66,9 @@
       "totalCharges": 309.5,
       "chargeCount": 2,
       "net": 5946.5,
-      "roi": 20.21
+      "roi": 20.21,
+      "calendarMatch": "Lake Havasu Winterfest",
+      "worked": true
     },
     {
       "id": "00094366",
@@ -76,7 +83,10 @@
       "overageCost": 0,
       "totalCharges": 0,
       "net": 1029,
-      "roi": null
+      "roi": null,
+      "calendarMatch": "Lake Havasu Service Event",
+      "worked": true
     }
-  ]
+  ],
+  "outsideOrders": []
 }
