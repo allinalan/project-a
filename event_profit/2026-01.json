@@ -1,7 +1,7 @@
 {
   "month": "2026-01",
-  "pulledAt": "2026-08-20T02:26:56.538Z",
-  "salesAsOf": "2026-08-19",
+  "pulledAt": "2026-08-20T16:54:42.167Z",
+  "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
@@ -15,7 +15,7 @@
     "net": 36228.27
   },
   "outsideSales": 0,
-  "travelPendingCount": 1,
+  "travelPendingCount": 0,
   "eventCount": 4,
   "events": [
     {
@@ -108,12 +108,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "Covered by Winterfest Airbnb trip (close together) — per Alan 2026-08-19",
       "totalCost": 0
     }
   ],
