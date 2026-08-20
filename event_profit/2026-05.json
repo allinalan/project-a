@@ -1,8 +1,8 @@
 {
   "month": "2026-05",
-  "pulledAt": "2026-08-20T00:12:12.468Z",
+  "pulledAt": "2026-08-20T00:20:56.674Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -13,6 +13,7 @@
     "charges": 3015.42,
     "net": 26147.58
   },
+  "outsideSales": 0,
   "eventCount": 4,
   "events": [
     {
@@ -29,7 +30,9 @@
       "totalCharges": 1211.42,
       "chargeCount": 2,
       "net": 15167.58,
-      "roi": 13.52
+      "roi": 13.52,
+      "calendarMatch": "Maricopa Home & Garden Show",
+      "worked": true
     },
     {
       "id": "00091806",
@@ -45,7 +48,9 @@
       "totalCharges": 385,
       "chargeCount": 2,
       "net": 8516,
-      "roi": 23.12
+      "roi": 23.12,
+      "calendarMatch": "Pasadena Strawberry Festival",
+      "worked": true
     },
     {
       "id": "00090305",
@@ -61,7 +66,9 @@
       "totalCharges": 1022,
       "chargeCount": 2,
       "net": 1298,
-      "roi": 2.27
+      "roi": 2.27,
+      "calendarMatch": "Prescott Mother's Day Fest",
+      "worked": true
     },
     {
       "id": "00098493",
@@ -77,7 +84,11 @@
       "totalCharges": 397,
       "chargeCount": 3,
       "net": 1166,
-      "roi": 3.94
+      "roi": 3.94,
+      "calendarMatch": null,
+      "worked": true,
+      "workedNote": "booth charges but no matching calendar banner — verify"
     }
-  ]
+  ],
+  "outsideOrders": []
 }
