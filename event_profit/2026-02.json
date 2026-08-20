@@ -1,8 +1,8 @@
 {
   "month": "2026-02",
-  "pulledAt": "2026-08-20T00:11:18.388Z",
+  "pulledAt": "2026-08-20T00:19:58.822Z",
   "salesAsOf": "2026-08-19",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
@@ -13,6 +13,7 @@
     "charges": 2686.25,
     "net": 16826.75
   },
+  "outsideSales": 0,
   "eventCount": 8,
   "events": [
     {
@@ -29,7 +30,9 @@
       "totalCharges": 1650,
       "chargeCount": 1,
       "net": 7046,
-      "roi": 5.27
+      "roi": 5.27,
+      "calendarMatch": "Fountain Hills Festival of the Fine Arts",
+      "worked": true
     },
     {
       "id": "00095870",
@@ -44,7 +47,9 @@
       "overageCost": 0,
       "totalCharges": 0,
       "net": 2985,
-      "roi": null
+      "roi": null,
+      "calendarMatch": "SE - Scottsdale",
+      "worked": true
     },
     {
       "id": "00095999",
@@ -60,7 +65,9 @@
       "totalCharges": 119.18,
       "chargeCount": 2,
       "net": 2428.82,
-      "roi": 21.38
+      "roi": 21.38,
+      "calendarMatch": "Chandler Fine Art & Wine Festival",
+      "worked": true
     },
     {
       "id": "00083374",
@@ -75,7 +82,9 @@
       "overageCost": 0,
       "totalCharges": 0,
       "net": 1701,
-      "roi": null
+      "roi": null,
+      "calendarMatch": "Barrett-Jackson",
+      "worked": true
     },
     {
       "id": "00089218",
@@ -91,7 +100,9 @@
       "totalCharges": 622,
       "chargeCount": 2,
       "net": 1458,
-      "roi": 3.34
+      "roi": 3.34,
+      "calendarMatch": "Chandler Fine Art & Wine Festival",
+      "worked": true
     },
     {
       "id": "00094491",
@@ -107,7 +118,9 @@
       "totalCharges": 87.07,
       "chargeCount": 1,
       "net": 1099.93,
-      "roi": 13.63
+      "roi": 13.63,
+      "calendarMatch": "Lake Havasu Service Event",
+      "worked": true
     },
     {
       "id": "00095871",
@@ -122,7 +135,9 @@
       "overageCost": 0,
       "totalCharges": 0,
       "net": 316,
-      "roi": null
+      "roi": null,
+      "calendarMatch": "SE - North Mesa",
+      "worked": true
     },
     {
       "id": "00095258",
@@ -138,7 +153,10 @@
       "homeMonth": "2026-02",
       "attribution": "first charge (no orders ever — charges can post late, month may be approximate)",
       "net": -208,
-      "roi": 0
+      "roi": 0,
+      "calendarMatch": "Lake Havasu Service Event",
+      "worked": true
     }
-  ]
+  ],
+  "outsideOrders": []
 }
