@@ -1,6 +1,6 @@
 {
   "month": "2026-01",
-  "pulledAt": "2026-08-20T00:19:39.688Z",
+  "pulledAt": "2026-08-20T02:18:13.981Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,9 +11,11 @@
   "totals": {
     "sales": 41394,
     "charges": 4605.73,
+    "travel": 0,
     "net": 36788.27
   },
   "outsideSales": 0,
+  "travelPendingCount": 2,
   "eventCount": 4,
   "events": [
     {
@@ -32,7 +34,10 @@
       "net": 23133,
       "roi": 10.04,
       "calendarMatch": "Barrett-Jackson",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 2560
     },
     {
       "id": "00081320",
@@ -50,7 +55,10 @@
       "net": 6679.77,
       "roi": 4.85,
       "calendarMatch": "Maricopa Home & Garden Show",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 1736.23
     },
     {
       "id": "00089754",
@@ -68,7 +76,17 @@
       "net": 5946.5,
       "roi": 20.21,
       "calendarMatch": "Lake Havasu Winterfest",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 309.5
     },
     {
       "id": "00094366",
@@ -85,7 +103,17 @@
       "net": 1029,
       "roi": null,
       "calendarMatch": "Lake Havasu Service Event",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 0
     }
   ],
   "outsideOrders": []
