@@ -1,6 +1,6 @@
 {
   "month": "2026-02",
-  "pulledAt": "2026-08-20T00:19:58.822Z",
+  "pulledAt": "2026-08-20T02:18:33.449Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,9 +11,11 @@
   "totals": {
     "sales": 19513,
     "charges": 2686.25,
+    "travel": 0,
     "net": 16826.75
   },
   "outsideSales": 0,
+  "travelPendingCount": 2,
   "eventCount": 8,
   "events": [
     {
@@ -32,7 +34,10 @@
       "net": 7046,
       "roi": 5.27,
       "calendarMatch": "Fountain Hills Festival of the Fine Arts",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 1650
     },
     {
       "id": "00095870",
@@ -49,7 +54,10 @@
       "net": 2985,
       "roi": null,
       "calendarMatch": "SE - Scottsdale",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 0
     },
     {
       "id": "00095999",
@@ -67,7 +75,10 @@
       "net": 2428.82,
       "roi": 21.38,
       "calendarMatch": "Chandler Fine Art & Wine Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 119.18
     },
     {
       "id": "00083374",
@@ -84,7 +95,10 @@
       "net": 1701,
       "roi": null,
       "calendarMatch": "Barrett-Jackson",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 0
     },
     {
       "id": "00089218",
@@ -102,7 +116,10 @@
       "net": 1458,
       "roi": 3.34,
       "calendarMatch": "Chandler Fine Art & Wine Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 622
     },
     {
       "id": "00094491",
@@ -120,7 +137,17 @@
       "net": 1099.93,
       "roi": 13.63,
       "calendarMatch": "Lake Havasu Service Event",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 87.07
     },
     {
       "id": "00095871",
@@ -137,7 +164,10 @@
       "net": 316,
       "roi": null,
       "calendarMatch": "SE - North Mesa",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 0
     },
     {
       "id": "00095258",
@@ -155,7 +185,17 @@
       "net": -208,
       "roi": 0,
       "calendarMatch": "Lake Havasu Service Event",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 208
     }
   ],
   "outsideOrders": []
