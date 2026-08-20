@@ -1442,7 +1442,8 @@
       "totalExp": 1736.23,
       "net": 2050.77,
       "dt": "2026-01-09",
-      "dtDisplay": "Jan 9\u201311, 2026"
+      "dtDisplay": "Jan 9\u201311, 2026",
+      "booth": 1736.23
     },
     {
       "name": "Barrett-Jackson Car Auction - Scottsdale",
@@ -1461,7 +1462,8 @@
       "totalExp": 2560,
       "net": 9002,
       "dt": "2026-01-20",
-      "dtDisplay": "Jan 20\u201325, 2026"
+      "dtDisplay": "Jan 20\u201325, 2026",
+      "booth": 2560
     },
     {
       "name": "Lake Havasu Winterfest",
@@ -1472,15 +1474,16 @@
       "shifts": 2,
       "ord": 11,
       "comm": 2815,
-      "hotel": 0,
+      "hotel": 560,
       "gas": 0,
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "totalExp": 309.5,
-      "net": 2505.5,
+      "totalExp": 869.5,
+      "net": 1945.5,
       "dt": "2026-01-31",
-      "dtDisplay": "Jan 31\u2013Feb 1, 2026"
+      "dtDisplay": "Jan 31\u2013Feb 1, 2026",
+      "booth": 309.5
     },
     {
       "name": "Lake Havasu Service & Sales Event",
@@ -1499,7 +1502,8 @@
       "totalExp": 87.07,
       "net": 446.93,
       "dt": "2026-01-30",
-      "dtDisplay": "Jan 30\u2013Feb 2, 2026"
+      "dtDisplay": "Jan 30\u2013Feb 2, 2026",
+      "booth": 87.07
     },
     {
       "name": "Downtown Chandler Fine Art & Wine Festival",
@@ -1518,7 +1522,8 @@
       "totalExp": 622,
       "net": 314,
       "dt": "2026-02-14",
-      "dtDisplay": "Feb 14\u201315, 2026"
+      "dtDisplay": "Feb 14\u201315, 2026",
+      "booth": 622
     },
     {
       "name": "Fountain Hills Festival of Fine Arts & Crafts",
@@ -1537,7 +1542,8 @@
       "totalExp": 1650,
       "net": 1984,
       "dt": "2026-02-20",
-      "dtDisplay": "Feb 20\u201322, 2026"
+      "dtDisplay": "Feb 20\u201322, 2026",
+      "booth": 1650
     },
     {
       "name": "Chandler Service & Sales Event",
@@ -1556,7 +1562,8 @@
       "totalExp": 119.18,
       "net": 1027.82,
       "dt": "2026-02-26",
-      "dtDisplay": "Feb 26, 2026"
+      "dtDisplay": "Feb 26, 2026",
+      "booth": 119.18
     },
     {
       "name": "Surprise Service & Sales Event",
@@ -1575,7 +1582,8 @@
       "totalExp": 51.65,
       "net": 742.35,
       "dt": "2026-03-10",
-      "dtDisplay": "Mar 10, 2026"
+      "dtDisplay": "Mar 10, 2026",
+      "booth": 51.65
     },
     {
       "name": "Maricopa County Home & Landscape Show",
@@ -1594,7 +1602,8 @@
       "totalExp": 1550.66,
       "net": 829.34,
       "dt": "2026-03-06",
-      "dtDisplay": "Mar 6\u20138, 2026"
+      "dtDisplay": "Mar 6\u20138, 2026",
+      "booth": 1550.66
     },
     {
       "name": "Southern Arizona Home Show",
@@ -1613,7 +1622,8 @@
       "totalExp": 1829.5,
       "net": 3730.5,
       "dt": "2026-03-27",
-      "dtDisplay": "Mar 27\u201329, 2026"
+      "dtDisplay": "Mar 27\u201329, 2026",
+      "booth": 1829.5
     },
     {
       "name": "Oro Valley Service & Sales Event",
@@ -1632,7 +1642,8 @@
       "totalExp": 66.67,
       "net": 400.33,
       "dt": "2026-03-31",
-      "dtDisplay": "Mar 31, 2026"
+      "dtDisplay": "Mar 31, 2026",
+      "booth": 66.67
     },
     {
       "name": "YCCA Home & Garden Show",
@@ -1642,16 +1653,17 @@
       "cpo": 18410,
       "shifts": 3,
       "ord": 16,
-      "comm": 8285,
-      "hotel": 0,
+      "comm": 8284,
+      "hotel": 347,
       "gas": 0,
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "totalExp": 383,
-      "net": 7902,
+      "totalExp": 730,
+      "net": 7554,
       "dt": "2026-04-24",
-      "dtDisplay": "Apr 24\u201326, 2026"
+      "dtDisplay": "Apr 24\u201326, 2026",
+      "booth": 383
     },
     {
       "name": "Maricopa County Home & Flower Show",
@@ -1670,7 +1682,8 @@
       "totalExp": 1211.42,
       "net": 5917.58,
       "dt": "2026-05-01",
-      "dtDisplay": "May 1\u20133, 2026"
+      "dtDisplay": "May 1\u20133, 2026",
+      "booth": 1211.42
     },
     {
       "name": "Prescott Mother's Day Fine Art & Wine Festival",
@@ -1681,15 +1694,16 @@
       "shifts": 2,
       "ord": 8,
       "comm": 1044,
-      "hotel": 0,
+      "hotel": 150,
       "gas": 0,
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "totalExp": 1022,
-      "net": 22,
+      "totalExp": 1172,
+      "net": -128,
       "dt": "2026-05-09",
-      "dtDisplay": "May 9\u201310, 2026"
+      "dtDisplay": "May 9\u201310, 2026",
+      "booth": 1022
     },
     {
       "name": "Rockin' the Rim",
@@ -1721,14 +1735,14 @@
       "shifts": 1,
       "ord": 7,
       "comm": 2443,
-      "booth": 0,
+      "booth": 227.48,
       "hotel": 0,
       "gas": 0,
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "totalExp": 0,
-      "net": 2443,
+      "totalExp": 227.48,
+      "net": 2215.52,
       "dt": "2026-06-22",
       "dtEnd": "2026-06-22",
       "dtDisplay": "Jun 22, 2026",
