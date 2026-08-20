@@ -1,21 +1,13 @@
 {
   "month": "2026-07",
-  "pulledAt": "2026-08-20T00:03:53.338Z",
-  "orderWindow": {
-    "start": "2026-07-01",
-    "end": "2026-07-31"
-  },
+  "pulledAt": "2026-08-20T00:12:48.447Z",
+  "salesAsOf": "2026-08-19",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
-    "start": 202619,
+    "start": 202601,
     "end": 202634
   },
-  "monthTabWeeks": [
-    202627,
-    202628,
-    202629,
-    202630,
-    202631
-  ],
   "totals": {
     "sales": 20545,
     "charges": 1301.25,
@@ -28,9 +20,14 @@
       "name": "Maricopa County Summer Home & Landscape Show",
       "sales": 17802,
       "orders": 14,
+      "firstOrderDate": "2026-07-17",
+      "lastOrderDate": "2026-07-22",
+      "homeMonth": "2026-07",
+      "attribution": "first order",
       "boothCost": 1279.25,
       "overageCost": 22,
       "totalCharges": 1301.25,
+      "chargeCount": 3,
       "net": 16500.75,
       "roi": 13.68
     },
@@ -39,6 +36,10 @@
       "name": "Surprise Service & Sales Event",
       "sales": 2634,
       "orders": 1,
+      "firstOrderDate": "2026-07-22",
+      "lastOrderDate": "2026-07-22",
+      "homeMonth": "2026-07",
+      "attribution": "first order",
       "boothCost": 0,
       "overageCost": 0,
       "totalCharges": 0,
@@ -50,112 +51,15 @@
       "name": "Snowflake Pioneer Days",
       "sales": 109,
       "orders": 1,
+      "firstOrderDate": "2026-07-25",
+      "lastOrderDate": "2026-07-25",
+      "homeMonth": "2026-07",
+      "attribution": "first order",
       "boothCost": 0,
       "overageCost": 0,
       "totalCharges": 0,
       "net": 109,
       "roi": null
-    }
-  ],
-  "unmatchedCharges": [
-    {
-      "id": "00085944",
-      "name": "Southern Arizona Home Show",
-      "boothCost": 261.34,
-      "overageCost": 0,
-      "totalCharges": 261.34,
-      "chargeCount": 1,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00090305",
-      "name": "Prescott Mother's Day Fine Art & Wine Festival",
-      "boothCost": 1000,
-      "overageCost": 22,
-      "totalCharges": 1022,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00091806",
-      "name": "Pasadena Strawberry Festival",
-      "boothCost": 325,
-      "overageCost": 60,
-      "totalCharges": 385,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00096004",
-      "name": "Prescott Service & Sales Event",
-      "boothCost": 56.87,
-      "overageCost": 0,
-      "totalCharges": 56.87,
-      "chargeCount": 4,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00098493",
-      "name": "Rockin' the Rim",
-      "boothCost": 375,
-      "overageCost": 22,
-      "totalCharges": 397,
-      "chargeCount": 3,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00098307",
-      "name": "NRCHA Kimes Ranch Derby",
-      "boothCost": 99.19,
-      "overageCost": 22,
-      "totalCharges": 121.19,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00095362",
-      "name": "Prescott Territorial Days",
-      "boothCost": 625,
-      "overageCost": 33,
-      "totalCharges": 658,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00096883",
-      "name": "Texas Blueberry Festival",
-      "boothCost": 225,
-      "overageCost": 20,
-      "totalCharges": 245,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00099373",
-      "name": "Prescott Bluegrass Festival",
-      "boothCost": 316.67,
-      "overageCost": 22,
-      "totalCharges": 338.67,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00090275",
-      "name": "Hunters Extravaganza - Houston",
-      "boothCost": 706.56,
-      "overageCost": 42,
-      "totalCharges": 748.56,
-      "chargeCount": 2,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
-    },
-    {
-      "id": "00100833",
-      "name": "Prescott Service & Sales Event",
-      "boothCost": 227.48,
-      "overageCost": 0,
-      "totalCharges": 227.48,
-      "chargeCount": 1,
-      "note": "charges in window but no orders this month (flop, upcoming deposit, or other month)"
     }
   ]
 }
