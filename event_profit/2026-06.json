@@ -1,6 +1,6 @@
 {
   "month": "2026-06",
-  "pulledAt": "2026-08-20T00:21:15.583Z",
+  "pulledAt": "2026-08-20T02:19:52.031Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,9 +11,11 @@
   "totals": {
     "sales": 16721,
     "charges": 1590.34,
+    "travel": 0,
     "net": 15130.66
   },
   "outsideSales": 0,
+  "travelPendingCount": 5,
   "eventCount": 5,
   "events": [
     {
@@ -32,7 +34,17 @@
       "net": 6666,
       "roi": 28.21,
       "calendarMatch": "Texas Blueberry Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 245
     },
     {
       "id": "00100833",
@@ -50,7 +62,17 @@
       "net": 5200.52,
       "roi": 23.86,
       "calendarMatch": "Prescott Bluegrass Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 227.48
     },
     {
       "id": "00095362",
@@ -68,7 +90,17 @@
       "net": 2496,
       "roi": 4.79,
       "calendarMatch": "Territorial Days",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 658
     },
     {
       "id": "00099373",
@@ -86,7 +118,17 @@
       "net": 889.33,
       "roi": 3.63,
       "calendarMatch": "Prescott Bluegrass Festival",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 338.67
     },
     {
       "id": "00098307",
@@ -105,7 +147,17 @@
       "roi": 0,
       "calendarMatch": null,
       "worked": true,
-      "workedNote": "booth charges but no matching calendar banner — verify"
+      "workedNote": "booth charges but no matching calendar banner — verify",
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 121.19
     }
   ],
   "outsideOrders": []
