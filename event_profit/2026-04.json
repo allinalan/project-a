@@ -1,7 +1,7 @@
 {
   "month": "2026-04",
-  "pulledAt": "2026-08-20T02:27:53.946Z",
-  "salesAsOf": "2026-08-19",
+  "pulledAt": "2026-08-20T16:55:42.489Z",
+  "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
@@ -15,7 +15,7 @@
     "net": 19266.18
   },
   "outsideSales": 1690,
-  "travelPendingCount": 1,
+  "travelPendingCount": 0,
   "eventCount": 3,
   "events": [
     {
@@ -67,12 +67,13 @@
       "outOfTown": true,
       "travel": {
         "flight": null,
-        "hotel": null,
+        "hotel": 0,
         "rentalCar": null,
         "other": null
       },
       "travelTotal": 0,
-      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "travelStatus": "recorded",
+      "travelNote": "No travel cost — included in service event — per Alan 2026-08-19",
       "totalCost": 56.87
     },
     {
