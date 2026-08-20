@@ -1,6 +1,6 @@
 {
   "month": "2026-02",
-  "pulledAt": "2026-08-20T21:12:25.807Z",
+  "pulledAt": "2026-08-20T21:16:02.300Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -88,10 +88,10 @@
       "commission": 1146.6,
       "net": 1027.42,
       "roi": 9.62,
-      "calendarMatch": "Chandler Fine Art & Wine Festival",
-      "shifts": 2,
+      "calendarMatch": "SE - Chandler",
+      "shifts": 1,
       "worked": true,
-      "workedSource": "calendar banner \"Chandler Fine Art & Wine Festival\" (2d)",
+      "workedSource": "calendar banner \"SE - Chandler\" (1d)",
       "outOfTown": false,
       "travelTotal": 0,
       "totalCost": 119.18
@@ -135,10 +135,10 @@
       "commission": 534.15,
       "net": 447.08,
       "roi": 6.13,
-      "calendarMatch": "Lake Havasu Service Event",
+      "calendarMatch": "Service Event Lake Havasu ",
       "shifts": 1,
       "worked": true,
-      "workedSource": "calendar banner \"Lake Havasu Service Event\" (1d)",
+      "workedSource": "calendar banner \"Service Event Lake Havasu \" (1d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
