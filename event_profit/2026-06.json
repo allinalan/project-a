@@ -1,6 +1,6 @@
 {
   "month": "2026-06",
-  "pulledAt": "2026-08-20T21:23:08.552Z",
+  "pulledAt": "2026-08-20T21:26:23.583Z",
   "salesAsOf": "2026-08-20",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
   "earnRate": {
@@ -109,9 +109,9 @@
       "roi": 1.76,
       "calendarMatch": "Territorial Days",
       "bannerKey": "Territorial Days|2026-06-06",
-      "shifts": 0,
+      "shifts": 2,
       "worked": true,
-      "workedSource": "calendar banner \"Territorial Days\" (2d) — shifts credited to the earlier record for this banner",
+      "workedSource": "calendar banner \"Territorial Days\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
@@ -142,9 +142,9 @@
       "roi": 1.13,
       "calendarMatch": "Prescott Bluegrass Festival",
       "bannerKey": "Prescott Bluegrass Festival|2026-06-20",
-      "shifts": 0,
+      "shifts": 2,
       "worked": true,
-      "workedSource": "calendar banner \"Prescott Bluegrass Festival\" (2d) — shifts credited to the earlier record for this banner",
+      "workedSource": "calendar banner \"Prescott Bluegrass Festival\" (2d)",
       "outOfTown": true,
       "travel": {
         "flight": null,
