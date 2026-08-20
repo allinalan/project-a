@@ -1,0 +1,113 @@
+{
+  "month": "2026-03",
+  "pulledAt": "2026-08-20T00:11:36.644Z",
+  "salesAsOf": "2026-08-19",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event",
+  "orderLookbackSince": "2025-06-01",
+  "chargeWindow": {
+    "start": 202601,
+    "end": 202634
+  },
+  "totals": {
+    "sales": 21151,
+    "charges": 3498.48,
+    "net": 17652.52
+  },
+  "eventCount": 6,
+  "events": [
+    {
+      "id": "00085944",
+      "name": "Southern Arizona Home Show",
+      "sales": 12771,
+      "orders": 17,
+      "firstOrderDate": "2026-03-27",
+      "lastOrderDate": "2026-06-01",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 1829.5,
+      "overageCost": 0,
+      "totalCharges": 1829.5,
+      "chargeCount": 7,
+      "net": 10941.5,
+      "roi": 6.98
+    },
+    {
+      "id": "00083759",
+      "name": "Maricopa County Home & Landscape Show",
+      "sales": 5288,
+      "orders": 13,
+      "firstOrderDate": "2026-03-06",
+      "lastOrderDate": "2026-03-16",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 1550.66,
+      "overageCost": 0,
+      "totalCharges": 1550.66,
+      "chargeCount": 5,
+      "net": 3737.34,
+      "roi": 3.41
+    },
+    {
+      "id": "00095873",
+      "name": "Surprise Service & Sales Event",
+      "sales": 1764,
+      "orders": 2,
+      "firstOrderDate": "2026-03-10",
+      "lastOrderDate": "2026-03-10",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 51.65,
+      "overageCost": 0,
+      "totalCharges": 51.65,
+      "chargeCount": 4,
+      "net": 1712.35,
+      "roi": 34.15
+    },
+    {
+      "id": "00097758",
+      "name": "Oro Valley Service & Sales Event",
+      "sales": 1038,
+      "orders": 3,
+      "firstOrderDate": "2026-03-31",
+      "lastOrderDate": "2026-03-31",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 66.67,
+      "overageCost": 0,
+      "totalCharges": 66.67,
+      "chargeCount": 1,
+      "net": 971.33,
+      "roi": 15.57
+    },
+    {
+      "id": "00089678",
+      "name": "4th Avenue Spring Street Fair",
+      "sales": 185,
+      "orders": 1,
+      "firstOrderDate": "2026-03-20",
+      "lastOrderDate": "2026-03-20",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 0,
+      "overageCost": 0,
+      "totalCharges": 0,
+      "net": 185,
+      "roi": null
+    },
+    {
+      "id": "00088150",
+      "name": "Oro Valley Spring Festival of the Arts",
+      "sales": 105,
+      "orders": 1,
+      "firstOrderDate": "2026-03-09",
+      "lastOrderDate": "2026-03-09",
+      "homeMonth": "2026-03",
+      "attribution": "first order",
+      "boothCost": 0,
+      "overageCost": 0,
+      "totalCharges": 0,
+      "net": 105,
+      "roi": null
+    }
+  ]
+}
