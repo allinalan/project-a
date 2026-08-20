@@ -1,6 +1,6 @@
 {
   "month": "2026-03",
-  "pulledAt": "2026-08-20T00:20:18.336Z",
+  "pulledAt": "2026-08-20T02:18:54.180Z",
   "salesAsOf": "2026-08-19",
   "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners",
   "orderLookbackSince": "2025-06-01",
@@ -11,9 +11,11 @@
   "totals": {
     "sales": 20966,
     "charges": 3498.48,
+    "travel": 0,
     "net": 17467.52
   },
   "outsideSales": 185,
+  "travelPendingCount": 3,
   "eventCount": 5,
   "events": [
     {
@@ -32,7 +34,17 @@
       "net": 10941.5,
       "roi": 6.98,
       "calendarMatch": "Southern Arizona Home Show",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 1829.5
     },
     {
       "id": "00083759",
@@ -50,7 +62,10 @@
       "net": 3737.34,
       "roi": 3.41,
       "calendarMatch": "Maricopa Home & Garden Show",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 1550.66
     },
     {
       "id": "00095873",
@@ -68,7 +83,10 @@
       "net": 1712.35,
       "roi": 34.15,
       "calendarMatch": "Service Event - Surprise/Avondale",
-      "worked": true
+      "worked": true,
+      "outOfTown": false,
+      "travelTotal": 0,
+      "totalCost": 51.65
     },
     {
       "id": "00097758",
@@ -86,7 +104,17 @@
       "net": 971.33,
       "roi": 15.57,
       "calendarMatch": "East or West Valley - SC",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 66.67
     },
     {
       "id": "00088150",
@@ -103,7 +131,17 @@
       "net": 105,
       "roi": null,
       "calendarMatch": "East or West Valley - SC",
-      "worked": true
+      "worked": true,
+      "outOfTown": true,
+      "travel": {
+        "flight": null,
+        "hotel": null,
+        "rentalCar": null,
+        "other": null
+      },
+      "travelTotal": 0,
+      "travelStatus": "PENDING — needs flight/hotel/rental car (or mark local)",
+      "totalCost": 0
     }
   ],
   "outsideOrders": [
