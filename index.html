@@ -3332,6 +3332,13 @@ function renderRoiTable(threshold){
     else { verdict='Review'; vStyle='background:var(--gold-light);color:var(--gold);'; }
     return {e,perShift,expRatio,verdict,vStyle};
   }).sort((a,b)=>(b.perShift??-1e9)-(a.perShift??-1e9));
+  // Portfolio totals footer — blended figures over the same rows shown above
+  const ftNet=S.events.reduce((s,e)=>s+(e.net||0),0);
+  const ftShifts=S.events.reduce((s,e)=>s+(e.shifts||0),0);
+  const ftComm=S.events.reduce((s,e)=>s+(e.comm||0),0);
+  const ftExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
+  const ftPerShift=ftShifts>0?Math.round(ftNet/ftShifts):null;
+  const ftExpRatio=ftComm>0?Math.round(ftExp/ftComm*100):null;
   wrap.innerHTML=`<table class="roi-table">
     <thead><tr><th>Event</th><th style="text-align:right;">Net</th><th style="text-align:right;">Shifts</th><th style="text-align:right;">Net / Shift</th><th style="text-align:right;">Exp % of Comm</th><th>Verdict</th></tr></thead>
     <tbody>${rows.map(r=>`<tr>
@@ -3342,6 +3349,14 @@ function renderRoiTable(threshold){
       <td style="text-align:right;color:${r.expRatio===null?'var(--text3)':r.expRatio<=40?'var(--green)':r.expRatio<=60?'var(--gold)':'var(--red)'};font-weight:600;">${r.expRatio!==null?r.expRatio+'%':'—'}</td>
       <td><span class="roi-verdict" style="${r.vStyle}">${r.verdict}</span></td>
     </tr>`).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--line-strong);">
+      <td style="font-weight:800;padding-top:9px;">Portfolio · ${plural(S.events.length,'event')}</td>
+      <td style="text-align:right;font-weight:800;padding-top:9px;color:${ftNet>=0?'var(--green)':'var(--red)'};">${fm(ftNet)}</td>
+      <td style="text-align:right;font-weight:700;padding-top:9px;">${ftShifts||'—'}</td>
+      <td style="text-align:right;font-weight:800;padding-top:9px;">${ftPerShift!==null?fm(ftPerShift):'—'}</td>
+      <td style="text-align:right;font-weight:700;padding-top:9px;color:${ftExpRatio===null?'var(--text3)':ftExpRatio<=40?'var(--green)':ftExpRatio<=60?'var(--gold)':'var(--red)'};">${ftExpRatio!==null?ftExpRatio+'%':'—'}</td>
+      <td></td>
+    </tr></tfoot>
   </table>
   <div style="font-size:11px;color:var(--text2);margin-top:9px;">Ranked by net profit per shift. "Book again" = net ≥ $${threshold.toLocaleString()} and expenses ≤ 40% of commission · "Skip / renegotiate" = net under half threshold or expenses over 60%.</div>`;
 }
