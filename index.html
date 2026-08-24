@@ -7,260 +7,388 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a5faa">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#f1efe8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Command Center">
 <style>
-  :root {
-    --bg:#f0f4f9;--surface:#fff;--surface2:#f5f8fc;--surface3:#e8eef6;
-    --border:#dce6f0;--border2:#c5d5e8;
-    --blue:#1a5faa;--blue2:#2272d4;--blue-light:#e8f0fb;--blue-mid:#d0e4f7;
-    --green:#1a7a4a;--green-light:#e6f5ed;
-    --red:#c0392b;--red-light:#fcecea;
-    --gold:#c47d0e;--gold-light:#fef6e4;
-    --amber:#e67e22;--amber-light:#fef3e2;
-    --gray-light:#f8f9fa;
-    --accent:#b8ff2e;--accent-dark:#8ac700;--accent-dim:rgba(184,255,46,0.12);--accent-border:rgba(184,255,46,0.35);
-    --text:#1a2332;--text2:#5a6b7e;--text3:#8296a8;
-    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  /* ============================================================
+     PROJECT A — "THE LEDGER" DESIGN SYSTEM
+     Editorial instrument: bone paper, ink type, racing-green signal,
+     hairline rules, Fraunces display numerals, Inter tabular data.
+     Legacy class names + CSS variables are kept as aliases so the
+     data/analytics engine (untouched) keeps rendering correctly.
+     ============================================================ */
+  :root{
+    /* core tokens */
+    --paper:#f1efe8; --card:#fbfaf6; --inset:#f3f0e8; --track:#e9e5d8;
+    --ink:#1c1a15; --ink2:#5d5950; --ink3:#767061;
+    --line:#e3dfd2; --line-strong:#cfc9b8;
+    --brand:#1c5a41; --brand-deep:#133f2d; --brand-wash:#e6eee6;
+    --pos:#157a43; --pos-wash:#e5efe4;
+    --neg:#b23a26; --neg-wash:#f7e8e3;
+    --gold2:#96700f; --gold-wash:#f5edd6;
+    --plan:#44618f; --plan-wash:#eaedf4; --plan-mid:#c9d2e2;
+    --serif:'Fraunces',Georgia,'Times New Roman',serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 1px 2px rgba(28,26,21,.04),0 8px 24px -12px rgba(28,26,21,.10);
+
+    /* legacy aliases (inline var() refs in engine-rendered markup) */
+    --bg:var(--paper); --surface:var(--card); --surface2:var(--inset); --surface3:var(--track);
+    --border:var(--line); --border2:var(--line-strong);
+    --blue:var(--plan); --blue2:#385380; --blue-light:var(--plan-wash); --blue-mid:var(--plan-mid);
+    --green:var(--pos); --green-light:var(--pos-wash);
+    --red:var(--neg); --red-light:var(--neg-wash);
+    --gold:var(--gold2); --gold-light:var(--gold-wash);
+    --amber:#9a6b10; --amber-light:var(--gold-wash);
+    --gray-light:var(--inset);
+    --accent:var(--brand); --accent-dark:#14472f;
+    --accent-dim:rgba(28,90,65,.08); --accent-border:rgba(28,90,65,.28);
+    --text:var(--ink); --text2:var(--ink2); --text3:var(--ink3);
+    --font:var(--sans);
   }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(26,95,170,.12);}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(28,90,65,.10);}
   button,input,select{touch-action:manipulation;}
-  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;}
-  nav{background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(26,95,170,.2);}
-  .logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#7ec8f5;}
-  .tabs{display:flex;gap:3px;}
-  .tab{padding:5px 13px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.7);font-family:var(--font);transition:all .15s;}
-  .tab:hover{background:rgba(255,255,255,.12);color:#fff;}
-  .tab.active{background:rgba(255,255,255,.15);color:#fff;border-bottom:2px solid var(--accent);}
-  .nav-r{display:flex;align-items:center;gap:8px;}
-  .streak-badge{background:rgba(184,255,46,.15);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--accent-border);letter-spacing:.3px;}
-  .av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
-  .page{display:none;padding:20px;max-width:1100px;margin:0 auto;}
-  .page.active{display:block;animation:fi .2s ease;}
-  @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-  .eyebrow{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:3px;}
-  .ptitle{font-size:21px;font-weight:700;color:var(--text);margin-bottom:18px;}.ptitle span{color:var(--blue);}
-  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
-  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;}
-  .g2{display:grid;grid-template-columns:1.5fr 1fr;gap:13px;margin-bottom:13px;}
-  .g2e{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px;}
-  .mc{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px 12px;border-top:3px solid var(--blue);}
-  .mc.pos{border-top-color:var(--green);}.mc.neg{border-top-color:var(--red);}.mc.neu{border-top-color:var(--blue);}.mc.gold{border-top-color:var(--gold);}
-  .mlbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;font-weight:600;}
-  .mval{font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1;}
-  .msub{font-size:12px;}.tg{color:var(--green);}.tr{color:var(--red);}.tm{color:var(--text2);}.tb{color:var(--blue);}.tgold{color:var(--gold);}
-  .panel{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:16px 18px;}
-  .phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
-  .ptit2{font-size:13px;font-weight:700;color:var(--text);}
-  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:11px;}
-  .bb{background:var(--blue-light);color:var(--blue);}.bg{background:var(--green-light);color:var(--green);}
-  .br{background:var(--red-light);color:var(--red);}.bgo{background:var(--gold-light);color:var(--gold);}
-  .bgy{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
-  .bacc{background:var(--accent-dim);color:var(--accent-dark);border:1px solid var(--accent-border);font-weight:700;}
-  .mc.accent{border-top-color:var(--accent);}
-  .prow{margin-bottom:11px;}.prow:last-child{margin-bottom:0;}
-  .pmeta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-  .plbl{font-size:12px;color:var(--text2);font-weight:600;}.pnum{font-size:12px;color:var(--text);font-weight:600;}
-  .ptrack{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
-  .pfill{height:6px;border-radius:4px;transition:width .8s cubic-bezier(.16,1,.3,1);}
-  .fb{background:var(--accent);}.fb2{background:var(--blue2);}.fgr{background:var(--green);}.fgo{background:var(--gold);}
-  .fa{background:var(--accent);}
-  .sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .si{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:11px 13px;}
-  .sil{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
-  .siv{font-size:17px;font-weight:700;color:var(--blue);}
-  .siv.accent{color:var(--accent-dark);}
+  html{scroll-behavior:smooth;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;min-height:100vh;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  ::selection{background:rgba(28,90,65,.16);}
+
+  /* numerals: data values align */
+  .mval,.siv,.pace-val,.pnum,.ts-val,.sc-val,.prof-stat-val,.rank-cpo,.year-table td,.roi-table td,
+  .funnel-num,.plan-total-cell,.fin,.plan-input,.inline-num,.sc2-step .fv{
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+
+  /* ============ TOP BAR ============ */
+  nav{background:var(--paper);display:flex;align-items:center;gap:18px;padding:0 26px;height:58px;
+    position:sticky;top:0;z-index:100;border-bottom:1px solid var(--line-strong);}
+  .logo{display:flex;align-items:baseline;gap:10px;white-space:nowrap;}
+  .logo .lg-name{font-family:var(--serif);font-style:italic;font-weight:700;font-size:17.5px;color:var(--ink);letter-spacing:-.01em;}
+  .logo .lg-sub{font-size:9.5px;font-weight:700;letter-spacing:.22em;color:var(--ink3);text-transform:uppercase;}
+  .tabs{display:flex;align-items:center;gap:2px;flex:1;min-width:0;}
+  .navsep{width:1px;height:16px;background:var(--line-strong);margin:0 8px;flex:0 0 auto;}
+  .tab{padding:6px 11px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    background:transparent;color:var(--ink2);font-family:var(--sans);transition:color .12s,background .12s;position:relative;}
+  .tab:hover{color:var(--ink);background:rgba(28,26,21,.045);}
+  .tab.active{color:var(--ink);}
+  .tab.active::after{content:'';position:absolute;left:11px;right:11px;bottom:-1px;height:2px;background:var(--brand);border-radius:1px;}
+  .tab-log{margin-left:auto;background:var(--brand);color:#fff;border:none;border-radius:8px;
+    padding:8px 15px;font-size:12.5px;font-weight:700;font-family:var(--sans);cursor:pointer;
+    letter-spacing:.01em;transition:background .12s;white-space:nowrap;}
+  .tab-log:hover{background:var(--brand-deep);}
+  .tab-log.active{background:var(--brand-deep);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);}
+  .nav-r{display:flex;align-items:center;gap:9px;flex:0 0 auto;}
+  .streak-badge{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;color:var(--ink2);
+    border:1px solid var(--line-strong);background:var(--card);letter-spacing:.02em;white-space:nowrap;}
+
+  /* data menu (sync + backup live here) */
+  .dmenu{position:relative;}
+  .dmenu-btn{background:var(--card);border:1px solid var(--line-strong);color:var(--ink2);font-size:11px;
+    font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:20px;
+    cursor:pointer;font-family:var(--sans);transition:all .12s;}
+  .dmenu-btn:hover{color:var(--ink);border-color:var(--ink3);}
+  .dmenu-pop{display:none;position:absolute;right:0;top:calc(100% + 8px);background:var(--card);
+    border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);padding:12px;
+    min-width:216px;z-index:300;}
+  .dmenu.open .dmenu-pop{display:block;}
+  .dmenu-pop .sync-line{font-size:11px;font-weight:600;color:var(--ink2);padding:2px 4px 10px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+  .dmenu-pop .dm-row{display:flex;flex-direction:column;gap:6px;}
+  .dm-act{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--line);
+    color:var(--ink);font-size:12.5px;font-weight:600;padding:8px 11px;border-radius:8px;cursor:pointer;
+    font-family:var(--sans);text-align:left;transition:all .12s;}
+  .dm-act:hover{border-color:var(--brand);color:var(--brand);}
+
+  /* ============ PAGE FRAME ============ */
+  .page{display:none;padding:30px 26px 90px;max-width:1140px;margin:0 auto;}
+  .page.active{display:block;animation:fi .18s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+  .eyebrow{font-size:10.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.18em;margin-bottom:6px;font-weight:700;}
+  .ptitle{font-family:var(--serif);font-size:34px;font-weight:600;color:var(--ink);margin-bottom:24px;letter-spacing:-.01em;line-height:1.05;}
+  .ptitle span{color:var(--brand);font-style:italic;}
+
+  /* grids */
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+  .g2{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:14px;}
+  .g2e{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+
+  /* ============ CARDS & TILES ============ */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+  .phead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .ptit2{font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.11em;}
+  .badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:11px;letter-spacing:.03em;white-space:nowrap;}
+  .bb{background:transparent;color:var(--ink3);border:1px solid var(--line-strong);}
+  .bg{background:var(--pos-wash);color:var(--pos);}
+  .br{background:var(--neg-wash);color:var(--neg);}
+  .bgo{background:var(--gold-wash);color:var(--gold2);}
+  .bgy{background:transparent;color:var(--ink3);border:1px solid var(--line);}
+  .bacc{background:var(--brand-wash);color:var(--accent-dark);border:1px solid var(--accent-border);font-weight:700;}
+
+  .mc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px 14px;}
+  .mc.pos,.mc.neg,.mc.neu,.mc.gold{border-top:none;}
+  .mc.accent .mval{color:var(--accent-dark);}
+  .mlbl{font-size:10.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;}
+  .mval{font-size:25px;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1;letter-spacing:-.02em;}
+  .msub{font-size:12px;color:var(--ink2);}
+  .tg{color:var(--pos);}.tr{color:var(--neg);}.tm{color:var(--ink2);}.tb{color:var(--plan);}.tgold{color:var(--gold2);}
   .ta{color:var(--accent-dark);font-weight:700;}
-  .qi{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .mc.hero{padding:20px 20px 18px;}
+  .mc.hero .mlbl{margin-bottom:10px;}
+  .mc.hero .mval{font-size:33px;letter-spacing:-.03em;margin-bottom:7px;}
+  .mc.hero .msub{font-size:12.5px;font-weight:600;}
+
+  /* progress rows */
+  .prow{margin-bottom:12px;}.prow:last-child{margin-bottom:0;}
+  .pmeta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+  .plbl{font-size:12px;color:var(--ink2);font-weight:600;}
+  .pnum{font-size:12px;color:var(--ink);font-weight:600;}
+  .ptrack{background:var(--track);border-radius:3px;height:5px;overflow:hidden;}
+  .pfill{height:5px;border-radius:3px;transition:width .8s cubic-bezier(.16,1,.3,1);}
+  .fb{background:var(--brand);}.fb2{background:var(--plan);}.fgr{background:var(--pos);}.fgo{background:var(--gold2);}.fa{background:var(--brand);}
+
+  /* small stat cells */
+  .sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .si{background:var(--inset);border:1px solid var(--line);border-radius:9px;padding:11px 13px;}
+  .sil{font-size:10px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px;}
+  .siv{font-size:17px;font-weight:700;color:var(--ink);}
+  .siv.accent{color:var(--accent-dark);}
+
+  /* checklist */
+  .qi{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);}
   .qi:last-child{border-bottom:none;}
-  .qck{width:17px;height:17px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s;background:var(--surface);}
-  .qck.done{background:var(--accent);border-color:var(--accent-dark);}
-  .qck.done::after{content:'✓';font-size:9px;color:#111;font-weight:700;}
-  .qtxt{font-size:13px;flex:1;}.qtxt.done{color:var(--text3);text-decoration:line-through;}
-  .fs{margin-bottom:18px;}
-  .fsl{font-size:11px;color:var(--accent-dark);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:11px;padding-bottom:7px;border-bottom:2px solid var(--accent-dim);}
-  .fg{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-  .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
-  .fg4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:11px;}
-  .fgrp{display:flex;flex-direction:column;gap:4px;}
-  .flbl{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-  .fin{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s;width:100%;}
-  .fin:focus{border-color:var(--blue);background:var(--blue-light);}
-  .fin::placeholder{color:var(--text3);}
-  .fin:disabled{background:var(--surface2);color:var(--text2);cursor:not-allowed;}
+  .qck{width:17px;height:17px;border-radius:50%;border:2px solid var(--line-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s;background:var(--card);}
+  .qck.done{background:var(--brand);border-color:var(--brand-deep);}
+  .qck.done::after{content:'✓';font-size:9px;color:#fff;font-weight:700;}
+  .qtxt{font-size:13px;flex:1;}.qtxt.done{color:var(--ink3);text-decoration:line-through;}
+
+  /* ============ FORMS ============ */
+  .fs{margin-bottom:20px;}
+  .fsl{font-size:11px;color:var(--ink2);font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .fg4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+  .fgrp{display:flex;flex-direction:column;gap:5px;}
+  .flbl{font-size:10.5px;color:var(--ink2);font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
+  .fin{background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:9px 11px;color:var(--ink);
+    font-family:var(--sans);font-size:13.5px;outline:none;transition:border-color .12s,box-shadow .12s;width:100%;}
+  .fin:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(28,90,65,.10);}
+  .fin::placeholder{color:var(--ink3);}
+  .fin:disabled{background:var(--inset);color:var(--ink2);cursor:not-allowed;border-color:var(--line);}
   select.fin option{background:#fff;}
-  .anote{font-size:11px;color:var(--text3);margin-top:2px;}
-  .notebox{background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 5px 5px 0;padding:9px 12px;font-size:12px;color:var(--gold);font-weight:600;margin-bottom:11px;}
-  .bp{background:var(--accent);color:#111;font-family:var(--font);font-size:13px;font-weight:700;padding:10px 24px;border:none;border-radius:7px;cursor:pointer;transition:all .15s;letter-spacing:.2px;}
-  .bp:hover{background:var(--accent-dark);transform:translateY(-1px);}
-  .bs{background:var(--surface);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;padding:9px 16px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;transition:all .15s;}
-  .bs:hover{border-color:var(--blue);color:var(--blue);}
-  .bedit{background:none;border:1px solid var(--border2);color:var(--text2);font-family:var(--font);font-size:11px;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
-  .bedit:hover{border-color:var(--blue);color:var(--blue);}
-  .bdel{background:none;border:1px solid transparent;color:var(--text3);font-family:var(--font);font-size:11px;padding:3px 7px;border-radius:4px;cursor:pointer;transition:all .15s;}
-  .bdel:hover{border-color:var(--red-light);color:var(--red);}
-  .edbanner{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:7px;padding:9px 13px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--blue);font-weight:600;}
-  .edbanner button{background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;}
-  .edbanner button:hover{color:var(--red);}
-  .div{height:1px;background:var(--border);margin:14px 0;}
-  .ins{display:flex;gap:9px;padding:9px 11px;border-radius:7px;margin-bottom:7px;border:1px solid;}
+  .anote{font-size:11px;color:var(--ink3);margin-top:2px;}
+  .notebox{background:var(--gold-wash);border-left:3px solid var(--gold2);border-radius:0 6px 6px 0;padding:9px 12px;font-size:12px;color:var(--gold2);font-weight:600;margin-bottom:11px;}
+
+  /* buttons */
+  .bp{background:var(--brand);color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;padding:11px 24px;
+    border:none;border-radius:9px;cursor:pointer;transition:background .12s;letter-spacing:.01em;}
+  .bp:hover{background:var(--brand-deep);}
+  .bs{background:transparent;color:var(--ink2);font-family:var(--sans);font-size:12.5px;font-weight:600;
+    padding:10px 16px;border:1px solid var(--line-strong);border-radius:9px;cursor:pointer;transition:all .12s;}
+  .bs:hover{border-color:var(--brand);color:var(--brand);}
+  .bedit{background:none;border:1px solid var(--line-strong);color:var(--ink2);font-family:var(--sans);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;cursor:pointer;transition:all .12s;}
+  .bedit:hover{border-color:var(--brand);color:var(--brand);}
+  .bdel{background:none;border:1px solid transparent;color:var(--ink3);font-family:var(--sans);font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;transition:all .12s;}
+  .bdel:hover{border-color:var(--neg-wash);color:var(--neg);background:var(--neg-wash);}
+
+  .edbanner{background:var(--plan-wash);border:1px solid var(--plan-mid);border-radius:9px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--plan);font-weight:700;}
+  .edbanner button{background:none;border:none;color:var(--ink2);cursor:pointer;font-size:12px;font-family:var(--sans);}
+  .edbanner button:hover{color:var(--neg);}
+  .div{height:1px;background:var(--line);margin:15px 0;}
+
+  /* coach insights */
+  .ins{display:flex;gap:10px;padding:11px 13px;border-radius:0 9px 9px 0;margin-bottom:8px;border-left:3px solid;}
   .ins:last-child{margin-bottom:0;}
-  .ins.warn{background:var(--red-light);border-color:#f5c6c2;}
-  .ins.ok{background:var(--green-light);border-color:#b8dfc9;}
-  .ins.info{background:var(--blue-light);border-color:var(--blue-mid);}
+  .ins.warn{background:var(--neg-wash);border-color:var(--neg);}
+  .ins.ok{background:var(--pos-wash);border-color:var(--pos);}
+  .ins.info{background:var(--inset);border-color:var(--line-strong);}
   .ins-ic{font-size:13px;flex-shrink:0;margin-top:1px;font-weight:700;}
-  .ins-tit{font-size:12px;font-weight:700;margin-bottom:2px;}
-  .ins-desc{font-size:12px;color:var(--text2);line-height:1.5;}
-  .cr{display:grid;grid-template-columns:1.8fr 1fr 1fr 80px;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
-  .cr-ext{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr 1fr 70px;gap:6px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
+  .ins.warn .ins-ic{color:var(--neg);}.ins.ok .ins-ic{color:var(--pos);}.ins.info .ins-ic{color:var(--ink3);}
+  .ins-tit{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .ins-desc{font-size:12px;color:var(--ink2);line-height:1.55;}
+
+  /* generic ledger rows */
+  .cr{display:grid;grid-template-columns:1.8fr 1fr 1fr 80px;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px;align-items:center;}
+  .cr-ext{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr 1fr 70px;gap:6px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px;align-items:center;}
   .cr-ext:last-child{border-bottom:none;}
-  .cr.hdr{font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .cr.hdr,.cr-ext.hdr{font-size:10px;color:var(--ink3);font-weight:800;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--line-strong);}
   .cr:last-child{border-bottom:none;}
-  .hr{display:grid;grid-template-columns:60px 1fr 65px 65px 75px 60px;gap:7px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
-  .hr.hdr{font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .hr{display:grid;grid-template-columns:60px 1fr 65px 65px 75px 60px;gap:7px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;align-items:center;}
+  .hr.hdr{font-size:10px;color:var(--ink3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
   .hr:last-child{border-bottom:none;}
-  .erow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);align-items:center;}
+  .erow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);align-items:center;}
   .erow:last-child{border-bottom:none;}
-  .scallout{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:7px;padding:11px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;}
+
+  .scallout{background:var(--inset);border:1px solid var(--line);border-radius:9px;padding:11px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;}
   .sc-itm{text-align:center;}
-  .sc-lbl{font-size:11px;color:var(--blue);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-  .sc-val{font-size:16px;font-weight:700;color:var(--blue);}
-  .tstat{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border);}
+  .sc-lbl{font-size:9.5px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+  .sc-val{font-size:15.5px;font-weight:700;color:var(--ink);}
+  .tstat{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);}
   .tstat:last-child{border-bottom:none;}
-  .ts-lbl{font-size:12px;color:var(--text2);font-weight:600;}
+  .ts-lbl{font-size:12px;color:var(--ink2);font-weight:600;}
   .ts-val{font-size:13px;font-weight:700;}
 
-  /* ===== GAME BAR ===== */
-  .game-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden;}
-  .game-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--accent));}
-  .rank-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-  .rank-badge{display:flex;align-items:center;gap:8px;}
-  .rank-icon{font-size:22px;line-height:1;}
-  .rank-name{font-size:16px;font-weight:700;color:var(--text);}
-  .rank-sub{font-size:11px;color:var(--text2);font-weight:600;margin-top:1px;}
-  .rank-right{text-align:right;}
-  .rank-cpo{font-size:20px;font-weight:700;color:var(--accent-dark);}
-  .rank-next{font-size:11px;color:var(--text2);font-weight:600;margin-top:2px;}
-  .xp-track{background:var(--surface3);border-radius:20px;height:18px;overflow:hidden;position:relative;margin-bottom:8px;}
-  .xp-fill{height:18px;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--accent));transition:width 1s cubic-bezier(.16,1,.3,1);position:relative;}
-  .xp-fill::after{content:'';position:absolute;top:3px;left:8px;right:8px;height:5px;background:rgba(255,255,255,.25);border-radius:10px;}
-  .xp-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#111;z-index:1;}
-  .badges-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-  .ach-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid;}
-  .ach-badge.earned{background:var(--accent-dim);color:var(--accent-dark);border-color:var(--accent-border);}
-  .ach-badge.locked{background:var(--surface2);color:var(--text3);border-color:var(--border);}
-  .mc.hero{padding:22px 22px 18px;border:2px solid var(--border2);border-top:5px solid var(--blue);border-radius:9px;}
-  .mc.hero .mlbl{font-size:12px;letter-spacing:1px;margin-bottom:10px;}
-  .mc.hero .mval{font-size:38px;letter-spacing:-2px;margin-bottom:6px;}
-  .mc.hero .msub{font-size:13px;font-weight:600;}
-  .year-table{width:100%;border-collapse:collapse;font-size:12px;}
-  .year-table th{background:var(--blue);color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:2px solid var(--accent);}
-  .year-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
-  .year-table tr:hover td{background:var(--surface2);}
-  .year-table tr.worked td{background:#fff;}
-  .year-table tr.vacation td{background:#fffbf0;}
-  .year-table tr.vacation td:first-child{border-left:3px solid var(--gold);}
-  .year-table tr.no-data td{color:var(--text3);}
-  .week-note-input{background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:3px 4px;font-family:var(--font);font-size:12px;color:var(--text);width:100%;outline:none;min-width:140px;}
-  .week-note-input:focus{border-bottom-color:var(--blue);background:var(--blue-light);}
-  .week-note-input::placeholder{color:var(--text3);}
-  .inline-num{background:transparent;border:none;border-bottom:1px dashed var(--border2);width:44px;text-align:center;font-family:var(--font);font-size:12px;font-weight:600;outline:none;padding:3px 2px;}
-  .inline-num:focus{border-bottom-color:var(--blue);background:var(--blue-light);}
-  .inline-num::placeholder{color:var(--text3);font-weight:400;}
+  /* ============ COMMAND HERO ============ */
+  .cmd-hero{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px 20px;margin-bottom:14px;}
+  .cmd-hero-top{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;flex-wrap:wrap;}
+  .hero-num{font-family:var(--serif);font-size:56px;font-weight:600;letter-spacing:-.02em;line-height:1;color:var(--ink);font-variant-numeric:lining-nums;margin:6px 0 8px;}
+  .hero-goal{font-size:13px;color:var(--ink2);font-weight:600;}
+  .hero-goal:hover{color:var(--ink);}
+  .pace-chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;margin-top:12px;}
+  .pace-chip.ahead{background:var(--pos-wash);color:var(--pos);}
+  .pace-chip.behind{background:var(--neg-wash);color:var(--neg);}
+
+  /* rank block — understated tier system */
+  .rank-blk{min-width:300px;flex:0 1 340px;}
+  .rank-eyebrow{font-size:10px;color:var(--ink3);font-weight:800;text-transform:uppercase;letter-spacing:.16em;margin-bottom:6px;}
+  .rank-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px;}
+  .rank-name{font-family:var(--serif);font-style:italic;font-size:23px;font-weight:700;color:var(--ink);line-height:1;}
+  .rank-next{font-size:11.5px;color:var(--ink2);font-weight:600;text-align:right;}
+  .rank-sub{font-size:11.5px;color:var(--ink3);font-weight:500;margin-top:8px;}
+  .xp-track{background:var(--track);border-radius:3px;height:6px;overflow:hidden;position:relative;}
+  .xp-fill{height:6px;border-radius:3px;background:var(--brand);transition:width 1s cubic-bezier(.16,1,.3,1);}
+  .xp-pct{display:none;}
+  .tier-track{display:flex;gap:3px;margin-top:9px;}
+  .tier-seg{flex:1;height:3px;border-radius:2px;background:var(--track);}
+  .tier-seg.done{background:var(--brand);}
+  .tier-seg.cur{background:var(--brand);opacity:.45;}
+  .tier-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);font-weight:600;margin-top:5px;letter-spacing:.02em;}
+  .cmd-pace{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);margin-top:20px;padding-top:16px;}
+  .cmd-pace .pace-itm{background:transparent;border-radius:0;padding:0 18px;border-left:1px solid var(--line);}
+  .cmd-pace .pace-itm:first-child{border-left:none;padding-left:0;}
+
+  .pace-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .pace-itm{background:var(--inset);border-radius:9px;padding:10px 12px;}
+  .pace-itm .mlbl{margin-bottom:5px;}
+  .pace-val{font-size:19px;font-weight:700;line-height:1.1;letter-spacing:-.01em;}
+  .pace-sub{font-size:11px;color:var(--ink2);margin-top:3px;}
+
+  /* mix bar list (replaces donut) */
+  .mix-row{display:grid;grid-template-columns:110px 1fr 92px;gap:10px;align-items:center;padding:6px 0;}
+  .mix-lbl{font-size:12px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mix-track{height:14px;border-radius:4px;background:var(--track);overflow:hidden;}
+  .mix-fill{height:100%;border-radius:0 4px 4px 0;min-width:2px;}
+  .mix-val{font-size:12px;font-weight:700;text-align:right;color:var(--ink);white-space:nowrap;}
+  .mix-val small{color:var(--ink3);font-weight:600;font-size:11px;}
+
+  /* focus "this week" strip */
+  .focus-week{background:var(--inset);border:1px solid var(--line);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.5;}
+  .focus-week b{color:var(--ink);}
+
+  /* ============ TREND CHART ============ */
+  .trend-wrap{position:relative;}
+  .trend-tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-size:11px;line-height:1.5;padding:7px 10px;border-radius:7px;box-shadow:var(--shadow);display:none;z-index:50;white-space:nowrap;}
+  .trend-legend{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--ink2);font-weight:600;margin-top:10px;flex-wrap:wrap;}
+  .trend-legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;}
+  .trend-legend .swline{display:inline-block;width:14px;height:0;border-top:2px dashed var(--plan);margin-right:5px;vertical-align:3px;}
+
+  /* ============ FUNNEL / ROI / MINIBARS ============ */
+  .funnel-row{display:grid;grid-template-columns:110px 1fr 110px;gap:9px;align-items:center;margin-bottom:8px;font-size:12px;}
+  .funnel-row:last-child{margin-bottom:0;}
+  .funnel-lbl{color:var(--ink2);font-weight:600;}
+  .funnel-track{background:var(--track);border-radius:4px;height:13px;overflow:hidden;}
+  .funnel-fill{height:13px;border-radius:4px;background:var(--brand);}
+  .funnel-num{font-weight:700;text-align:right;}
+  .roi-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .roi-table th{text-align:left;font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;padding:7px 8px;border-bottom:1px solid var(--line-strong);white-space:nowrap;font-weight:800;}
+  .roi-table td{padding:8px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  .roi-table tr:last-child td{border-bottom:none;}
+  .roi-verdict{font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;display:inline-block;}
+  .minibar{height:13px;background:var(--track);border-radius:4px;overflow:hidden;min-width:70px;}
+  .minibar>div{height:100%;background:var(--brand);border-radius:0 4px 4px 0;min-width:2px;}
+  .minibar.gold>div{background:var(--gold2);}
+
+  /* ============ YEAR TABLE ============ */
+  .year-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .year-table th{background:var(--card);color:var(--ink3);padding:10px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;border-bottom:1px solid var(--line-strong);}
+  .year-table td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  .year-table tr:hover td{background:var(--inset);}
+  .year-table tr.worked td{background:transparent;}
+  .year-table tr.worked:hover td{background:var(--inset);}
+  .year-table tr.vacation td{background:var(--gold-wash);}
+  .year-table tr.no-data td{color:var(--ink3);}
+  .week-note-input{background:transparent;border:none;border-bottom:1px dashed var(--line-strong);padding:3px 4px;font-family:var(--sans);font-size:12px;color:var(--ink);width:100%;outline:none;min-width:140px;}
+  .week-note-input:focus{border-bottom-color:var(--brand);background:var(--brand-wash);}
+  .week-note-input::placeholder{color:var(--ink3);}
+  .inline-num{background:transparent;border:none;border-bottom:1px dashed var(--line-strong);width:44px;text-align:center;font-family:var(--sans);font-size:12px;font-weight:600;outline:none;padding:3px 2px;}
+  .inline-num:focus{border-bottom-color:var(--brand);background:var(--brand-wash);}
+  .inline-num::placeholder{color:var(--ink3);font-weight:400;}
   .inline-num:disabled{border-bottom-color:transparent;}
-  .cpo-cell{font-weight:700;color:var(--blue);}
-  .cpo-cell.empty{color:var(--text3);font-weight:400;}
-  .month-header td{background:var(--surface3)!important;font-weight:700;font-size:12px;color:var(--blue);padding:6px 10px;}
-  .camp-divider td{background:linear-gradient(90deg,var(--blue),var(--blue2))!important;color:#fff;font-weight:800;font-size:13px;padding:10px 14px;text-align:center;letter-spacing:.5px;border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);}
-  .plan-input{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:6px 8px;border-radius:5px;font-size:12px;font-family:var(--font);text-align:right;}
-  .plan-input:focus{outline:none;border-color:var(--blue);background:var(--blue-light);}
-  .plan-total-cell{font-weight:700;color:var(--blue);background:var(--blue-light);font-size:13px;text-align:right;}
-  .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
-  .dot-worked{background:var(--green);}
-  .dot-vacation{background:var(--gold);}
-  .dot-empty{background:var(--text3);}
-  .year-filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
-  .filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);transition:all .15s;}
-  .filter-btn.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700;}
+  .cpo-cell{font-weight:700;color:var(--ink);}
+  .cpo-cell.empty{color:var(--ink3);font-weight:400;}
+  .cpo-bar{display:block;height:3px;border-radius:2px;background:var(--brand);opacity:.55;margin-top:3px;max-width:76px;}
+  .month-header td{background:var(--paper)!important;font-weight:800;font-size:10px;color:var(--ink3);padding:14px 10px 5px;text-transform:uppercase;letter-spacing:.12em;border-bottom:1px solid var(--line-strong);}
+  .camp-divider td{background:var(--ink)!important;color:var(--paper);font-weight:700;font-size:10.5px;padding:8px 14px;text-align:center;letter-spacing:.14em;text-transform:uppercase;border:none;}
+  .plan-input{width:100%;border:1px solid var(--line);background:#fff;color:var(--plan);font-weight:600;padding:6px 8px;border-radius:6px;font-size:12px;font-family:var(--sans);text-align:right;}
+  .plan-input:focus{outline:none;border-color:var(--plan);background:var(--plan-wash);}
+  .plan-input::placeholder{color:var(--ink3);font-weight:400;}
+  .plan-total-cell{font-weight:700;color:var(--plan);background:var(--plan-wash);font-size:13px;text-align:right;}
+  .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .dot-worked{background:var(--pos);}
+  .dot-vacation{background:var(--gold2);}
+  .dot-empty{background:var(--line-strong);}
+  .year-filters{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap;}
+  .filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--line-strong);background:var(--card);color:var(--ink2);font-family:var(--sans);transition:all .12s;}
+  .filter-btn:hover{border-color:var(--ink3);color:var(--ink);}
+  .filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700;}
   .year-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px;}
 
-  /* ===== PROFITABILITY ===== */
-  .prof-event{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--blue);}
-  .prof-event.hit{border-left-color:var(--accent);}
-  .prof-event.miss{border-left-color:var(--red);}
-  .prof-event-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-  .prof-event-name{font-size:14px;font-weight:700;}
-  .prof-event-meta{font-size:11px;color:var(--text2);margin-top:2px;}
+  /* ============ EVENT P&L ============ */
+  .prof-event{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-bottom:10px;border-left:3px solid var(--line-strong);}
+  .prof-event.hit{border-left-color:var(--brand);}
+  .prof-event.miss{border-left-color:var(--neg);}
+  .prof-event-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;}
+  .prof-event-name{font-size:14.5px;font-weight:700;letter-spacing:-.01em;}
+  .prof-event-meta{font-size:11.5px;color:var(--ink2);margin-top:2px;}
   .prof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
-  .prof-stat{background:var(--surface2);border-radius:6px;padding:8px 10px;}
-  .prof-stat-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+  .prof-stat{background:var(--inset);border-radius:8px;padding:9px 11px;}
+  .prof-stat-lbl{font-size:9.5px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
   .prof-stat-val{font-size:15px;font-weight:700;}
-  .profit-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
-  .pill-hit{background:var(--accent-dim);color:var(--accent-dark);border:1px solid var(--accent-border);}
-  .pill-miss{background:var(--red-light);color:var(--red);}
-  .pill-close{background:var(--amber-light);color:var(--amber);}
-  .settings-row{display:flex;align-items:center;gap:12px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:8px;padding:12px 16px;margin-bottom:16px;}
-  .settings-row label{font-size:12px;color:var(--blue);font-weight:600;}
-  .settings-fin{background:var(--surface);border:1.5px solid var(--blue-mid);border-radius:6px;padding:6px 10px;font-family:var(--font);font-size:13px;font-weight:700;color:var(--blue);outline:none;width:90px;text-align:center;}
-  .settings-fin:focus{border-color:var(--blue);}
-  .mb{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:200;align-items:center;justify-content:center;}
+  .profit-pill{padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+  .pill-hit{background:var(--brand-wash);color:var(--accent-dark);border:1px solid var(--accent-border);}
+  .pill-miss{background:var(--neg-wash);color:var(--neg);}
+  .pill-close{background:var(--gold-wash);color:var(--amber);}
+  .settings-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:16px;flex-wrap:wrap;}
+  .settings-row label{font-size:11px;color:var(--ink2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+  .settings-fin{background:#fff;border:1px solid var(--line-strong);border-radius:7px;padding:6px 10px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink);outline:none;width:90px;text-align:center;}
+  .settings-fin:focus{border-color:var(--brand);}
+
+  /* modal + toast */
+  .mb{display:none;position:fixed;inset:0;background:rgba(28,26,21,.45);z-index:200;align-items:center;justify-content:center;}
   .mb.open{display:flex;}
-  .mo{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:20px;width:400px;box-shadow:0 8px 30px rgba(26,95,170,.12);}
-  .motit{font-size:14px;font-weight:700;margin-bottom:13px;color:var(--blue);}
-  .toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:7px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;}
+  .mo{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;width:400px;box-shadow:var(--shadow);}
+  .motit{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:14px;color:var(--ink);}
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:12.5px;font-weight:700;padding:10px 18px;border-radius:9px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
-  .toast.blue{background:var(--blue);}
-  /* ===== TREND CHART ===== */
-  .trend-wrap{position:relative;}
-  .trend-tip{position:absolute;pointer-events:none;background:var(--text);color:#fff;font-size:11px;line-height:1.5;padding:7px 10px;border-radius:6px;box-shadow:0 4px 14px rgba(10,20,40,.25);display:none;z-index:50;white-space:nowrap;}
-  .trend-legend{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--text2);font-weight:600;margin-top:8px;flex-wrap:wrap;}
-  .trend-legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;}
-  .trend-legend .swline{display:inline-block;width:14px;height:0;border-top:2px dashed var(--text2);margin-right:5px;vertical-align:3px;}
-  /* ===== PACE STRIP ===== */
-  .pace-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-  .pace-itm{background:var(--surface2);border-radius:7px;padding:9px 11px;}
-  .pace-itm .mlbl{margin-bottom:4px;}
-  .pace-val{font-size:17px;font-weight:700;line-height:1.1;}
-  .pace-sub{font-size:11px;color:var(--text2);margin-top:2px;}
-  /* ===== SC FUNNEL ===== */
-  .funnel-row{display:grid;grid-template-columns:110px 1fr 90px;gap:9px;align-items:center;margin-bottom:7px;font-size:12px;}
-  .funnel-row:last-child{margin-bottom:0;}
-  .funnel-lbl{color:var(--text2);font-weight:600;}
-  .funnel-track{background:var(--surface3);border-radius:4px;height:14px;overflow:hidden;}
-  .funnel-fill{height:14px;border-radius:4px;background:var(--blue);}
-  .funnel-num{font-weight:700;text-align:right;}
-  /* ===== ROI TABLE ===== */
-  .roi-table{width:100%;border-collapse:collapse;font-size:12px;}
-  .roi-table th{text-align:left;font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:2px solid var(--border);white-space:nowrap;}
-  .roi-table td{padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap;}
-  .roi-table tr:last-child td{border-bottom:none;}
-  .roi-verdict{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;display:inline-block;}
-  /* ===== SC2 PUSH TAB ===== */
-  .sc2-window{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-light);border:1px solid var(--blue-mid);padding:3px 10px;border-radius:11px;display:inline-block;}
-  .sc2-callout{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.55;margin-top:12px;}
-  .sc2-callout b{color:var(--text);}
-  .sc2-note{background:var(--surface2);border:1px dashed var(--border2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.55;}
+  .toast.blue{background:var(--ink);}
+
+  /* ============ SC2 PUSH ============ */
+  .sc2-hero{background:var(--ink);border-radius:16px;padding:26px 28px 24px;margin-bottom:16px;color:var(--paper);}
+  .sc2-hero .eyebrow{color:rgba(241,239,232,.55);margin-bottom:8px;}
+  .sc2-hero-num{font-family:var(--serif);font-size:54px;font-weight:600;letter-spacing:-.02em;line-height:1;color:#fff;margin-bottom:10px;}
+  .sc2-hero-sub{font-size:13px;color:rgba(241,239,232,.75);font-weight:600;}
+  .sc2-hero-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .sc2-window{font-size:10.5px;font-weight:700;color:rgba(241,239,232,.85);background:rgba(241,239,232,.10);border:1px solid rgba(241,239,232,.22);padding:4px 11px;border-radius:12px;display:inline-block;letter-spacing:.04em;}
+  .sc2-hero-note{font-size:11px;color:rgba(241,239,232,.5);}
+  .sc2-callout{background:var(--brand-wash);border:1px solid var(--accent-border);border-radius:9px;padding:11px 14px;font-size:12.5px;line-height:1.55;margin-top:12px;}
+  .sc2-callout b{color:var(--ink);}
+  .sc2-note{background:var(--inset);border:1px dashed var(--line-strong);border-radius:9px;padding:11px 14px;font-size:12px;color:var(--ink2);line-height:1.55;}
   .sc2-funnel{display:flex;align-items:stretch;gap:8px;margin-bottom:14px;}
-  .sc2-step{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;}
-  .sc2-step .fv{font-size:21px;font-weight:700;color:var(--text);line-height:1.1;}
-  .sc2-step .fl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-top:3px;}
+  .sc2-step{flex:1;min-width:0;background:var(--inset);border:1px solid var(--line);border-radius:9px;padding:11px 8px;text-align:center;}
+  .sc2-step .fv{font-size:22px;font-weight:700;color:var(--ink);line-height:1.1;letter-spacing:-.01em;}
+  .sc2-step .fl{font-size:9.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-top:3px;}
   .sc2-step .fs{font-size:11px;font-weight:700;margin-top:2px;}
-  .sc2-farrow{display:flex;align-items:center;color:var(--text3);font-size:15px;font-weight:700;flex:0 0 auto;}
-  .minibar{height:14px;background:var(--surface2);border-radius:4px;overflow:hidden;min-width:70px;}
-  .minibar>div{height:100%;background:var(--blue);border-radius:0 4px 4px 0;min-width:2px;}
-  .minibar.gold>div{background:var(--gold);}
-  .sc2-list{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6;color:var(--text);}
+  .sc2-farrow{display:flex;align-items:center;color:var(--ink3);font-size:15px;font-weight:700;flex:0 0 auto;}
+  .sc2-list{margin:0;padding-left:18px;font-size:12.5px;line-height:1.6;color:var(--ink);}
   .sc2-list li{margin-bottom:8px;}
   .sc2-list li:last-child{margin-bottom:0;}
   .sc2-cmp-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px;}
-  .sc2-cmp-row .cl{flex:0 0 130px;color:var(--text2);font-weight:600;}
+  .sc2-cmp-row .cl{flex:0 0 130px;color:var(--ink2);font-weight:600;}
   .sc2-cmp-row .ctrack{flex:1;display:flex;flex-direction:column;gap:3px;}
   .sc2-cmp-row .cv{flex:0 0 auto;text-align:right;min-width:130px;font-weight:700;white-space:nowrap;}
   .delta-chip{font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;margin-left:6px;display:inline-block;}
-  /* Phone: comparison rows go two-line (label+value, then full-width bars) so the
-     delta chips never push past the viewport and the bars get real width */
   @media(max-width:700px){
     .sc2-cmp-row{flex-wrap:wrap;gap:4px 8px;margin-bottom:13px;}
     .sc2-cmp-row .cl{flex:1 1 auto;}
@@ -270,187 +398,267 @@
     .sc2-step{padding:9px 4px;}
     .sc2-step .fv{font-size:18px;}
   }
-  /* ===== BOTTOM APP NAV (mobile) ===== */
+
+  /* ============ ENTER STATS ============ */
+  .step-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
+  .step-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line);}
+  .step-num{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-variant-numeric:tabular-nums;}
+  .step-num.alt{background:var(--brand);}
+  .step-num.dim{background:var(--card);color:var(--ink2);border:1px solid var(--line-strong);}
+  .step-tit{font-size:13.5px;font-weight:700;color:var(--ink);}
+  .step-sub{font-size:11.5px;color:var(--ink2);font-weight:400;}
+
+  /* ============ MOBILE NAV ============ */
   .bnav{display:none;}
+  .msheet-back{display:none;}
   .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 
-  /* Tablet: wrap the top nav, keep scrollable tabs */
-  @media(max-width:900px) and (min-width:701px){
-    nav{flex-wrap:wrap;height:auto;padding:8px 10px;row-gap:6px;}
+  @media(max-width:900px){
+    .g2e{grid-template-columns:1fr;}
+  }
+  @media(max-width:1000px) and (min-width:701px){
+    nav{flex-wrap:wrap;height:auto;padding:10px 16px;row-gap:8px;}
     .tabs{order:3;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;}
     .tabs::-webkit-scrollbar{display:none;}
     .tab{white-space:nowrap;flex:0 0 auto;}
+    .tab-log{margin-left:auto;}
     .nav-r{margin-left:auto;}
+    .hero-num{font-size:44px;}
   }
 
-  /* Phone: app-style layout — compact top bar, fixed bottom tab bar */
   @media(max-width:700px){
-    body{padding-bottom:calc(66px + env(safe-area-inset-bottom));}
-    nav{padding:0 12px;height:48px;}
-    .logo{font-size:14px;}
+    body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
+    nav{padding:0 14px;height:52px;gap:10px;}
+    .logo .lg-sub{display:none;}
     .tabs{display:none;}
-    #sync-status{display:none;}
-    .av{display:none;}
-    .streak-badge{font-size:10px;padding:3px 8px;}
-    .bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -2px 12px rgba(26,95,170,.10);padding:5px 2px calc(5px + env(safe-area-inset-bottom));justify-content:space-around;}
-    .bnav-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;font-family:var(--font);color:var(--text2);font-size:9px;font-weight:600;padding:4px 0;cursor:pointer;border-radius:8px;}
-    .bnav-item .bi{font-size:18px;line-height:1;}
-    .bnav-item.active{color:var(--blue);}
-    .bnav-item.active .bi{transform:scale(1.12);}
-    .bnav-item:active{background:var(--blue-light);}
-
+    .streak-badge{font-size:10px;padding:4px 9px;}
     .desktop-hint{display:none;}
     .pill-detail{display:none;}
-    .page{padding:12px;}
-    .ptitle{font-size:18px;margin-bottom:14px;}
+    .page{padding:16px 14px 90px;}
+    .ptitle{font-size:27px;margin-bottom:16px;}
     .g3{grid-template-columns:1fr;}
+    .g3.tiles{grid-template-columns:1fr 1fr;}
     .g4{grid-template-columns:1fr 1fr;}
     .g2,.g2e{grid-template-columns:1fr;}
     .fg,.fg3,.fg4{grid-template-columns:1fr;}
     .year-summary{grid-template-columns:1fr 1fr;}
     .pace-grid{grid-template-columns:1fr 1fr;}
     .prof-grid{grid-template-columns:1fr 1fr;}
-    .mc.hero{padding:16px 14px 13px;}
-    .mc.hero .mval{font-size:26px;letter-spacing:-1px;}
+    .mc.hero .mval{font-size:26px;}
     .mval{font-size:21px;}
+    .cmd-hero{padding:18px 16px 16px;}
+    .hero-num{font-size:42px;}
+    .rank-blk{min-width:0;flex:1 1 100%;border-top:1px solid var(--line);padding-top:16px;margin-top:4px;}
+    .cmd-pace{grid-template-columns:1fr 1fr;gap:14px 0;}
+    .cmd-pace .pace-itm{padding:0 14px;}
+    .cmd-pace .pace-itm:nth-child(3){border-left:none;padding-left:0;}
+    /* focus column first on phones — that's the "what matters now" layer */
+    #home-main{order:2;}
+    #home-side{order:1;}
+    .sc2-hero-num{font-size:38px;}
 
-    /* iOS zooms into inputs under 16px — keep form text at 16px on phones */
+    /* iOS zooms into inputs under 16px */
     .fin,.plan-input,.week-note-input,.settings-fin,select.fin,.inline-num{font-size:16px;}
     .inline-num{width:52px;}
-    /* Bigger touch targets */
     .bedit,.bdel{padding:8px 12px;font-size:12px;}
-    .bp{padding:12px 24px;}
-    .bs{padding:11px 16px;}
+    .bp{padding:13px 24px;}
+    .bs{padding:12px 16px;}
     .qck{width:22px;height:22px;}
     .filter-btn{padding:8px 14px;}
     button.badge{padding:9px 14px;border-radius:14px;}
     #daily-check-btn{padding:12px 20px !important;font-size:13px !important;}
-    .nav-r button{white-space:nowrap;padding:10px 12px !important;}
     .year-filters{flex-wrap:wrap;}
 
-    /* Wide tables: sticky first column while the rest scrolls */
-    .year-table th:first-child,.year-table td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:2px 0 6px rgba(26,95,170,.07);}
-    .year-table th:first-child{background:var(--blue);z-index:3;}
-    .year-table tr.vacation td:first-child{background:#fffbf0;}
+    /* wide tables: sticky first column */
+    .year-table th:first-child,.year-table td:first-child{position:sticky;left:0;z-index:2;background:var(--card);box-shadow:2px 0 6px rgba(28,26,21,.06);}
+    .year-table tr.vacation td:first-child{background:var(--gold-wash);}
     .year-table tr.month-header td:first-child,.year-table tr.camp-divider td:first-child{position:static;box-shadow:none;}
     .scrollx>*{min-width:640px;}
-    /* Plan table: sticky Wk column, inputs wide enough for 5-digit plans */
-    #plan-table th:first-child,#plan-table td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:2px 0 6px rgba(26,95,170,.07);}
-    #plan-table th:first-child{background:var(--blue);z-index:3;}
+    #plan-table th:first-child,#plan-table td:first-child{position:sticky;left:0;z-index:2;background:var(--card);box-shadow:2px 0 6px rgba(28,26,21,.06);}
     .plan-input{min-width:78px;padding:9px 6px;}
     .plan-total-cell{min-width:86px;}
     .scallout{gap:6px;padding:10px 8px;}
-
     .settings-row{flex-wrap:wrap;row-gap:8px;}
     .settings-row>div[style*="width:1px"]{display:none;}
     .mo{width:calc(100vw - 32px);max-width:400px;}
-    .toast{left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom));text-align:center;}
+    .toast{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));text-align:center;}
     .trend-legend{gap:10px;}
-    #chart-wrap{flex-direction:column;align-items:center;gap:12px;}
     .prof-event-header{flex-wrap:wrap;gap:8px;}
-    .rank-cpo{font-size:17px;}
-    .rank-name{font-size:14px;}
+    .mix-row{grid-template-columns:96px 1fr 84px;}
+
+    /* bottom app bar */
+    .bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--card);
+      border-top:1px solid var(--line-strong);padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+      justify-content:space-around;align-items:flex-end;}
+    .bnav-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;
+      font-family:var(--sans);color:var(--ink3);font-size:9.5px;font-weight:700;padding:4px 0 2px;cursor:pointer;letter-spacing:.02em;}
+    .bnav-item svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+    .bnav-item.active{color:var(--brand);}
+    .bnav-item:active{color:var(--ink);}
+    .bnav-log{flex:0 0 62px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;margin-top:-18px;padding:0;}
+    .bnav-log .lg-circle{width:48px;height:48px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(19,63,45,.35);border:3px solid var(--card);transition:background .12s;}
+    .bnav-log .lg-circle svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
+    .bnav-log.active .lg-circle{background:var(--brand-deep);}
+
+    /* more sheet */
+    .msheet-back{position:fixed;inset:0;background:rgba(28,26,21,.4);z-index:160;}
+    .msheet-back.open{display:block;}
+    .msheet{position:fixed;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:170;
+      background:var(--card);border:1px solid var(--line-strong);border-radius:16px;box-shadow:var(--shadow);
+      padding:8px;display:none;}
+    .msheet.open{display:block;animation:fi .15s ease;}
+    .msheet-item{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;
+      font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);padding:13px 14px;border-radius:10px;cursor:pointer;text-align:left;}
+    .msheet-item:active{background:var(--inset);}
+    .msheet-item .mi-sub{margin-left:auto;font-size:11px;color:var(--ink3);font-weight:600;}
+    .msheet-item svg{width:19px;height:19px;stroke:var(--ink2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
   }
+
+  .msheet{display:none;}
+  .sg4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:700px){.sg4{grid-template-columns:1fr 1fr;}}
+  .cat-empty{opacity:.55;}
+
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">Command <span>Center.</span></div>
+  <div class="logo"><span class="lg-name">Command Center</span><span class="lg-sub">All in Alan</span></div>
   <div class="tabs">
-    <button class="tab active" data-page="home" onclick="showPage('home',this)">Home</button>
-    <button class="tab" data-page="campaign" onclick="showPage('campaign',this)">Campaign</button>
+    <button class="tab active" data-page="home" onclick="showPage('home',this)">Command</button>
+    <div class="navsep"></div>
     <button class="tab" data-page="ratios" onclick="showPage('ratios',this)">Scorecard</button>
-    <button class="tab" data-page="yearview" onclick="showPage('yearview',this)">Year View</button>
+    <button class="tab" data-page="campaign" onclick="showPage('campaign',this)">Campaigns</button>
+    <div class="navsep"></div>
+    <button class="tab" data-page="yearview" onclick="showPage('yearview',this)">Year</button>
     <button class="tab" data-page="plan" onclick="showPage('plan',this)">Plan</button>
-    <button class="tab" data-page="profit" onclick="showPage('profit',this)">Event Profitability</button>
-    <button class="tab" data-page="sc2" onclick="showPage('sc2',this)">SC2 PUSH</button>
-    <button class="tab" data-page="enter" onclick="showPage('enter',this)">Enter Stats</button>
+    <div class="navsep"></div>
+    <button class="tab" data-page="profit" onclick="showPage('profit',this)">Event P&amp;L</button>
+    <button class="tab" data-page="sc2" onclick="showPage('sc2',this)">SC2 Push</button>
+    <button class="tab-log" data-page="enter" onclick="showPage('enter',this)">+ Log Week</button>
   </div>
   <div class="nav-r">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span id="sync-status" style="font-size:11px;font-weight:600;color:var(--text2);">Not synced</span>
-      <button onclick="loadFromSheets()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↓ Load</button>
-      <button onclick="saveToSheets()" style="background:var(--blue);border:none;color:#fff;font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">↑ Save</button>
-      <button onclick="exportBackup()" title="Download a dated backup copy of all your data" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:var(--font);font-weight:600;">⬇ Backup</button>
-    </div>
     <div class="streak-badge" id="streakEl">Day 0 streak</div>
-    <div class="av" id="avEl">AH</div>
+    <div class="dmenu" id="dmenu">
+      <button class="dmenu-btn" onclick="toggleDataMenu(event)">Data</button>
+      <div class="dmenu-pop">
+        <div class="sync-line" id="sync-status">Not synced</div>
+        <div class="dm-row">
+          <button class="dm-act" onclick="loadFromSheets()">↓&nbsp; Load from cloud</button>
+          <button class="dm-act" onclick="saveToSheets()">↑&nbsp; Save to cloud</button>
+          <button class="dm-act" onclick="exportBackup()" title="Download a dated backup copy of all your data">⤓&nbsp; Download backup</button>
+        </div>
+      </div>
+    </div>
+    <div id="avEl" style="display:none;">AH</div>
   </div>
 </nav>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="eyebrow">Weekly Overview</div>
-  <div class="ptitle">Good morning, <span id="repNameEl">Rep</span>.</div>
+  <div class="eyebrow">All in Alan · 2026 Season</div>
+  <div class="ptitle">Command<span>.</span> <span id="repNameEl" style="display:none;">Rep</span><span id="rank-icon" style="display:none;"></span><span id="rank-cpo" style="display:none;"></span></div>
 
-  <!-- GAME BAR -->
-  <div class="game-bar">
-    <div class="rank-row">
-      <div class="rank-badge">
-        <div class="rank-icon" id="rank-icon">🔰</div>
-        <div>
+  <!-- STATUS — where the year stands -->
+  <div class="cmd-hero">
+    <div class="cmd-hero-top">
+      <div style="flex:1 1 300px;min-width:250px;">
+        <div class="rank-eyebrow">Year to date · Total CPO</div>
+        <div class="hero-num" id="h-cpo">$0</div>
+        <div class="hero-goal" id="h-cpo-s" onclick="startEditHomeGoal('yr')" style="cursor:pointer;" title="Click to edit goal">0% of $500,000 goal</div>
+        <input id="home-goal-yr" type="number" style="display:none;width:110px;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font-family:var(--sans);" onblur="saveHomeGoal('yr')" onkeydown="if(event.key==='Enter')saveHomeGoal('yr');if(event.key==='Escape')cancelHomeGoal('yr');">
+        <div id="hero-pace-chip"></div>
+      </div>
+      <div class="rank-blk">
+        <div class="rank-eyebrow">Season rank</div>
+        <div class="rank-line">
           <div class="rank-name" id="rank-name">Rookie</div>
-          <div class="rank-sub" id="rank-sub">Starting your All In journey</div>
+          <div class="rank-next" id="rank-next">$50,000 to next rank</div>
         </div>
-      </div>
-      <div class="rank-right">
-        <div class="rank-cpo" id="rank-cpo">$0</div>
-        <div class="rank-next" id="rank-next">$50,000 to next rank</div>
+        <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div><div class="xp-pct" id="xp-pct">0%</div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);font-weight:600;margin-top:5px;">
+          <span id="rank-floor-label">$0</span>
+          <span id="rank-ceil-label">$50,000</span>
+        </div>
+        <div class="tier-track" id="tier-track"></div>
+        <div class="rank-sub" id="rank-sub">Starting your All In journey</div>
       </div>
     </div>
-    <div class="xp-track">
-      <div class="xp-fill" id="xp-fill" style="width:0%"></div>
-      <div class="xp-pct" id="xp-pct">0%</div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);font-weight:600;">
-      <span id="rank-floor-label">$0</span>
-      <span id="rank-ceil-label">$50,000</span>
+    <div class="cmd-pace">
+      <div class="pace-itm"><div class="mlbl">Goal Progress</div><div class="pace-val" style="color:var(--accent-dark);" id="h-pct">0%</div><div class="pace-sub" id="h-pct-sub">of $500K</div></div>
+      <div class="pace-itm"><div class="mlbl">Year Elapsed</div><div class="pace-val" id="h-elapsed">—</div><div class="pace-sub" id="h-elapsed-sub">Wk — of 52</div></div>
+      <div class="pace-itm"><div class="mlbl">Needed / Wk</div><div class="pace-val" id="h-needed">$—</div><div class="pace-sub" id="h-needed-sub">to hit goal</div></div>
+      <div class="pace-itm"><div class="mlbl">Projected Finish</div><div class="pace-val" style="color:var(--gold2);" id="h-proj">$—</div><div class="pace-sub" id="h-proj-sub">at current pace</div></div>
     </div>
   </div>
-  <div class="g4">
-    <div class="mc accent"><div class="mlbl">Total CPO (YTD)</div><div class="mval" id="h-cpo">$0</div><div class="msub tm" id="h-cpo-s" onclick="startEditHomeGoal('yr')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit goal">0% of $500,000 goal</div><input id="home-goal-yr" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveHomeGoal('yr')" onkeydown="if(event.key==='Enter')saveHomeGoal('yr');if(event.key==='Escape')cancelHomeGoal('yr');"></div>
+
+  <div class="g3 tiles">
     <div class="mc neu"><div class="mlbl">Orders (YTD)</div><div class="mval" id="h-ord">0</div><div class="msub tm" id="h-ord-s">0% of 759 goal</div></div>
-    <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s" onclick="startEditHomeGoal('avg')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit goal">Goal: $659</div><input id="home-goal-avg" type="number" style="display:none;width:90px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveHomeGoal('avg')" onkeydown="if(event.key==='Enter')saveHomeGoal('avg');if(event.key==='Escape')cancelHomeGoal('avg');"></div>
+    <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s" onclick="startEditHomeGoal('avg')" style="cursor:pointer;" title="Click to edit goal">Goal: $659</div><input id="home-goal-avg" type="number" style="display:none;width:90px;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font-family:var(--sans);" onblur="saveHomeGoal('avg')" onkeydown="if(event.key==='Enter')saveHomeGoal('avg');if(event.key==='Escape')cancelHomeGoal('avg');"></div>
     <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm" id="h-profit-s">commission − event expenses</div></div>
   </div>
-  <div class="g2">
-    <div class="panel">
-      <div class="phead"><div class="ptit2">Yearly Progress</div><div class="badge bb">2026</div></div>
-      <div class="prow"><div class="pmeta"><span class="plbl">Sales</span><span class="pnum" id="pr-s-l">$0 / $500,000</span></div><div class="ptrack"><div class="pfill fb" id="pr-s" style="width:0%"></div></div></div>
-      <div class="prow"><div class="pmeta"><span class="plbl">Orders</span><span class="pnum" id="pr-o-l">0 / 759</span></div><div class="ptrack"><div class="pfill fb2" id="pr-o" style="width:0%"></div></div></div>
-      <div class="prow"><div class="pmeta"><span class="plbl">SC Completed</span><span class="pnum" id="pr-sc-l">0 / 237</span></div><div class="ptrack"><div class="pfill fgr" id="pr-sc" style="width:0%"></div></div></div>
-      <div class="div"></div>
-      <div class="pace-grid">
-        <div class="pace-itm"><div class="mlbl">Goal Progress</div><div class="pace-val" style="color:var(--accent-dark);" id="h-pct">0%</div><div class="pace-sub" id="h-pct-sub">of $500K</div></div>
-        <div class="pace-itm"><div class="mlbl">Year Elapsed</div><div class="pace-val" id="h-elapsed">—</div><div class="pace-sub" id="h-elapsed-sub">Wk — of 52</div></div>
-        <div class="pace-itm"><div class="mlbl">Needed / Wk</div><div class="pace-val" id="h-needed">$—</div><div class="pace-sub" id="h-needed-sub">to hit goal</div></div>
-        <div class="pace-itm"><div class="mlbl">Projected</div><div class="pace-val" style="color:var(--gold);" id="h-proj">$—</div><div class="pace-sub" id="h-proj-sub">at current pace</div></div>
+
+  <div class="g2" style="align-items:start;">
+    <!-- MOMENTUM — what is changing -->
+    <div id="home-main" style="display:flex;flex-direction:column;gap:14px;min-width:0;">
+      <div class="panel">
+        <div class="phead"><div class="ptit2">Momentum — Weekly CPO</div><div class="badge bb" id="trend-badge">2026</div></div>
+        <div class="trend-wrap" id="trend-wrap">
+          <canvas id="trend-chart" style="width:100%;height:200px;display:block;"></canvas>
+          <div class="trend-tip" id="trend-tip"></div>
+        </div>
+        <div class="trend-legend">
+          <span><span class="sw" style="background:var(--brand);"></span>Actual CPO</span>
+          <span><span class="sw" style="background:var(--gold2);"></span>Vacation week</span>
+          <span><span class="swline"></span>Planned CPO</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phead"><div class="ptit2">Last Logged Week</div><div class="badge bb" id="lw-label">No data yet</div></div>
+        <div class="sg sg4" id="lw-grid">
+          <div class="si"><div class="sil">CPO</div><div class="siv">—</div></div>
+          <div class="si"><div class="sil">Orders</div><div class="siv">—</div></div>
+          <div class="si"><div class="sil">SC Booked</div><div class="siv">—</div></div>
+          <div class="si"><div class="sil">SC Completed</div><div class="siv">—</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phead"><div class="ptit2">Business Mix (YTD)</div><div class="badge bb">Share of CPO</div></div>
+        <div id="chart-empty" style="font-size:12px;color:var(--ink3);text-align:center;padding:24px 0;display:none;">Enter stats to see your CPO breakdown.</div>
+        <div id="chart-wrap">
+          <div id="chart-legend"></div>
+        </div>
       </div>
     </div>
-    <!-- RIGHT COL: DAILY ONE THING + WEEKLY STANDARDS -->
-    <div style="display:flex;flex-direction:column;gap:13px;">
+
+    <!-- FOCUS — what deserves attention now -->
+    <div id="home-side" style="display:flex;flex-direction:column;gap:14px;min-width:0;">
+      <div class="panel">
+        <div class="phead" style="margin-bottom:10px;"><div class="ptit2">This Week</div><div class="badge bb" id="fw-badge">Now</div></div>
+        <div class="focus-week" id="focus-week">—</div>
+      </div>
 
       <!-- DAILY ONE THING -->
       <div class="panel">
         <div class="phead">
           <div>
             <div class="ptit2">Daily One Thing</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px;">One focus. Every day.</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:3px;">One focus. Every day.</div>
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
-            <div style="background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent-dark);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="daily-streak-badge">0 day streak</div>
-            <button class="badge bgy" style="cursor:pointer;border:none;font-family:var(--font);" onclick="openDailyEdit()">edit</button>
+            <div style="background:var(--brand-wash);border:1px solid var(--accent-border);color:var(--accent-dark);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="daily-streak-badge">0 day streak</div>
+            <button class="badge bgy" style="cursor:pointer;font-family:var(--sans);" onclick="openDailyEdit()">edit</button>
           </div>
         </div>
         <div id="daily-one-display"></div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:11px;color:var(--text2);">Completed today?</span>
-          <button class="bp" id="daily-check-btn" onclick="completeDailyOne()" style="padding:6px 16px;font-size:12px;">Mark Done</button>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--ink2);">Completed today?</span>
+          <button class="bp" id="daily-check-btn" onclick="completeDailyOne()" style="padding:7px 16px;font-size:12px;">Mark Done</button>
         </div>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:11px;color:var(--text2);font-weight:600;">Longest streak</span>
-          <span style="font-size:12px;font-weight:700;color:var(--text);" id="daily-longest">0 days</span>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--ink2);font-weight:600;">Longest streak</span>
+          <span style="font-size:12px;font-weight:700;color:var(--ink);" id="daily-longest">0 days</span>
         </div>
       </div>
 
@@ -459,56 +667,27 @@
         <div class="phead">
           <div>
             <div class="ptit2">Weekly Standards</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px;">Hit all of them. Every week.</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:3px;">Hit all of them. Every week.</div>
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
-            <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="weekly-streak-badge">0 week streak</div>
-            <button class="badge bgy" style="cursor:pointer;border:none;font-family:var(--font);" onclick="openStandardsEdit()">edit</button>
+            <div style="background:var(--plan-wash);color:var(--plan);font-size:11px;font-weight:700;padding:3px 10px;border-radius:11px;" id="weekly-streak-badge">0 week streak</div>
+            <button class="badge bgy" style="cursor:pointer;font-family:var(--sans);" onclick="openStandardsEdit()">edit</button>
           </div>
         </div>
         <div id="weekly-standards-list"></div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);" id="weekly-claim-wrap"></div>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:11px;color:var(--text2);font-weight:600;">Longest streak</span>
-          <span style="font-size:12px;font-weight:700;color:var(--text);" id="weekly-longest">0 weeks</span>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);" id="weekly-claim-wrap"></div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:var(--ink2);font-weight:600;">Longest streak</span>
+          <span style="font-size:12px;font-weight:700;color:var(--ink);" id="weekly-longest">0 weeks</span>
         </div>
       </div>
 
-    </div>
-  </div>
-  <!-- WEEKLY CPO TREND -->
-  <div class="panel" style="margin-bottom:13px;">
-    <div class="phead"><div class="ptit2">Weekly CPO Trend</div><div class="badge bb" id="trend-badge">2026</div></div>
-    <div class="trend-wrap" id="trend-wrap">
-      <canvas id="trend-chart" style="width:100%;height:190px;display:block;"></canvas>
-      <div class="trend-tip" id="trend-tip"></div>
-    </div>
-    <div class="trend-legend">
-      <span><span class="sw" style="background:var(--blue);"></span>Actual CPO</span>
-      <span><span class="sw" style="background:var(--gold);"></span>Vacation week</span>
-      <span><span class="swline"></span>Planned CPO</span>
-    </div>
-  </div>
-
-  <div class="g2e">
-    <!-- CPO BREAKDOWN CHART -->
-    <div class="panel">
-      <div class="phead"><div class="ptit2">CPO Breakdown (YTD)</div><div class="badge bb">By Category</div></div>
-      <div id="chart-empty" style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;display:none;">Enter stats to see your CPO breakdown.</div>
-      <div id="chart-wrap" style="display:flex;align-items:center;gap:20px;">
-        <canvas id="donut-chart" width="140" height="140" style="flex-shrink:0;"></canvas>
-        <div id="chart-legend" style="display:flex;flex-direction:column;gap:7px;flex:1;"></div>
-      </div>
-    </div>
-
-    <!-- LAST WEEK -->
-    <div class="panel">
-      <div class="phead"><div class="ptit2">Last Week</div><div class="badge bb" id="lw-label">No data yet</div></div>
-      <div class="sg" id="lw-grid">
-        <div class="si"><div class="sil">CPO</div><div class="siv">—</div></div>
-        <div class="si"><div class="sil">Orders</div><div class="siv">—</div></div>
-        <div class="si"><div class="sil">SC Booked</div><div class="siv">—</div></div>
-        <div class="si"><div class="sil">SC Completed</div><div class="siv">—</div></div>
+      <!-- YEARLY GOALS -->
+      <div class="panel">
+        <div class="phead"><div class="ptit2">Yearly Goals</div><div class="badge bb">2026</div></div>
+        <div class="prow"><div class="pmeta"><span class="plbl">Sales</span><span class="pnum" id="pr-s-l">$0 / $500,000</span></div><div class="ptrack"><div class="pfill fb" id="pr-s" style="width:0%"></div></div></div>
+        <div class="prow"><div class="pmeta"><span class="plbl">Orders</span><span class="pnum" id="pr-o-l">0 / 759</span></div><div class="ptrack"><div class="pfill fb2" id="pr-o" style="width:0%"></div></div></div>
+        <div class="prow"><div class="pmeta"><span class="plbl">SC Completed</span><span class="pnum" id="pr-sc-l">0 / 237</span></div><div class="ptrack"><div class="pfill fgr" id="pr-sc" style="width:0%"></div></div></div>
       </div>
     </div>
   </div>
@@ -516,17 +695,17 @@
 
 <!-- ENTER STATS -->
 <div class="page" id="page-enter">
-  <div class="eyebrow">Weekly Input</div>
-  <div class="ptitle">Enter Your <span>Stats.</span></div>
+  <div class="eyebrow">Operations · Weekly Input</div>
+  <div class="ptitle">Log the Week<span>.</span></div>
   <div class="g2">
     <div class="panel">
       <div class="edbanner" id="edbanner" style="display:none;">Editing Week <span id="ed-wk-lbl">—</span><button onclick="cancelEdit()">Cancel ✕</button></div>
 
       <!-- PHASE 1: BEFORE THE WEEK -->
-      <div style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 16px;margin-bottom:18px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <div style="background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 1</div>
-          <div style="font-size:13px;font-weight:700;color:var(--blue);">Before the Week Starts</div>
+      <div class="step-card" style="margin-bottom:16px;">
+        <div class="step-head">
+          <div class="step-num">1</div>
+          <div><div class="step-tit">Before the week starts</div><div class="step-sub">Set the target and the calendar shape</div></div>
         </div>
         <div class="fg">
           <div class="fgrp"><label class="flbl">Week #</label><input type="number" class="fin" id="i-wk" placeholder="e.g. 16" oninput="onWeekChange()"></div>
@@ -556,10 +735,10 @@
       </div>
 
       <!-- PHASE 2: AFTER THE WEEK -->
-      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:18px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-          <div style="background:var(--accent-dark);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 2</div>
-          <div style="font-size:13px;font-weight:700;color:var(--text);">After the Week Ends — Log Your Results</div>
+      <div class="step-card" style="margin-bottom:16px;">
+        <div class="step-head">
+          <div class="step-num alt">2</div>
+          <div><div class="step-tit">After the week ends — log your results</div><div class="step-sub">Totals first, then each bucket</div></div>
         </div>
 
         <div class="fs"><div class="fsl">Overall Sales</div>
@@ -654,10 +833,10 @@
       </div>
 
       <!-- STEP 3: EVENT PROFITABILITY -->
-      <div id="step3-event-form" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-          <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;">STEP 3</div>
-          <div style="font-size:13px;font-weight:700;color:var(--text);">Log Event Profitability <span style="font-size:12px;color:var(--text2);font-weight:400;">(optional — only if you worked an event)</span></div>
+      <div id="step3-event-form" class="step-card" style="margin-top:16px;">
+        <div class="step-head">
+          <div class="step-num dim">3</div>
+          <div><div class="step-tit">Log event profitability</div><div class="step-sub">Optional — only if you worked an event this week</div></div>
         </div>
 
         <div class="fs"><div class="fsl">Event Info</div>
@@ -736,7 +915,7 @@
           <button type="button" onclick="cancelEventEdit()" style="background:transparent;border:1px solid var(--blue);color:var(--blue);font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;cursor:pointer;font-family:var(--font);">Cancel Edit</button>
         </div>
         <div style="display:flex;gap:9px;">
-          <button class="bp" id="event-save-btn" style="background:var(--blue);" onclick="saveEvent()">Add Event to Profitability →</button>
+          <button class="bp" id="event-save-btn" style="background:var(--ink);" onclick="saveEvent()">Add Event to Profitability →</button>
           <button class="bs" type="button" onclick="clearEventForm()" style="display:none;" id="event-clear-btn">Clear</button>
         </div>
       </div>
@@ -757,12 +936,30 @@
 
 <!-- CAMPAIGN -->
 <div class="page" id="page-campaign">
-  <div class="eyebrow">Revenue Breakdown</div>
-  <div class="ptitle">Campaign <span>Overview.</span></div>
+  <div class="eyebrow">Operating Periods</div>
+  <div class="ptitle">Campaigns<span>.</span></div>
   <div class="g3">
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign I</div><div class="badge bb">Jan–Apr</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ci-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="ci-goal-display" onclick="startEditGoal('ci')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$110,000</span><input id="ci-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveGoal('ci')" onkeydown="if(event.key==='Enter')saveGoal('ci');if(event.key==='Escape')cancelGoal('ci');"></div><div class="ptrack" style="height:7px;"><div class="pfill fb" id="ci-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ci-p" class="tb">0%</span><span id="ci-g" class="tm">Gap: $110,000</span></div></div>
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign II</div><div class="badge bgy">May–Aug</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="cii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="cii-goal-display" onclick="startEditGoal('cii')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$230,000</span><input id="cii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveGoal('cii')" onkeydown="if(event.key==='Enter')saveGoal('cii');if(event.key==='Escape')cancelGoal('cii');"></div><div class="ptrack" style="height:7px;"><div class="pfill fb2" id="cii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="cii-p" class="tb">0%</span><span id="cii-g" class="tm">Gap: $230,000</span></div></div>
-    <div class="panel"><div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy">Sep–Dec</div></div><div style="font-size:24px;font-weight:700;margin-bottom:2px;" id="ciii-a">$0</div><div style="font-size:12px;color:var(--text2);margin-bottom:11px;">of <span id="ciii-goal-display" onclick="startEditGoal('ciii')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$160,000</span><input id="ciii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--border);border-radius:4px;padding:2px 5px;" onblur="saveGoal('ciii')" onkeydown="if(event.key==='Enter')saveGoal('ciii');if(event.key==='Escape')cancelGoal('ciii');"></div><div class="ptrack" style="height:7px;"><div class="pfill fgr" id="ciii-b" style="width:0%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div></div>
+    <div class="panel" id="camp-ci-panel">
+      <div class="phead"><div class="ptit2">Campaign I</div><div class="badge bgy" id="ci-badge">Jan–Apr</div></div>
+      <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:2px;font-variant-numeric:tabular-nums;" id="ci-a">$0</div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:12px;">of <span id="ci-goal-display" onclick="startEditGoal('ci')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$110,000</span><input id="ci-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:2px 5px;" onblur="saveGoal('ci')" onkeydown="if(event.key==='Enter')saveGoal('ci');if(event.key==='Escape')cancelGoal('ci');"></div>
+      <div class="ptrack" style="height:6px;"><div class="pfill fb" id="ci-b" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:600;"><span id="ci-p" class="tb">0%</span><span id="ci-g" class="tm">Gap: $110,000</span></div>
+    </div>
+    <div class="panel" id="camp-cii-panel">
+      <div class="phead"><div class="ptit2">Campaign II</div><div class="badge bgy" id="cii-badge">May–Aug</div></div>
+      <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:2px;font-variant-numeric:tabular-nums;" id="cii-a">$0</div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:12px;">of <span id="cii-goal-display" onclick="startEditGoal('cii')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$230,000</span><input id="cii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:2px 5px;" onblur="saveGoal('cii')" onkeydown="if(event.key==='Enter')saveGoal('cii');if(event.key==='Escape')cancelGoal('cii');"></div>
+      <div class="ptrack" style="height:6px;"><div class="pfill fb" id="cii-b" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:600;"><span id="cii-p" class="tb">0%</span><span id="cii-g" class="tm">Gap: $230,000</span></div>
+    </div>
+    <div class="panel" id="camp-ciii-panel">
+      <div class="phead"><div class="ptit2">Campaign III</div><div class="badge bgy" id="ciii-badge">Sep–Dec</div></div>
+      <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:2px;font-variant-numeric:tabular-nums;" id="ciii-a">$0</div>
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:12px;">of <span id="ciii-goal-display" onclick="startEditGoal('ciii')" style="cursor:pointer;text-decoration:underline dotted;" title="Click to edit">$160,000</span><input id="ciii-goal-input" type="number" style="display:none;width:80px;font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:2px 5px;" onblur="saveGoal('ciii')" onkeydown="if(event.key==='Enter')saveGoal('ciii');if(event.key==='Escape')cancelGoal('ciii');"></div>
+      <div class="ptrack" style="height:6px;"><div class="pfill fb" id="ciii-b" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:600;"><span id="ciii-p" class="tg">0%</span><span id="ciii-g" class="tm">Gap: $160,000</span></div>
+    </div>
   </div>
   <div class="panel" style="margin-bottom:13px;">
     <div class="phead" style="flex-wrap:wrap;gap:8px;">
@@ -794,8 +991,8 @@
 
 <!-- RATIOS -->
 <div class="page" id="page-ratios">
-  <div class="eyebrow">Performance Scorecard</div>
-  <div class="ptitle">Your <span>Scorecard.</span></div>
+  <div class="eyebrow">Analysis · Performance Health</div>
+  <div class="ptitle">Scorecard<span>.</span></div>
 
   <!-- HERO METRIC CARDS -->
   <div class="g4">
@@ -819,6 +1016,12 @@
       <div class="mval" id="rv-close">—</div>
       <div class="msub tm" id="rd-close">Goal: 88%</div>
     </div>
+  </div>
+
+  <!-- THE COACH (full width) -->
+  <div class="panel" style="margin-bottom:13px;">
+    <div class="phead"><div class="ptit2">The Coach</div><div class="badge bb">Insights</div></div>
+    <div id="coach"><div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;">Enter stats to unlock coaching insights.</div></div>
   </div>
 
   <!-- PRODUCTIVITY -->
@@ -846,12 +1049,6 @@
         <div class="msub tm" id="prod-weeks-with-workdays-sub">— enter to track</div>
       </div>
     </div>
-  </div>
-
-  <!-- THE COACH (full width) -->
-  <div class="panel" style="margin-bottom:13px;">
-    <div class="phead"><div class="ptit2">The Coach</div><div class="badge bb">Insights</div></div>
-    <div id="coach"><div style="font-size:12px;color:var(--text3);text-align:center;padding:22px 0;">Enter stats to unlock coaching insights.</div></div>
   </div>
 
   <!-- EVENT PERFORMANCE (below Coach) -->
@@ -898,8 +1095,9 @@
       <div id="sc-pace" style="margin-top:11px;"></div>
     </div>
 
-    <!-- Service Events -->
-    <div class="panel">
+    <!-- Service Events + RoR (stacked) -->
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0;">
+    <div class="panel" id="panel-se">
       <div class="phead"><div class="ptit2">Service Event Stats (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="se-score-badge">Score: —</div><div class="badge bb">SE</div></div></div>
       <div class="g4" style="margin-bottom:0;">
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">SE CPO</div><div style="font-size:17px;font-weight:700;" id="se-stat-cpo">—</div></div>
@@ -908,13 +1106,23 @@
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">CPO / Event</div><div style="font-size:17px;font-weight:700;" id="se-stat-cpe">—</div></div>
       </div>
     </div>
+    <div class="panel" id="panel-ror">
+      <div class="phead"><div class="ptit2">RoR Received (YTD)</div><div class="badge bgy">Passive — excluded from $/shift &amp; per-day stats</div></div>
+      <div class="g4" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR CPO</div><div style="font-size:17px;font-weight:700;color:#0d9488;" id="ror-stat-cpo">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR Orders</div><div style="font-size:17px;font-weight:700;" id="ror-stat-ord">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="ror-stat-avg">—</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">% of Total CPO</div><div style="font-size:17px;font-weight:700;" id="ror-stat-pct">—</div></div>
+      </div>
+    </div>
+    </div>
 
   </div>
 
   <div class="g2e">
 
     <!-- Marketing / Phone / Text -->
-    <div class="panel">
+    <div class="panel" id="panel-mkt">
       <div class="phead"><div class="ptit2">Marketing / Phone / Text (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="mkt-score-badge">Score: —</div><div class="badge bb">Mkt</div></div></div>
       <div class="g4" style="margin-bottom:0;">
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total CPO</div><div style="font-size:17px;font-weight:700;" id="mkt-stat-cpo">—</div></div>
@@ -925,7 +1133,7 @@
     </div>
 
     <!-- Biz Gift / Realtor -->
-    <div class="panel">
+    <div class="panel" id="panel-biz">
       <div class="phead"><div class="ptit2">Biz Gift / Realtor (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="biz-score-badge">Score: —</div><div class="badge bb">BG</div></div></div>
       <div class="g4" style="margin-bottom:0;">
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Total CPO</div><div style="font-size:17px;font-weight:700;" id="biz-stat-cpo">—</div></div>
@@ -940,7 +1148,7 @@
   <div class="g2e">
 
     <!-- Federal / Base Work -->
-    <div class="panel">
+    <div class="panel" id="panel-fed">
       <div class="phead"><div class="ptit2">Federal / Base Work (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="fed-score-badge">Score: —</div><div class="badge bb">FED</div></div></div>
       <div class="g4" style="margin-bottom:0;">
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Fed CPO</div><div style="font-size:17px;font-weight:700;" id="fed-stat-cpo">—</div></div>
@@ -951,7 +1159,7 @@
     </div>
 
     <!-- Demos -->
-    <div class="panel">
+    <div class="panel" id="panel-demo">
       <div class="phead"><div class="ptit2">Demos (YTD)</div><div style="display:flex;gap:6px;align-items:center;"><div class="badge bgy" id="demo-score-badge">Score: —</div><div class="badge bb">Demo</div></div></div>
       <div class="g4" style="margin-bottom:0;">
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Demo CPO</div><div style="font-size:17px;font-weight:700;" id="demo-stat-cpo">—</div></div>
@@ -963,24 +1171,13 @@
 
   </div>
 
-  <div class="g2e">
-    <!-- RoR Received -->
-    <div class="panel">
-      <div class="phead"><div class="ptit2">RoR Received (YTD)</div><div class="badge bgy">Passive — excluded from $/shift &amp; per-day stats</div></div>
-      <div class="g4" style="margin-bottom:0;">
-        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR CPO</div><div style="font-size:17px;font-weight:700;color:#0d9488;" id="ror-stat-cpo">—</div></div>
-        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">RoR Orders</div><div style="font-size:17px;font-weight:700;" id="ror-stat-ord">—</div></div>
-        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg Order</div><div style="font-size:17px;font-weight:700;" id="ror-stat-avg">—</div></div>
-        <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">% of Total CPO</div><div style="font-size:17px;font-weight:700;" id="ror-stat-pct">—</div></div>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 
 <!-- YEAR VIEW -->
 <div class="page" id="page-yearview">
-  <div class="eyebrow">2026 Bird's Eye View</div>
-  <div class="ptitle">Year <span>Overview.</span></div>
+  <div class="eyebrow">The Record · 2026</div>
+  <div class="ptitle">The Year<span>.</span></div>
   <div class="year-summary" id="ys-cards"></div>
   <div class="year-filters">
     <span style="font-size:12px;font-weight:600;color:var(--text2);">Show:</span>
@@ -1013,8 +1210,8 @@
 
 <!-- PLAN -->
 <div class="page" id="page-plan">
-  <div class="eyebrow">Forecast & Targets</div>
-  <div class="ptitle">Plan <span>Ahead.</span></div>
+  <div class="eyebrow">Forward Planning</div>
+  <div class="ptitle">The Plan<span>.</span></div>
   <div class="year-filters" style="margin-bottom:14px;">
     <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
     <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I<span class="pill-detail"> (Jan–Apr · Wks 1–17)</span></button>
@@ -1047,8 +1244,8 @@
 
 <!-- PROFITABILITY -->
 <div class="page" id="page-profit">
-  <div class="eyebrow">Event Profitability</div>
-  <div class="ptitle">True <span>Profit.</span></div>
+  <div class="eyebrow">Event Portfolio</div>
+  <div class="ptitle">Event P&amp;L<span>.</span></div>
 
   <div class="settings-row">
     <label>Commission Rate:</label>
@@ -1098,17 +1295,22 @@
 <!-- SC2 PUSH (Alan's personal push retrospective — static numbers from the Aug 14 handoff,
      independent of data.json / weekly stats) -->
 <div class="page" id="page-sc2">
-  <div class="eyebrow">SC2 PUSH · Jul 16 – Aug 3, 2026</div>
-  <div class="ptitle" style="margin-bottom:6px;">The $90K <span>PUSH.</span></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
-    <span class="sc2-window">16 of 19 days worked</span>
-    <span class="sc2-window">12 appointment days + 4 event days</span>
-    <span style="font-size:11px;color:var(--text3);">Compiled Aug 14 from my_orders export + calendar · 4 × $0 house orders excluded from all counts</span>
+  <div class="eyebrow">Competition Mode · Retrospective</div>
+  <div class="ptitle">The $90K Push<span>.</span></div>
+
+  <div class="sc2-hero">
+    <div class="eyebrow">SC2 Push · Jul 16 – Aug 3, 2026 · Final</div>
+    <div class="sc2-hero-num">$90,770</div>
+    <div class="sc2-hero-sub">89 orders · $1,020 avg order · <span style="color:#e59a8b;font-weight:700;">▼ 37% vs 2025 ($144,847)</span></div>
+    <div class="sc2-hero-meta">
+      <span class="sc2-window">16 of 19 days worked</span>
+      <span class="sc2-window">12 appointment days + 4 event days</span>
+      <span class="sc2-hero-note">Compiled Aug 14 from my_orders export + calendar · 4 × $0 house orders excluded from all counts</span>
+    </div>
   </div>
 
   <!-- HEADLINE KPIs -->
-  <div class="g4">
-    <div class="mc accent"><div class="mlbl">Total Push CPO</div><div class="mval">$90,770</div><div class="msub tm">89 orders · $1,020 avg order</div><div class="msub tr" style="font-weight:700;">▼ 37% vs 2025 ($144,847)</div></div>
+  <div class="g3 tiles">
     <div class="mc neu"><div class="mlbl">Per Day Worked</div><div class="mval">$5,673</div><div class="msub tm">every PUSH day ≈ $5K+ of inventory</div></div>
     <div class="mc pos"><div class="mlbl">Close Rate</div><div class="mval">76.7%</div><div class="msub tg">46 orders / 60 completed appts</div></div>
     <div class="mc neu"><div class="mlbl">Per Completed Appt</div><div class="mval">$914</div><div class="msub tm">$694 per booked slot</div></div>
@@ -1266,15 +1468,19 @@
 </div>
 
 <!-- BOTTOM APP NAV (phones) -->
+<div class="msheet-back" id="msheetBack" onclick="toggleMoreSheet(false)"></div>
+<div class="msheet" id="msheet">
+  <button class="msheet-item" data-page="yearview" onclick="showPage('yearview',this)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>The Year<span class="mi-sub">52-week record</span></button>
+  <button class="msheet-item" data-page="plan" onclick="showPage('plan',this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>The Plan<span class="mi-sub">targets &amp; forecast</span></button>
+  <button class="msheet-item" data-page="profit" onclick="showPage('profit',this)"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 1.8 2.7 5 3.3 5 1.5 5 3.4-2.2 3.3-5 3.3-5-1.4-5-3.3"/></svg>Event P&amp;L<span class="mi-sub">true profit</span></button>
+  <button class="msheet-item" data-page="sc2" onclick="showPage('sc2',this)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>SC2 Push<span class="mi-sub">retrospective</span></button>
+</div>
 <div class="bnav">
-  <button class="bnav-item active" data-page="home" onclick="showPage('home',this)"><span class="bi">🏠</span>Home</button>
-  <button class="bnav-item" data-page="campaign" onclick="showPage('campaign',this)"><span class="bi">🎯</span>Campaign</button>
-  <button class="bnav-item" data-page="ratios" onclick="showPage('ratios',this)"><span class="bi">📊</span>Score</button>
-  <button class="bnav-item" data-page="yearview" onclick="showPage('yearview',this)"><span class="bi">📅</span>Year</button>
-  <button class="bnav-item" data-page="plan" onclick="showPage('plan',this)"><span class="bi">📝</span>Plan</button>
-  <button class="bnav-item" data-page="profit" onclick="showPage('profit',this)"><span class="bi">💰</span>Profit</button>
-  <button class="bnav-item" data-page="sc2" onclick="showPage('sc2',this)"><span class="bi">🔥</span>SC2</button>
-  <button class="bnav-item" data-page="enter" onclick="showPage('enter',this)"><span class="bi">➕</span>Enter</button>
+  <button class="bnav-item active" data-page="home" onclick="showPage('home',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>Command</button>
+  <button class="bnav-item" data-page="ratios" onclick="showPage('ratios',this)"><svg viewBox="0 0 24 24"><path d="M5 20v-7M12 20V5M19 20v-11"/></svg>Score</button>
+  <button class="bnav-log" data-page="enter" onclick="showPage('enter',this)" aria-label="Log week"><span class="lg-circle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button>
+  <button class="bnav-item" data-page="campaign" onclick="showPage('campaign',this)"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h12l-2.2 4L17 12H5"/></svg>Campaigns</button>
+  <button class="bnav-item" id="bnavMore" onclick="toggleMoreSheet()"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>More</button>
 </div>
 
 <div class="toast" id="t1">Week saved!</div>
@@ -1313,16 +1519,37 @@ function formatDate(str){
 // ==================== NAV ====================
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tab,.bnav-item').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab,.bnav-item,.tab-log,.bnav-log').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   // Keep top tabs and the mobile bottom bar in sync regardless of which was tapped
-  document.querySelectorAll('.tab[data-page="'+id+'"],.bnav-item[data-page="'+id+'"]').forEach(b=>b.classList.add('active'));
+  document.querySelectorAll('.tab[data-page="'+id+'"],.bnav-item[data-page="'+id+'"],.tab-log[data-page="'+id+'"],.bnav-log[data-page="'+id+'"]').forEach(b=>b.classList.add('active'));
+  // On phones the secondary destinations live behind "More"
+  const moreBtn=document.getElementById('bnavMore');
+  if(moreBtn) moreBtn.classList.toggle('active',['yearview','plan','profit','sc2'].includes(id));
+  toggleMoreSheet(false);
   if(btn && !btn.dataset.page)btn.classList.add('active');
   window.scrollTo(0,0);
   // Only rebuild the page being shown — a full refreshAll on every tab tap
   // rebuilds all 7 screens and makes each tap visibly laggy on phones.
   refreshPage(id);
 }
+
+function toggleMoreSheet(force){
+  const sh=document.getElementById('msheet'), back=document.getElementById('msheetBack');
+  if(!sh) return;
+  const open = force===undefined ? !sh.classList.contains('open') : !!force;
+  sh.classList.toggle('open',open);
+  if(back) back.classList.toggle('open',open);
+}
+
+function toggleDataMenu(e){
+  if(e) e.stopPropagation();
+  document.getElementById('dmenu')?.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  const dm=document.getElementById('dmenu');
+  if(dm && dm.classList.contains('open') && !dm.contains(e.target)) dm.classList.remove('open');
+});
 
 function refreshPage(id){
   prepData();
@@ -1393,6 +1620,10 @@ function refreshHome(){
   document.getElementById('xp-pct').textContent = xpPct+'%';
   document.getElementById('rank-floor-label').textContent = fm(floor);
   document.getElementById('rank-ceil-label').textContent = fm(ceil);
+  // Tier track — the whole progression at a glance, no icons
+  const tierEl=document.getElementById('tier-track');
+  if(tierEl) tierEl.innerHTML=ranks.map((r,i)=>
+    `<div class="tier-seg ${i<rankIdx?'done':i===rankIdx?'cur':''}" title="${r.name} · ${fm(r.floor)}"></div>`).join('');
 
   renderDailyOne();
   renderWeeklyStandards();
@@ -1433,6 +1664,25 @@ function refreshHome(){
   document.getElementById('h-needed-sub').textContent='recent pace '+(recentPace>0?fm(recentPace):'—')+'/wk';
   document.getElementById('h-proj').textContent=proj>0?fm(proj):'$—';
   document.getElementById('h-proj-sub').textContent='at '+fm(avgPace)+'/worked wk';
+  // Pace verdict chip in the hero — the one-line answer to "am I on pace?"
+  const chipEl=document.getElementById('hero-pace-chip');
+  if(chipEl){
+    const ahead=sp>=elP;
+    chipEl.innerHTML=`<span class="pace-chip ${ahead?'ahead':'behind'}">${ahead?'▲ Ahead of pace':'▼ Behind pace'} · ${t.cpo>=S.g.yr?'goal hit':fm(neededWk)+'/wk needed'}</span>`;
+  }
+  // This Week focus — plan vs logged for the current CUTCO week
+  const fw=document.getElementById('focus-week');
+  if(fw){
+    const curProj=S.projections[wkE];
+    const curW=S.weeks.find(w=>w.wk===wkE);
+    const planTxt=curProj?fm(projTotal(curProj)):null;
+    const fwb=document.getElementById('fw-badge');
+    if(fwb) fwb.textContent='Wk '+wkE;
+    fw.innerHTML=`<b>Week ${wkE} of 52.</b> `
+      +(planTxt?`Planned: <b style="color:var(--plan);">${planTxt}</b> CPO. `:`No plan set for this week. `)
+      +(curW?`Logged: <b>${fm(curW.cpo||0)}</b>${curW.ord?` · ${plural(curW.ord,'order')}`:''}.`
+            :`Not logged yet — log it when the week closes.`);
+  }
   // Last Week (most recent entry)
   const last = S.weeks[S.weeks.length-1];
   if(last){
@@ -1444,7 +1694,8 @@ function refreshHome(){
       <div class="si"><div class="sil">SC Completed</div><div class="siv">${last.scc}</div></div>`;
   }
 
-  // CPO Donut Chart — fixed categorical hue order (CVD-validated), never re-cycled
+  // Business mix — bar list (reads better than a donut for "what makes up my CPO").
+  // Fixed categorical hue order (CVD-validated), never re-cycled.
   const chartCats = [
     {label:'Events',        val:S.cats.ev||0,   color:'#1a5faa'},
     {label:'Service Calls', val:S.cats.sc||0,   color:'#c47d0e'},
@@ -1456,58 +1707,26 @@ function refreshHome(){
     {label:'RoR Received',  val:S.cats.ror||0,  color:'#0d9488'}
   ].filter(c=>c.val>0);
   const totalCPO = chartCats.reduce((s,c)=>s+c.val,0);
-  const canvas = document.getElementById('donut-chart');
   const legend = document.getElementById('chart-legend');
   if(totalCPO===0){
     document.getElementById('chart-empty').style.display='block';
     document.getElementById('chart-wrap').style.display='none';
   } else {
     document.getElementById('chart-empty').style.display='none';
-    document.getElementById('chart-wrap').style.display='flex';
-    const dpr=window.devicePixelRatio||1;
-    canvas.width=140*dpr; canvas.height=140*dpr;
-    canvas.style.width='140px'; canvas.style.height='140px';
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    ctx.clearRect(0,0,140,140);
-    const cx=70,cy=70,r=58,inner=36;
-    let angle=-Math.PI/2;
-    chartCats.forEach(c=>{
-      const slice=(c.val/totalCPO)*Math.PI*2;
-      ctx.beginPath();
-      ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r,angle,angle+slice);
-      ctx.closePath();
-      ctx.fillStyle=c.color;
-      ctx.fill();
-      // 2px surface gap between adjacent slices
-      ctx.strokeStyle='#fff';
-      ctx.lineWidth=2;
-      ctx.stroke();
-      angle+=slice;
-    });
-    // Donut hole
-    ctx.beginPath();
-    ctx.arc(cx,cy,inner,0,Math.PI*2);
-    ctx.fillStyle='#fff';
-    ctx.fill();
-    // Center text
-    ctx.fillStyle='#1a2332';
-    ctx.font='bold 11px '+FONT_STACK;
-    ctx.textAlign='center';
-    ctx.fillText('Total',cx,cy-4);
-    ctx.font='bold 12px '+FONT_STACK;
-    ctx.fillStyle='#1a5faa';
-    ctx.fillText(fm(totalCPO),cx,cy+10);
-    // Legend
+    document.getElementById('chart-wrap').style.display='block';
+    const maxV=Math.max(...chartCats.map(c=>c.val));
     legend.innerHTML=chartCats.map(c=>{
-      const pct=Math.round(c.val/totalCPO*100);
-      return`<div style="display:flex;align-items:center;gap:7px;">
-        <div style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0;"></div>
-        <div style="flex:1;font-size:11px;color:var(--text2);font-weight:600;">${c.label}</div>
-        <div style="font-size:12px;font-weight:700;color:var(--text);">${pct}%</div>
+      const p=Math.round(c.val/totalCPO*100);
+      return`<div class="mix-row" title="${c.label}: ${fm(c.val)} · ${p}% of CPO">
+        <div class="mix-lbl">${c.label}</div>
+        <div class="mix-track"><div class="mix-fill" style="width:${Math.max(2,Math.round(c.val/maxV*100))}%;background:${c.color};"></div></div>
+        <div class="mix-val">${fm(c.val)} <small>${p}%</small></div>
       </div>`;
-    }).join('');
+    }).join('')
+    +`<div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:8px;padding-top:9px;font-size:12px;">
+        <span style="color:var(--text2);font-weight:600;">Total CPO</span>
+        <span style="font-weight:700;">${fm(totalCPO)}</span>
+      </div>`;
   }
   renderTrendChart();
   renderDailyOne();
@@ -1515,7 +1734,7 @@ function refreshHome(){
 }
 
 // ==================== WEEKLY CPO TREND CHART ====================
-const FONT_STACK="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const FONT_STACK="'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 let trendBars=[]; // hit-test cache for tooltip
 
 function renderTrendChart(){
@@ -1554,9 +1773,9 @@ function renderTrendChart(){
   ctx.font='10px '+FONT_STACK;
   ctx.textAlign='right'; ctx.textBaseline='middle';
   for(let v=0;v<=yMax;v+=step){
-    ctx.strokeStyle='#e8eef6'; ctx.lineWidth=1;
+    ctx.strokeStyle='#e7e3d6'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(padL,y(v)); ctx.lineTo(cssW-padR,y(v)); ctx.stroke();
-    ctx.fillStyle='#8296a8';
+    ctx.fillStyle='#767061';
     ctx.fillText(v>=1000?'$'+(v/1000)+'k':'$'+v,padL-6,y(v));
   }
   // month labels on first week of each month
@@ -1568,13 +1787,13 @@ function renderTrendChart(){
     const yw=yearWeeks[d.wk-1];
     const m=yw?yw.month:'';
     if(m && m!==lastMonth){
-      ctx.fillStyle='#8296a8';
+      ctx.fillStyle='#767061';
       ctx.fillText(m,padL+i*slot+slot/2,cssH-8);
       lastMonth=m;
     }
     if(d.cpo!==null && d.cpo>0){
       const h=Math.max(2,(d.cpo/yMax)*plotH);
-      ctx.fillStyle=d.vac?'#c47d0e':'#1a5faa';
+      ctx.fillStyle=d.vac?'#96700f':'#1c5a41';
       // rounded top (4px), flat baseline
       const rr=Math.min(4,barW/2,h);
       ctx.beginPath();
@@ -1588,12 +1807,12 @@ function renderTrendChart(){
       ctx.fill();
     } else if(d.cpo===0 && d.wk<=wkE && weekMap[d.wk]){
       // logged zero week — small baseline tick so it reads as "logged, zero"
-      ctx.fillStyle=d.vac?'#c47d0e':'#c5d5e8';
+      ctx.fillStyle=d.vac?'#96700f':'#cfc9b8';
       ctx.fillRect(x,padT+plotH-2,barW,2);
     }
-    // planned CPO — dashed goal-post at plan height
+    // planned CPO — dashed goal-post at plan height (blueprint blue = planned, never actual)
     if(d.plan!==null && d.plan>0){
-      ctx.strokeStyle='#5a6b7e'; ctx.lineWidth=2; ctx.setLineDash([3,2]);
+      ctx.strokeStyle='#44618f'; ctx.lineWidth=2; ctx.setLineDash([3,2]);
       ctx.beginPath();
       ctx.moveTo(x-1,y(d.plan)); ctx.lineTo(x+barW+1,y(d.plan)); ctx.stroke();
       ctx.setLineDash([]);
@@ -1602,7 +1821,7 @@ function renderTrendChart(){
   });
   // "today" marker after current week
   const tx=padL+Math.min(wkE,data.length)*slot;
-  ctx.strokeStyle='#c5d5e8'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  ctx.strokeStyle='#cfc9b8'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
   ctx.beginPath(); ctx.moveTo(tx,padT); ctx.lineTo(tx,padT+plotH); ctx.stroke();
   ctx.setLineDash([]);
   const badge=document.getElementById('trend-badge');
@@ -1701,7 +1920,7 @@ function renderDailyOne() {
   } else {
     btn.textContent = 'Mark Done';
     btn.style.background = 'var(--accent)';
-    btn.style.color = '#111';
+    btn.style.color = '#fff';
     btn.disabled = false;
     btn.style.opacity = '1';
     btn.style.cursor = 'pointer';
@@ -1776,7 +1995,7 @@ function renderWeeklyStandards() {
     ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0;">No standards set. Click edit to add some.</div>'
     : S.weeklyStandards.map((s,i) => `
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleStandard(${i})">
-        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${s.done?'var(--blue)':'var(--border2)'};background:${s.done?'var(--blue)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${s.done?'var(--brand)':'var(--border2)'};background:${s.done?'var(--brand)':'var(--surface)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           ${s.done?'<span style="color:#fff;font-size:10px;font-weight:700;">✓</span>':''}
         </div>
         <div style="font-size:13px;flex:1;${s.done?'text-decoration:line-through;color:var(--text3);':'color:var(--text);'}">${s.text}</div>
@@ -1875,6 +2094,22 @@ function refreshCampaign(){
     }
     var disp=document.getElementById(id+'-goal-display');
     if(disp)disp.textContent=fm(g);
+  });
+
+  // Mark the campaign currently being operated (presentation only)
+  const wkNowC=weeksElapsed();
+  const campNow=wkNowC<=17?'ci':wkNowC<=35?'cii':'ciii';
+  const campEnd={ci:17,cii:35,ciii:52};
+  [['ci','Jan–Apr'],['cii','May–Aug'],['ciii','Sep–Dec']].forEach(([k,lbl])=>{
+    const b=document.getElementById(k+'-badge');
+    if(!b) return;
+    if(k===campNow){
+      b.textContent='Active · '+Math.max(1,campEnd[k]-wkNowC+1)+' wks left';
+      b.className='badge bacc';
+    } else {
+      b.textContent=lbl;
+      b.className='badge bgy';
+    }
   });
 
   // Per-campaign category breakdown from weekly entries — CPO, orders, and activity
@@ -2405,6 +2640,12 @@ function refreshRatios(){
   const dcrEl = document.getElementById('demo-stat-cr');
   dcrEl.innerHTML = demoCR!==null ? `${demoCR}%<br><span style="font-size:11px;color:${demoCR>=88?'var(--green)':'var(--red)'};">${demoCR>=88?'↑ Above':'↓ Below'} 88%</span>` : '—<br><span style="font-size:11px;color:var(--text2);">Goal: 88%</span>';
 
+  // Categories with no production yet recede (presentation only)
+  [['panel-se',seCPO],['panel-mkt',mktCPO],['panel-biz',bizCPO],['panel-fed',fedCPO],['panel-demo',demoCPO],['panel-ror',rorCPO]].forEach(([pid,v])=>{
+    const el=document.getElementById(pid);
+    if(el) el.classList.toggle('cat-empty', !(v>0));
+  });
+
   // ---- SC APPOINTMENT FUNNEL + PLAN PACE ----
   const funnelEl = document.getElementById('sc-funnel');
   if(funnelEl){
@@ -2523,6 +2764,7 @@ function refreshYearView(){
   const campOf = wk => wk<=17?'CI':wk<=35?'CII':'CIII';
 
   let lastMonth='', lastCamp=null;
+  const maxWkCPO=Math.max(1,...S.weeks.map(w=>w.cpo||0));
   const rows=yearWeeks.map(yw=>{
     const w=weekMap[yw.wk];
     const note=S.yearNotes[yw.wk]||(w&&w.tnote)||'';
@@ -2551,7 +2793,7 @@ function refreshYearView(){
     return campDivider+monthRow+`<tr class="${status}">
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td>${dot}Wk ${yw.wk}</td>
-      <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}</td>
+      <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}${w&&(w.cpo||0)>0?`<span class="cpo-bar" style="width:${Math.max(4,Math.round((w.cpo/maxWkCPO)*76))}px;"></span>`:''}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
@@ -2911,8 +3153,7 @@ function editEvent(idx){
   if(!e) return;
   editEventIdx = idx;
   // Switch to the Enter Stats page — the event form lives there, not on the Profit page
-  const enterBtn = [...document.querySelectorAll('.tab')].find(b => b.getAttribute('onclick')?.includes("'enter'"));
-  if(enterBtn) showPage('enter', enterBtn);
+  showPage('enter', document.querySelector('.tab-log'));
   // Populate basic fields
   const set = (id,val) => { const el = document.getElementById(id); if(el) el.value = val ?? ''; };
   set('p-name', e.name);
@@ -3091,6 +3332,13 @@ function renderRoiTable(threshold){
     else { verdict='Review'; vStyle='background:var(--gold-light);color:var(--gold);'; }
     return {e,perShift,expRatio,verdict,vStyle};
   }).sort((a,b)=>(b.perShift??-1e9)-(a.perShift??-1e9));
+  // Portfolio totals footer — blended figures over the same rows shown above
+  const ftNet=S.events.reduce((s,e)=>s+(e.net||0),0);
+  const ftShifts=S.events.reduce((s,e)=>s+(e.shifts||0),0);
+  const ftComm=S.events.reduce((s,e)=>s+(e.comm||0),0);
+  const ftExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
+  const ftPerShift=ftShifts>0?Math.round(ftNet/ftShifts):null;
+  const ftExpRatio=ftComm>0?Math.round(ftExp/ftComm*100):null;
   wrap.innerHTML=`<table class="roi-table">
     <thead><tr><th>Event</th><th style="text-align:right;">Net</th><th style="text-align:right;">Shifts</th><th style="text-align:right;">Net / Shift</th><th style="text-align:right;">Exp % of Comm</th><th>Verdict</th></tr></thead>
     <tbody>${rows.map(r=>`<tr>
@@ -3101,6 +3349,14 @@ function renderRoiTable(threshold){
       <td style="text-align:right;color:${r.expRatio===null?'var(--text3)':r.expRatio<=40?'var(--green)':r.expRatio<=60?'var(--gold)':'var(--red)'};font-weight:600;">${r.expRatio!==null?r.expRatio+'%':'—'}</td>
       <td><span class="roi-verdict" style="${r.vStyle}">${r.verdict}</span></td>
     </tr>`).join('')}</tbody>
+    <tfoot><tr style="border-top:2px solid var(--line-strong);">
+      <td style="font-weight:800;padding-top:9px;">Portfolio · ${plural(S.events.length,'event')}</td>
+      <td style="text-align:right;font-weight:800;padding-top:9px;color:${ftNet>=0?'var(--green)':'var(--red)'};">${fm(ftNet)}</td>
+      <td style="text-align:right;font-weight:700;padding-top:9px;">${ftShifts||'—'}</td>
+      <td style="text-align:right;font-weight:800;padding-top:9px;">${ftPerShift!==null?fm(ftPerShift):'—'}</td>
+      <td style="text-align:right;font-weight:700;padding-top:9px;color:${ftExpRatio===null?'var(--text3)':ftExpRatio<=40?'var(--green)':ftExpRatio<=60?'var(--gold)':'var(--red)'};">${ftExpRatio!==null?ftExpRatio+'%':'—'}</td>
+      <td></td>
+    </tr></tfoot>
   </table>
   <div style="font-size:11px;color:var(--text2);margin-top:9px;">Ranked by net profit per shift. "Book again" = net ≥ $${threshold.toLocaleString()} and expenses ≤ 40% of commission · "Skip / renegotiate" = net under half threshold or expenses over 60%.</div>`;
 }
