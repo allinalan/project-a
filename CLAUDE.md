@@ -54,6 +54,29 @@ When parsing an order export into weekly stats:
     appointment either. (Practical test when parsing an export: same customer,
     add-on/amendment to an order already counted in a prior week → CPO only.)
 
+## Weekly stats reconcile (fallback for missed weeks)
+
+Weeks run Tuesday → Monday. If a completed week is missing from `weeks[]`, rebuild it
+from primary sources — never from a Slack post:
+
+- **Source of truth:** VectorConnect order receipt emails in Gmail
+  (`service@mail.vectormarketing.com`, subject "Order Receipt for …"). The attached
+  `order_<num>_rep.pdf` carries Order Date, the Customer Type flag, the Event name,
+  and the true CPO (second amount column on the "Order Total" row). Cross-check
+  completeness against the daily "Updates for your Cutco customers' orders" digests
+  from `service@cutco.com` (Processed Orders tables).
+- **Bucketing by receipt flags:** Event says "… Service & Sales Event" → `se`/`seOrd`;
+  any other Event booth sale → `ev`/`evOrd`; Customer Type "Service Call" → `scp`/`sco`;
+  re-orders by text/email/phone with no event → `mkt`/`mktOrd`; RoR and add-on rules
+  above still apply.
+- **Activity fields** (evSh, scb/scc, `_seb`/`_sec`, daysOff, workDays) come from the
+  CUTCO Google Calendar, not from orders.
+- **Do not detect the week via Slack search.** The Slack connector's search API
+  returns zero results in this workspace for every query, which is what produced the
+  "no summary detected" failure that silently dropped Aug 18–24, 2026. A scheduled
+  Routine ("Weekly stats reconcile — Command Center") runs Tuesday mornings and fills
+  any missing prior week from receipts on a branch for Alan to review and merge.
+
 ## Field glossary (weekly entries)
 
 `cpo`/`ord` totals · `ev`/`evOrd`/`evSh` traditional events · `scp`/`sco`/`scb`/`scc`
