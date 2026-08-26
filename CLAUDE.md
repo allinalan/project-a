@@ -71,6 +71,13 @@ from primary sources — never from a Slack post:
   above still apply.
 - **Activity fields** (evSh, scb/scc, `_seb`/`_sec`, daysOff, workDays) come from the
   CUTCO Google Calendar, not from orders.
+- **Yellow rule (appointment completion):** a customer appointment block colored
+  YELLOW in Google Calendar (colorId "5") means the customer rescheduled or
+  no-showed — it counts in booked (`scb`/`_seb`) but NOT in completed
+  (`scc`/`_sec`). Completed appointments are the non-yellow ones (Alan's normal
+  appointment color is green, colorId "10"). A Calendly cancellation/reschedule
+  email is an equivalent signal. Calendly RSVP status alone proves nothing —
+  customers cancel by text and the booking stays "accepted".
 - **Do not detect the week via Slack search.** The Slack connector's search API
   returns zero results in this workspace for every query, which is what produced the
   "no summary detected" failure that silently dropped Aug 18–24, 2026. A scheduled
