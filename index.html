@@ -2965,10 +2965,10 @@ const PLAN_RATE_DEFS=[
   {k:'seDay',   l:'SE $ / day',           u:'$'},
   {k:'seOrdDay',l:'SE orders / day',      u:''}
 ];
+// Event shifts and SC appointments have no standing weekly figure — they're
+// typed week by week in the table, because no two of Alan's weeks look alike.
 const PLAN_DEF_DEFS=[
-  {k:'sh',     l:'Event shifts / week',   sub:'booth shifts you plan to work'},
-  {k:'appt',   l:'SC appts / week',       sub:'service calls you plan to book'},
-  {k:'seDays', l:'SE days / week',        sub:'days on a service event'}
+  {k:'seDays', l:'SE days / week', sub:'leave blank and type SE days per week instead'}
 ];
 // Starting figures for a rate with no history behind it yet. SE $/day is Alan's
 // own number (Aug 2026) and stands in until SE Days have been logged for a few
@@ -2980,6 +2980,11 @@ function planSettings(){
   if(!S.planSettings||typeof S.planSettings!=='object') S.planSettings={};
   if(!S.planSettings.def)  S.planSettings.def={};
   if(!S.planSettings.rate) S.planSettings.rate={};
+  // A default for an activity that no longer has one would keep auto-filling
+  // invisibly — clear it out.
+  Object.keys(S.planSettings.def).forEach(k=>{
+    if(!PLAN_DEF_DEFS.some(d=>d.k===k)) delete S.planSettings.def[k];
+  });
   return S.planSettings;
 }
 
@@ -3145,19 +3150,20 @@ function renderPlanAssumptions(){
     </div>`;
   }).join('');
 
-  // What a default week comes out to, with the math spelled out.
-  const t=planCalcFrom(numOrNull(st.def.sh),numOrNull(st.def.appt),numOrNull(st.def.seDays),eff);
-  const parts=[];
-  if(t.ev!==null) parts.push(`Events ${t.sh} sh × ${fm(eff.evShift)} = <b>${fm(t.ev)}</b>`);
-  if(t.sc!==null) parts.push(`SC ${t.appt} appts × ${eff.scComp}% × ${eff.scClose}% = ${d1(t.scOrd)} ord × ${fm(eff.scAvgOrd)} = <b>${fm(t.sc)}</b>`);
-  if(t.se!==null) parts.push(`SE ${t.seDays} day${t.seDays===1?'':'s'} × ${fm(eff.seDay)} = <b>${fm(t.se)}</b>`);
-  const wkCPO=(t.ev||0)+(t.sc||0)+(t.se||0);
-  const wkOrd=Math.round((t.evOrd||0)+(t.scOrd||0)+(t.seOrdN||0));
-  const summary = parts.length
-    ? `<div style="font-size:13px;font-weight:700;color:var(--plan);">A typical planned week: ${fm(wkCPO)} CPO · ${wkOrd} order${wkOrd===1?'':'s'}
-         <span style="font-weight:600;color:var(--text2);">· ${fm(wkCPO*(52-wkNow+1))} over the ${52-wkNow+1} weeks left in 2026</span></div>
-       <div style="font-size:11.5px;color:var(--text2);margin-top:5px;line-height:1.5;">${parts.join(' &nbsp;·&nbsp; ')}</div>`
-    : `<div style="font-size:12.5px;color:var(--text2);">Set shifts, appointments and SE days above and every blank week from Wk ${wkNow} on fills itself in.</div>`;
+  // What one of each is worth, so any week's math is a multiplication away.
+  const u=planCalcFrom(1,1,1,eff);
+  const unit=(lbl,cpo,ord,math)=> cpo===null ? '' :
+    `<div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:3px 0;">
+       <span style="font-size:12.5px;color:var(--text2);">${lbl}</span>
+       <span style="font-size:12.5px;font-weight:700;color:var(--plan);white-space:nowrap;">${fm(cpo)}${ord!==null?` · ${d1(ord)} ord`:''}</span>
+     </div>${math?`<div style="font-size:10.5px;color:var(--text3);margin:-2px 0 4px;">${math}</div>`:''}`;
+  const units=[
+    unit('1 event shift', u.ev, u.evOrd, ''),
+    unit('1 SC appointment booked', u.sc, u.scOrd, `${eff.scComp}% held × ${eff.scClose}% closed × ${fm(eff.scAvgOrd)}`),
+    unit('1 SE day', u.se, u.seOrdN, '')
+  ].join('');
+  const summary = `<div style="font-size:12.5px;font-weight:700;color:var(--plan);margin-bottom:6px;">What one of each is worth</div>${units}
+    <div style="font-size:11px;color:var(--text2);margin-top:6px;">Type shifts, appointments and SE days into any week in the table — this is the math each one runs on.</div>`;
 
   const missing=PLAN_RATE_DEFS.filter(r=>eff[r.k]===null||eff[r.k]===undefined).map(r=>r.l);
   const seeded=PLAN_RATE_DEFS.filter(r=>src[r.k]==='seed'||src[r.k]==='derived').map(r=>r.l);
@@ -3170,15 +3176,16 @@ function renderPlanAssumptions(){
   box.innerHTML=`
     <div class="phead" style="margin-bottom:12px;"><div class="ptit2">Planning Assumptions</div>
       <div class="badge bgb" style="background:var(--plan-wash);color:var(--plan);">Rates from 2026 YTD · editable</div></div>
-    <div class="pa-sec">Your week — what you plan to work</div>
-    <div class="pa-grid">${defs}</div>
-    <div class="pa-sec" style="margin-top:16px;">Your averages — override any of them</div>
+    <div class="pa-sec">Your averages — override any of them</div>
     <div class="pa-rates">${rates}</div>
     ${warn}
+    <div class="pa-sec" style="margin-top:16px;">Standing weekly default (optional)</div>
+    <div class="pa-grid">${defs}</div>
     <div class="pa-sum">${summary}</div>
     <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.55;">
-      Auto-fill only writes into <b>blank</b> weeks from <b>Wk ${wkNow}</b> forward — closed weeks and anything you typed yourself are left alone.
-      Change a single week's shifts, appts or SE days in the table and that week's bucket recalculates on the spot.
+      Event shifts and SC appointments are typed week by week in the table — every week is different, so nothing is assumed for them.
+      A week's bucket recalculates the moment you change its shifts, appts or SE days. Auto-fill only writes into <b>blank</b>
+      weeks from <b>Wk ${wkNow}</b> forward — closed weeks and anything you typed yourself are left alone.
       Marketing, Biz Gift, Federal and Demo are always yours to type. Clear a cell to hand it back to the calculator.
     </div>`;
 }
@@ -3312,7 +3319,7 @@ function renderPlanTotals(){
     </div>
     <div style="font-size:11.5px;color:var(--text2);margin-top:11px;border-top:1px solid var(--line);padding-top:9px;">
       Planned activity in this campaign: <b>${d1(shifts)}</b> event shifts · <b>${d1(appts)}</b> SC appointments · <b>${d1(seDays)}</b> SE days
-      <span style="color:var(--text3);">(per-week entries plus the weekly default on every upcoming week)</span>
+      <span style="color:var(--text3);">(what's typed in the table, plus any standing weekly default on upcoming weeks)</span>
     </div>
   </div>`;
 }
