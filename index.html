@@ -2970,6 +2970,10 @@ const PLAN_DEF_DEFS=[
   {k:'appt',   l:'SC appts / week',       sub:'service calls you plan to book'},
   {k:'seDays', l:'SE days / week',        sub:'days on a service event'}
 ];
+// Starting figures for a rate with no history behind it yet. SE $/day is Alan's
+// own number (Aug 2026) and stands in until SE Days have been logged for a few
+// weeks — the moment a YTD average exists it takes over on its own.
+const PLAN_SEED={seDay:3147};
 const numOrNull=v=>(v===undefined||v===null||v==='')?null:(isNaN(parseFloat(v))?null:parseFloat(v));
 
 function planSettings(){
@@ -2996,14 +3000,30 @@ function planAutoRates(){
     scAvgOrd: sco>0    ? Math.round(scp/sco)      : null,
     seDay:    seDays>0 ? Math.round(se/seDays)    : null,
     seOrdDay: seDays>0 ? d1(seOrd/seDays)         : null,
-    src:{evSh,scb,scc,sco,seDays}
+    seAvgOrd: seOrd>0  ? Math.round(se/seOrd)     : null,
+    src:{evSh,scb,scc,sco,seDays,seOrd}
   };
 }
 // Effective rate = Alan's override when he typed one, else the YTD average.
+// Where each effective rate comes from: 'own' (Alan typed it), 'ytd' (his logged
+// weeks), 'seed' (starting figure, no history yet) or 'derived' (SE orders/day
+// worked back from SE $/day and his SE average order). Shown in the panel so a
+// rate never looks more earned than it is.
 function planRates(){
-  const auto=planAutoRates(), ov=planSettings().rate, eff={};
-  PLAN_RATE_DEFS.forEach(r=>{ const o=numOrNull(ov[r.k]); eff[r.k]= o!==null?o:auto[r.k]; });
-  return {eff,auto};
+  const auto=planAutoRates(), ov=planSettings().rate, eff={}, src={};
+  PLAN_RATE_DEFS.forEach(r=>{
+    const o=numOrNull(ov[r.k]);
+    if(o!==null){ eff[r.k]=o; src[r.k]='own'; }
+    else if(auto[r.k]!==null&&auto[r.k]!==undefined){ eff[r.k]=auto[r.k]; src[r.k]='ytd'; }
+    else if(PLAN_SEED[r.k]!==undefined){ eff[r.k]=PLAN_SEED[r.k]; src[r.k]='seed'; }
+    else { eff[r.k]=null; src[r.k]='none'; }
+  });
+  // No SE days logged yet, so no orders/day either — back it out of SE $/day and
+  // the SE average order he does have, otherwise SE plans revenue with no orders.
+  if(src.seOrdDay==='none' && eff.seDay!==null && auto.seAvgOrd){
+    eff.seOrdDay=d1(eff.seDay/auto.seAvgOrd); src.seOrdDay='derived';
+  }
+  return {eff,auto,src};
 }
 // A week's planned activity: its own cell if set, otherwise the weekly default.
 function planAct(wk,k){
@@ -3094,7 +3114,7 @@ function planFmtRate(k,v){
 function renderPlanAssumptions(){
   const box=document.getElementById('plan-assume');
   if(!box) return;
-  const {eff,auto}=planRates();
+  const {eff,auto,src}=planRates();
   const st=planSettings();
   const wkNow=weeksElapsed();
 
@@ -3106,17 +3126,22 @@ function renderPlanAssumptions(){
 
   const rates=PLAN_RATE_DEFS.map(r=>{
     const ovRaw=numOrNull(st.rate[r.k]);
-    const over=ovRaw!==null;
+    const over=src[r.k]==='own';
     const hasAuto=auto[r.k]!==null&&auto[r.k]!==undefined;
-    const autoTxt = auto[r.k]!==null && auto[r.k]!==undefined
-      ? 'YTD ' + planFmtRate(r.k,auto[r.k])
-      : 'no data yet — set it here';
+    const autoTxt='YTD '+planFmtRate(r.k,auto[r.k]);
+    let note;
+    if(over) note = hasAuto
+      ? `yours · <span class="pa-reset" onclick="resetPlanRate('${r.k}')">use ${autoTxt}</span>`
+      : 'yours';
+    else if(src[r.k]==='ytd')     note = autoTxt;
+    else if(src[r.k]==='seed')    note = `starting figure — your YTD takes over once SE Days are logged`;
+    else if(src[r.k]==='derived') note = `from SE $/day ÷ ${fm(auto.seAvgOrd)} SE avg order`;
+    else                          note = 'no data yet — set it here';
+    const ph = !over && eff[r.k]!==null && eff[r.k]!==undefined ? eff[r.k] : '—';
     return `<div class="pa-fld">
       <label>${r.l}</label>
-      <input type="number" inputmode="decimal" class="pa-in${over?' over':''}" id="pa-rate-${r.k}" value="${over?ovRaw:''}" placeholder="${auto[r.k]!==null&&auto[r.k]!==undefined?auto[r.k]:'—'}" oninput="onPlanRateEdit('${r.k}',this)">
-      <div class="pa-note">${!over ? autoTxt
-        : (hasAuto ? `yours · <span class="pa-reset" onclick="resetPlanRate('${r.k}')">use ${autoTxt}</span>`
-                   : 'yours · no YTD average behind this one yet')}</div>
+      <input type="number" inputmode="decimal" class="pa-in${over?' over':''}" id="pa-rate-${r.k}" value="${over?ovRaw:''}" placeholder="${ph}" oninput="onPlanRateEdit('${r.k}',this)">
+      <div class="pa-note">${note}</div>
     </div>`;
   }).join('');
 
@@ -3135,9 +3160,12 @@ function renderPlanAssumptions(){
     : `<div style="font-size:12.5px;color:var(--text2);">Set shifts, appointments and SE days above and every blank week from Wk ${wkNow} on fills itself in.</div>`;
 
   const missing=PLAN_RATE_DEFS.filter(r=>eff[r.k]===null||eff[r.k]===undefined).map(r=>r.l);
+  const seeded=PLAN_RATE_DEFS.filter(r=>src[r.k]==='seed'||src[r.k]==='derived').map(r=>r.l);
   const warn = missing.length
-    ? `<div style="font-size:11.5px;color:var(--gold2);font-weight:600;margin-top:8px;">No average yet for: ${missing.join(', ')} — type a rate above and that bucket starts planning. (SE $/day builds once you log SE Days on the weekly entry form.)</div>`
-    : '';
+    ? `<div style="font-size:11.5px;color:var(--gold2);font-weight:600;margin-top:8px;">No average yet for: ${missing.join(', ')} — type a rate above and that bucket starts planning.</div>`
+    : (seeded.length
+      ? `<div style="font-size:11.5px;color:var(--gold2);font-weight:600;margin-top:8px;">${seeded.join(' and ')} ${seeded.length>1?'are':'is'} running on a starting figure, not history — log SE Days on the weekly entry form and your own average takes over.</div>`
+      : '');
 
   box.innerHTML=`
     <div class="phead" style="margin-bottom:12px;"><div class="ptit2">Planning Assumptions</div>
