@@ -344,7 +344,6 @@
   .pa-in.over{border-color:var(--gold2);background:var(--gold-wash);color:var(--gold2);}
   .pa-note{font-size:10.5px;color:var(--ink3);margin-top:3px;line-height:1.35;}
   .pa-reset{color:var(--plan);font-weight:700;cursor:pointer;text-decoration:underline;}
-  .pa-sum{background:var(--plan-wash);border:1px solid var(--plan-mid);border-radius:9px;padding:11px 14px;margin-top:14px;}
   @media(max-width:760px){ .pa-grid,.pa-rates{grid-template-columns:repeat(2,minmax(0,1fr));} }
   .plan-total-cell{font-weight:700;color:var(--plan);background:var(--plan-wash);font-size:13px;text-align:right;}
   .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;}
@@ -3137,21 +3136,6 @@ function renderPlanAssumptions(){
     </div>`;
   }).join('');
 
-  // What one of each is worth, so any week's math is a multiplication away.
-  const u=planCalcFrom(1,1,1,eff);
-  const unit=(lbl,cpo,ord,math)=> cpo===null ? '' :
-    `<div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:3px 0;">
-       <span style="font-size:12.5px;color:var(--text2);">${lbl}</span>
-       <span style="font-size:12.5px;font-weight:700;color:var(--plan);white-space:nowrap;">${fm(cpo)}${ord!==null?` · ${d1(ord)} ord`:''}</span>
-     </div>${math?`<div style="font-size:10.5px;color:var(--text3);margin:-2px 0 4px;">${math}</div>`:''}`;
-  const units=[
-    unit('1 event shift', u.ev, u.evOrd, ''),
-    unit('1 SC appointment booked', u.sc, u.scOrd, `${eff.scComp}% held × ${eff.scClose}% closed × ${fm(eff.scAvgOrd)}`),
-    unit('1 SE day', u.se, u.seOrdN, '')
-  ].join('');
-  const summary = `<div style="font-size:12.5px;font-weight:700;color:var(--plan);margin-bottom:6px;">What one of each is worth</div>${units}
-    <div style="font-size:11px;color:var(--text2);margin-top:6px;">Type shifts, appointments and SE days into any week in the table — this is the math each one runs on.</div>`;
-
   const missing=PLAN_RATE_DEFS.filter(r=>eff[r.k]===null||eff[r.k]===undefined).map(r=>r.l);
   const seeded=PLAN_RATE_DEFS.filter(r=>src[r.k]==='seed'||src[r.k]==='derived').map(r=>r.l);
   const warn = missing.length
@@ -3166,8 +3150,7 @@ function renderPlanAssumptions(){
     <div class="pa-sec">Your averages — override any of them</div>
     <div class="pa-rates">${rates}</div>
     ${warn}
-    <div class="pa-sum">${summary}</div>
-    <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.55;">
+    <div style="font-size:11px;color:var(--text2);margin-top:12px;line-height:1.55;">
       Shifts, appointments and SE days are typed week by week in the table — every week is different, so nothing is assumed for you.
       A week's CPO recalculates the moment you change any of the three, and only that week. Closed weeks and anything you typed
       yourself are never overwritten.
@@ -3205,7 +3188,8 @@ function planRecalcAuto(){
     planTidy(wk);
   }
 }
-// Just the "typical week" block, so the panel's inputs keep focus while typing.
+// Redraw the panel (rate notes shift as rates change) without dropping the
+// cursor out of the field being typed in.
 function refreshPlanSummary(){
   const box=document.getElementById('plan-assume');
   if(!box) return;
