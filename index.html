@@ -323,7 +323,28 @@
   .camp-divider td{background:var(--ink)!important;color:var(--paper);font-weight:700;font-size:10.5px;padding:8px 14px;text-align:center;letter-spacing:.14em;text-transform:uppercase;border:none;}
   .plan-input{width:100%;border:1px solid var(--line);background:#fff;color:var(--plan);font-weight:600;padding:6px 8px;border-radius:6px;font-size:12px;font-family:var(--sans);text-align:right;}
   .plan-input:focus{outline:none;border-color:var(--plan);background:var(--plan-wash);}
+  .plan-input::-webkit-outer-spin-button,.plan-input::-webkit-inner-spin-button,
+  .pa-in::-webkit-outer-spin-button,.pa-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .plan-input,.pa-in{-moz-appearance:textfield;appearance:textfield;}
   .plan-input::placeholder{color:var(--ink3);font-weight:400;}
+  /* activity inputs (shifts / appts / SE days) — the levers that drive the math */
+  .plan-input.act{color:var(--gold2);border-color:#ded2ae;background:#fdfaf1;font-weight:700;}
+  .plan-input.act:focus{border-color:var(--gold2);background:var(--gold-wash);}
+  /* a CPO cell the calculator is managing — dashed = "clear me and I refill" */
+  .plan-input.auto{border-style:dashed;border-color:var(--plan-mid);background:var(--plan-wash);}
+  .plan-act-cell{background:rgba(150,112,15,.05);}
+  /* planning assumptions panel */
+  .pa-sec{font-size:10.5px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:9px;}
+  .pa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+  .pa-rates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+  .pa-fld label{display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:4px;}
+  .pa-in{width:100%;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:700;
+    padding:7px 9px;border-radius:7px;font-size:13px;font-family:var(--sans);text-align:right;}
+  .pa-in:focus{outline:none;border-color:var(--plan);background:var(--plan-wash);}
+  .pa-in.over{border-color:var(--gold2);background:var(--gold-wash);color:var(--gold2);}
+  .pa-note{font-size:10.5px;color:var(--ink3);margin-top:3px;line-height:1.35;}
+  .pa-reset{color:var(--plan);font-weight:700;cursor:pointer;text-decoration:underline;}
+  @media(max-width:760px){ .pa-grid,.pa-rates{grid-template-columns:repeat(2,minmax(0,1fr));} }
   .plan-total-cell{font-weight:700;color:var(--plan);background:var(--plan-wash);font-size:13px;text-align:right;}
   .status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;}
   .dot-worked{background:var(--pos);}
@@ -772,9 +793,15 @@
         </div>
 
         <div class="fs"><div class="fsl">Service Events</div>
-          <div class="fg">
-            <div class="fgrp"><label class="flbl">SE CPO ($)</label><input type="number" class="fin" id="i-se" placeholder="0"></div>
-            <div class="fgrp"><label class="flbl">SE Orders (#)</label><input type="number" class="fin" id="i-se-ord" placeholder="0"></div>
+          <div class="fg3">
+            <div class="fgrp"><label class="flbl">SE CPO ($)</label><input type="number" class="fin" id="i-se" placeholder="0" oninput="calcSE()"></div>
+            <div class="fgrp"><label class="flbl">SE Orders (#)</label><input type="number" class="fin" id="i-se-ord" placeholder="0" oninput="calcSE()"></div>
+            <div class="fgrp"><label class="flbl">SE Days (#) <span style="font-size:11px;color:var(--text2);font-weight:400;">— days worked at service events</span></label><input type="number" class="fin" id="i-se-days" placeholder="0" oninput="calcSE()"></div>
+          </div>
+          <div class="scallout">
+            <div class="sc-itm"><div class="sc-lbl">SE $ / Day</div><div class="sc-val" id="se-pd">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Orders / Day</div><div class="sc-val" id="se-od">—</div></div>
+            <div class="sc-itm"><div class="sc-lbl">Avg Order ($)</div><div class="sc-val" id="se-ao">—</div></div>
           </div>
         </div>
 
@@ -1212,12 +1239,13 @@
 <div class="page" id="page-plan">
   <div class="eyebrow">Forward Planning</div>
   <div class="ptitle">The Plan<span>.</span></div>
+  <div class="panel" id="plan-assume" style="margin-bottom:14px;padding:15px 18px;"></div>
   <div class="year-filters" style="margin-bottom:14px;">
     <span style="font-size:12px;font-weight:600;color:var(--text2);">Campaign:</span>
     <button class="filter-btn plan-camp-btn" data-camp="CI" onclick="showPlanCampaign('CI',this)">Campaign I<span class="pill-detail"> (Jan–Apr · Wks 1–17)</span></button>
     <button class="filter-btn plan-camp-btn active" data-camp="CII" onclick="showPlanCampaign('CII',this)">Campaign II<span class="pill-detail"> (May–Aug · Wks 18–35)</span></button>
     <button class="filter-btn plan-camp-btn" data-camp="CIII" onclick="showPlanCampaign('CIII',this)">Campaign III<span class="pill-detail"> (Sep–Dec · Wks 36–52)</span></button>
-    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Total CPO auto-sums from category cells. Press Tab to move between cells.</span>
+    <span class="desktop-hint" style="font-size:11px;color:var(--text2);margin-left:auto;">Gold cells are activity. Blue dashed CPO cells are calculated — type over one to own it, clear it to hand it back.</span>
   </div>
   <div class="panel" style="padding:0;overflow:auto;">
     <table class="year-table" id="plan-table">
@@ -1225,6 +1253,9 @@
         <tr>
           <th style="width:60px;">Wk</th>
           <th style="width:90px;">Dates</th>
+          <th style="width:70px;background:var(--gold-wash);">Shifts</th>
+          <th style="width:70px;background:var(--gold-wash);">SC Appts</th>
+          <th style="width:70px;background:var(--gold-wash);">SE Days</th>
           <th style="width:95px;background:var(--blue-light);">Total CPO</th>
           <th style="width:80px;">Event</th>
           <th style="width:80px;">Svc Call</th>
@@ -2912,52 +2943,334 @@ function showPlanCampaign(camp,btn){
   refreshPlan();
 }
 
-function refreshPlan(){
-  const tbody=document.getElementById('plan-tbody');
-  if(!tbody) return; // page not in DOM yet
-  const range = planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,35] : [36,52];
-  const yearWeeks=buildYearWeeks();
-  // NOTE: projections store Service Calls under 'sc' (matching Year View + totals).
-  // This table previously read/wrote 'scp', which hid SC plans and dropped them on edit.
-  const cats=PROJ_CATS;
+// ---- PLANNING ENGINE ------------------------------------------------------
+// Alan plans a week by activity, not by revenue: how many event shifts he is
+// working, how many service-call appointments he has booked, how many service
+// event days he is on. Those three numbers times his own YTD averages give the
+// planned CPO for Events / Service Calls / Service Events. Marketing, Biz Gift,
+// Federal and Demo stay hand-typed — there is no activity metric behind them.
+//
+// Activity lives on the projection ('sh', 'appt', 'seDays') and nowhere else:
+// there is no standing weekly figure for any of the three, because no two of
+// Alan's weeks look alike — most carry no service event at all, some carry
+// three. A week plans only what he types into it. Rates default to the YTD
+// averages off the logged weeks and can be overridden in S.planSettings.rate.
+const PLAN_ACT=['sh','appt','seDays'];
+const PLAN_ACT_BUCKET={sh:'ev',appt:'sc',seDays:'se'};
+const PLAN_RATE_DEFS=[
+  {k:'evShift', l:'Event $ / shift',      u:'$'},
+  {k:'evOrdSh', l:'Event orders / shift', u:''},
+  {k:'scComp',  l:'SC completion %',      u:'%'},
+  {k:'scClose', l:'SC closing %',         u:'%'},
+  {k:'scAvgOrd',l:'SC avg order',         u:'$'},
+  {k:'seDay',   l:'SE $ / day',           u:'$'},
+  {k:'seOrdDay',l:'SE orders / day',      u:''}
+];
+// Starting figures for a rate with no history behind it yet. SE $/day is Alan's
+// own number (Aug 2026) and stands in until SE Days have been logged for a few
+// weeks — the moment a YTD average exists it takes over on its own.
+const PLAN_SEED={seDay:3147};
+const numOrNull=v=>(v===undefined||v===null||v==='')?null:(isNaN(parseFloat(v))?null:parseFloat(v));
 
+function planSettings(){
+  if(!S.planSettings||typeof S.planSettings!=='object') S.planSettings={};
+  if(!S.planSettings.rate) S.planSettings.rate={};
+  // Weekly defaults were dropped; a leftover one would keep auto-filling weeks
+  // invisibly, so it goes on load.
+  delete S.planSettings.def;
+  return S.planSettings;
+}
+
+// YTD averages straight off the logged weeks — the same numbers the Home and
+// Ratios tabs show. RoR is untouched here: it never had activity behind it.
+function planAutoRates(){
+  let ev=0,evOrd=0,evSh=0,scp=0,sco=0,scb=0,scc=0,se=0,seOrd=0,seDays=0;
+  (S.weeks||[]).forEach(w=>{
+    ev+=w.ev||0; evOrd+=w.evOrd||0; evSh+=w.evSh||0;
+    scp+=w.scp||0; sco+=w.sco||0; scb+=w.scb||0; scc+=w.scc||0;
+    se+=w.se||0; seOrd+=w.seOrd||0; seDays+=w.seDays||0;
+  });
+  return {
+    evShift:  evSh>0   ? Math.round(ev/evSh)      : null,
+    evOrdSh:  evSh>0   ? d1(evOrd/evSh)           : null,
+    scComp:   scb>0    ? Math.round(scc/scb*100)  : null,
+    scClose:  scc>0    ? Math.round(sco/scc*100)  : null,
+    scAvgOrd: sco>0    ? Math.round(scp/sco)      : null,
+    seDay:    seDays>0 ? Math.round(se/seDays)    : null,
+    seOrdDay: seDays>0 ? d1(seOrd/seDays)         : null,
+    seAvgOrd: seOrd>0  ? Math.round(se/seOrd)     : null,
+    src:{evSh,scb,scc,sco,seDays,seOrd}
+  };
+}
+// Effective rate = Alan's override when he typed one, else the YTD average.
+// Where each effective rate comes from: 'own' (Alan typed it), 'ytd' (his logged
+// weeks), 'seed' (starting figure, no history yet) or 'derived' (SE orders/day
+// worked back from SE $/day and his SE average order). Shown in the panel so a
+// rate never looks more earned than it is.
+function planRates(){
+  const auto=planAutoRates(), ov=planSettings().rate, eff={}, src={};
+  PLAN_RATE_DEFS.forEach(r=>{
+    const o=numOrNull(ov[r.k]);
+    if(o!==null){ eff[r.k]=o; src[r.k]='own'; }
+    else if(auto[r.k]!==null&&auto[r.k]!==undefined){ eff[r.k]=auto[r.k]; src[r.k]='ytd'; }
+    else if(PLAN_SEED[r.k]!==undefined){ eff[r.k]=PLAN_SEED[r.k]; src[r.k]='seed'; }
+    else { eff[r.k]=null; src[r.k]='none'; }
+  });
+  // No SE days logged yet, so no orders/day either — back it out of SE $/day and
+  // the SE average order he does have, otherwise SE plans revenue with no orders.
+  if(src.seOrdDay==='none' && eff.seDay!==null && auto.seAvgOrd){
+    eff.seOrdDay=d1(eff.seDay/auto.seAvgOrd); src.seOrdDay='derived';
+  }
+  return {eff,auto,src};
+}
+// A week's planned activity — whatever is in that week's cell, nothing implied.
+function planAct(wk,k){
+  const p=S.projections[wk];
+  return p?numOrNull(p[k]):null;
+}
+// Activity -> planned CPO and orders. Service Calls run the full funnel:
+// appointments booked x completion % x closing % x SC average order.
+function planCalcFrom(sh,appt,sd,eff){
+  const held  = appt!==null && eff.scComp!=null  ? appt*eff.scComp/100  : null;
+  const scOrd = held!==null && eff.scClose!=null ? held*eff.scClose/100 : null;
+  return {
+    sh, appt, seDays:sd, held, scOrd,
+    ev: sh!==null   && eff.evShift!=null  ? Math.round(sh*eff.evShift)     : null,
+    sc: scOrd!==null&& eff.scAvgOrd!=null ? Math.round(scOrd*eff.scAvgOrd) : null,
+    se: sd!==null   && eff.seDay!=null    ? Math.round(sd*eff.seDay)       : null,
+    evOrd:  sh!==null && eff.evOrdSh!=null  ? sh*eff.evOrdSh  : null,
+    seOrdN: sd!==null && eff.seOrdDay!=null ? sd*eff.seOrdDay : null
+  };
+}
+function planWeekCalc(wk,eff){
+  return planCalcFrom(planAct(wk,'sh'),planAct(wk,'appt'),planAct(wk,'seDays'),eff);
+}
+
+// Write a calculated value onto a week. Without force we only ever fill a blank
+// cell or refresh one we calculated ourselves (tagged in _auto) — a number Alan
+// typed by hand is never overwritten. force=true is a deliberate per-week edit:
+// he just changed that week's shifts/appts/SE days, so that bucket recalculates.
+function planWrite(wk,key,val,force){
+  const p=S.projections[wk];
+  const isAuto=!!(p&&p._auto&&p._auto[key]);
+  const isBlank=!p||p[key]===undefined;
+  if(!force && !isAuto && !isBlank) return false;
+  if(val===null||val===undefined){
+    if(p&&isAuto&&p[key]!==undefined){ delete p[key]; if(p._auto) delete p._auto[key]; return true; }
+    return false;
+  }
+  if(!S.projections[wk]) S.projections[wk]={};
+  const q=S.projections[wk];
+  if(q[key]===val && q._auto && q._auto[key]) return false;
+  q[key]=val; q._auto=q._auto||{}; q._auto[key]=1;
+  return true;
+}
+// Planned total orders = event + service call + service event orders. Marketing
+// and Biz Gift orders aren't modelled, so type over this when you add those.
+function planWriteOrders(wk,c,force){
+  const parts=[c.evOrd,c.scOrd,c.seOrdN].filter(v=>v!==null);
+  return planWrite(wk,'ord', parts.length?Math.round(parts.reduce((a,b)=>a+b,0)):null, force);
+}
+// Keep 'cpo' in step with the category cells; drop an entry that holds nothing.
+function planTidy(wk){
+  const p=S.projections[wk];
+  if(!p) return;
+  if(p._auto){
+    Object.keys(p._auto).forEach(k=>{ if(p[k]===undefined) delete p._auto[k]; });
+    if(!Object.keys(p._auto).length) delete p._auto;
+  }
+  const hasCat=PROJ_CATS.some(c=>p[c]!==undefined);
+  const hasOrd=p.ord!==undefined;
+  const hasAct=PLAN_ACT.some(a=>p[a]!==undefined);
+  if(!hasCat&&!hasOrd&&!hasAct){ delete S.projections[wk]; return; }
+  p.cpo=projTotal(p);
+}
+// Roll the defaults forward across the rest of the year. Blank (and previously
+// calculated) cells only, and only from the current week on — a closed week's
+// plan is history, and back-filling it would skew plan-vs-actual variance.
+function planAutoFill(){
+  const {eff}=planRates();
+  let changed=false;
+  for(let wk=weeksElapsed(); wk<=52; wk++){
+    const c=planWeekCalc(wk,eff);
+    if(planWrite(wk,'ev',c.ev,false)) changed=true;
+    if(planWrite(wk,'sc',c.sc,false)) changed=true;
+    if(planWrite(wk,'se',c.se,false)) changed=true;
+    if(planWriteOrders(wk,c,false))   changed=true;
+    planTidy(wk);
+  }
+  return changed;
+}
+
+// ---- PLANNING ASSUMPTIONS PANEL -------------------------------------------
+function planFmtRate(k,v){
+  if(v===null||v===undefined) return '—';
+  const def=PLAN_RATE_DEFS.find(r=>r.k===k);
+  return def && def.u==='$' ? fm(v) : (def && def.u==='%' ? v+'%' : v);
+}
+function renderPlanAssumptions(){
+  const box=document.getElementById('plan-assume');
+  if(!box) return;
+  const {eff,auto,src}=planRates();
+  const st=planSettings();
+  const wkNow=weeksElapsed();
+
+  const rates=PLAN_RATE_DEFS.map(r=>{
+    const ovRaw=numOrNull(st.rate[r.k]);
+    const over=src[r.k]==='own';
+    const hasAuto=auto[r.k]!==null&&auto[r.k]!==undefined;
+    const autoTxt='YTD '+planFmtRate(r.k,auto[r.k]);
+    let note;
+    if(over) note = hasAuto
+      ? `yours · <span class="pa-reset" onclick="resetPlanRate('${r.k}')">use ${autoTxt}</span>`
+      : 'yours';
+    else if(src[r.k]==='ytd')     note = autoTxt;
+    else if(src[r.k]==='seed')    note = `starting figure — your YTD takes over once SE Days are logged`;
+    else if(src[r.k]==='derived') note = `from SE $/day ÷ ${fm(auto.seAvgOrd)} SE avg order`;
+    else                          note = 'no data yet — set it here';
+    const ph = !over && eff[r.k]!==null && eff[r.k]!==undefined ? eff[r.k] : '—';
+    return `<div class="pa-fld">
+      <label>${r.l}</label>
+      <input type="number" inputmode="decimal" class="pa-in${over?' over':''}" id="pa-rate-${r.k}" value="${over?ovRaw:''}" placeholder="${ph}" oninput="onPlanRateEdit('${r.k}',this)">
+      <div class="pa-note">${note}</div>
+    </div>`;
+  }).join('');
+
+  const missing=PLAN_RATE_DEFS.filter(r=>eff[r.k]===null||eff[r.k]===undefined).map(r=>r.l);
+  const seeded=PLAN_RATE_DEFS.filter(r=>src[r.k]==='seed'||src[r.k]==='derived').map(r=>r.l);
+  const warn = missing.length
+    ? `<div style="font-size:11.5px;color:var(--gold2);font-weight:600;margin-top:8px;">No average yet for: ${missing.join(', ')} — type a rate above and that bucket starts planning.</div>`
+    : (seeded.length
+      ? `<div style="font-size:11.5px;color:var(--gold2);font-weight:600;margin-top:8px;">${seeded.join(' and ')} ${seeded.length>1?'are':'is'} running on a starting figure, not history — log SE Days on the weekly entry form and your own average takes over.</div>`
+      : '');
+
+  box.innerHTML=`
+    <div class="phead" style="margin-bottom:12px;"><div class="ptit2">Planning Assumptions</div>
+      <div class="badge bgb" style="background:var(--plan-wash);color:var(--plan);">Rates from 2026 YTD · editable</div></div>
+    <div class="pa-sec">Your averages — override any of them</div>
+    <div class="pa-rates">${rates}</div>
+    ${warn}
+    <div style="font-size:11px;color:var(--text2);margin-top:12px;line-height:1.55;">
+      Shifts, appointments and SE days are typed week by week in the table — every week is different, so nothing is assumed for you.
+      A week's CPO recalculates the moment you change any of the three, and only that week. Closed weeks and anything you typed
+      yourself are never overwritten.
+      Marketing, Biz Gift, Federal and Demo are always yours to type. Clear a cell to hand it back to the calculator.
+    </div>`;
+}
+
+function onPlanRateEdit(k,input){
+  const st=planSettings();
+  const v=numOrNull(input.value);
+  if(v===null) delete st.rate[k]; else st.rate[k]=v;
+  input.classList.toggle('over', v!==null);
+  planRecalcAuto();
+  renderPlanTable();
+  refreshPlanSummary();
+  savePlanSettingsLocal();
+  debouncedSave();
+}
+function resetPlanRate(k){
+  delete planSettings().rate[k];
+  planRecalcAuto();
+  refreshPlan();
+  savePlanSettingsLocal();
+  debouncedSave();
+}
+// Rates moved: refresh every cell the calculator owns (hand-typed cells stay put).
+function planRecalcAuto(){
+  const {eff}=planRates();
+  for(let wk=weeksElapsed(); wk<=52; wk++){
+    const c=planWeekCalc(wk,eff);
+    planWrite(wk,'ev',c.ev,false);
+    planWrite(wk,'sc',c.sc,false);
+    planWrite(wk,'se',c.se,false);
+    planWriteOrders(wk,c,false);
+    planTidy(wk);
+  }
+}
+// Redraw the panel (rate notes shift as rates change) without dropping the
+// cursor out of the field being typed in.
+function refreshPlanSummary(){
+  const box=document.getElementById('plan-assume');
+  if(!box) return;
+  const cur=document.activeElement;
+  const id=cur&&cur.id&&cur.id.indexOf('pa-')===0?cur.id:null;
+  const selStart=id?cur.selectionStart:null;
+  renderPlanAssumptions();
+  if(id){
+    const back=document.getElementById(id);
+    if(back){ back.focus(); try{ back.setSelectionRange(selStart,selStart); }catch(e){} }
+  }
+}
+
+// ---- PLAN TABLE -----------------------------------------------------------
+function planRange(){
+  return planCamp==='CI' ? [1,17] : planCamp==='CII' ? [18,35] : [36,52];
+}
+function renderPlanTable(){
+  const tbody=document.getElementById('plan-tbody');
+  if(!tbody) return;
+  const range=planRange();
+  const yearWeeks=buildYearWeeks();
   const rows=[];
   for(let wk=range[0]; wk<=range[1]; wk++){
     const yw=yearWeeks[wk-1];
     if(!yw) continue;
     const proj=S.projections[wk]||{};
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
-    // Auto-sum total CPO from category fields
-    const totalCPO=projTotal(proj);
-    const cells=cats.map(c=>{
-      const val=proj[c]||'';
-      return `<td><input type="number" inputmode="decimal" class="plan-input" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"></td>`;
+    // Activity cells — blank until Alan types that week's own numbers.
+    const actCells=PLAN_ACT.map(k=>{
+      const val=proj[k]!==undefined?proj[k]:'';
+      return `<td class="plan-act-cell"><input type="number" inputmode="decimal" class="plan-input act" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${k}" oninput="onProjEdit(this)"></td>`;
     }).join('');
+    const cells=PROJ_CATS.map(c=>{
+      const val=proj[c]!==undefined?proj[c]:'';
+      const isAuto=!!(proj._auto&&proj._auto[c]);
+      return `<td><input type="number" inputmode="decimal" class="plan-input${isAuto?' auto':''}" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${c}" oninput="onProjEdit(this)"${isAuto?' title="Calculated from this week\'s activity. Type to override, clear to hand it back."':''}></td>`;
+    }).join('');
+    const ordAuto=!!(proj._auto&&proj._auto.ord);
     rows.push(`<tr>
       <td style="font-weight:700;">Wk ${wk}</td>
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
-      <td class="plan-total-cell" id="plan-total-${wk}">${S.projections[wk]?fm(totalCPO):'—'}</td>
+      ${actCells}
+      <td class="plan-total-cell" id="plan-total-${wk}">${S.projections[wk]?fm(projTotal(proj)):'—'}</td>
       ${cells}
-      <td><input type="number" inputmode="numeric" class="plan-input" value="${proj.ord||''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
+      <td><input type="number" inputmode="numeric" class="plan-input${ordAuto?' auto':''}" value="${proj.ord!==undefined?proj.ord:''}" placeholder="—" data-wk="${wk}" data-cat="ord" oninput="onProjEdit(this)"></td>
     </tr>`);
   }
   tbody.innerHTML=rows.join('');
-
-  // Plan footer totals
+  renderPlanTotals();
+}
+function renderPlanTotals(){
+  const el=document.getElementById('plan-totals');
+  if(!el) return;
+  const range=planRange();
   const projWks=Object.keys(S.projections).filter(k=>+k>=range[0]&&+k<=range[1]).map(k=>S.projections[k]);
   const sumCPO=projWks.reduce((s,p)=>s+projTotal(p),0);
   const sumOrd=projWks.reduce((s,p)=>s+(parseInt(p.ord)||0),0);
   // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
   const filledWeeks=projWks.length;
   const range_size = range[1]-range[0]+1;
-  document.getElementById('plan-totals').innerHTML=`<div class="panel" style="padding:14px 18px;">
+  const actSum=k=>projWks.reduce((n,p)=>n+(parseFloat(p[k])||0),0);
+  const shifts=actSum('sh'), appts=actSum('appt'), seDays=actSum('seDays');
+  el.innerHTML=`<div class="panel" style="padding:14px 18px;">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">${planCamp} Campaign Plan Totals</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:13px;">
       <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED CPO SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?fm(sumCPO):'—'}</div></div>
       <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">PROJECTED ORDERS SUM</div><div style="font-size:18px;font-weight:700;color:var(--blue);">${filledWeeks>0?sumOrd:'—'}</div></div>
       <div><div style="color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.4px;">WEEKS PLANNED</div><div style="font-size:18px;font-weight:700;color:var(--text);">${filledWeeks} / ${range_size}</div></div>
     </div>
+    <div style="font-size:11.5px;color:var(--text2);margin-top:11px;border-top:1px solid var(--line);padding-top:9px;">
+      Planned activity in this campaign: <b>${d1(shifts)}</b> event shifts · <b>${d1(appts)}</b> SC appointments · <b>${d1(seDays)}</b> SE days
+      <span style="color:var(--text3);">(what's typed into the weeks above)</span>
+    </div>
   </div>`;
+}
+function refreshPlan(){
+  if(!document.getElementById('plan-tbody')) return; // page not in DOM yet
+  if(planAutoFill()) debouncedSave();
+  renderPlanAssumptions();
+  renderPlanTable();
 }
 
 function onProjEdit(input){
@@ -2965,30 +3278,45 @@ function onProjEdit(input){
   const cat=input.dataset.cat;
   const val=input.value;
   if(!S.projections[wk]) S.projections[wk]={};
+  const p=S.projections[wk];
   if(val==='' || val===null){
-    delete S.projections[wk][cat];
+    delete p[cat];
+    if(p._auto) delete p._auto[cat];
   } else {
-    S.projections[wk][cat] = cat==='ord' ? (parseInt(val)||0) : (parseFloat(val)||0);
+    p[cat] = (cat==='ord'||PLAN_ACT.indexOf(cat)>=0) ? (parseInt(val)||0) : (parseFloat(val)||0);
+    // A number typed by hand belongs to Alan — the calculator stops managing it.
+    if(p._auto) delete p._auto[cat];
   }
-  // Auto-recompute total CPO from category cells ('sc' key — same as Year View reads)
-  const cats=PROJ_CATS;
-  const total = projTotal(S.projections[wk]);
-  // Cleanup: if user has cleared every input field, drop the whole projection entry.
-  // Otherwise keep cpo in sync with the category sum (could be 0 — explicit "planned 0" week).
-  const hasAnyCat = cats.some(c => S.projections[wk][c] !== undefined);
-  const hasOrd = S.projections[wk].ord !== undefined;
-  if (!hasAnyCat && !hasOrd) {
-    delete S.projections[wk];
-  } else {
-    S.projections[wk].cpo = total;
+  if(PLAN_ACT.indexOf(cat)>=0){
+    // Deliberate activity edit: recompute this week's matching bucket even if it
+    // already carried a value, plus the orders that come with it.
+    const {eff}=planRates();
+    const c=planWeekCalc(wk,eff);
+    const bucket=PLAN_ACT_BUCKET[cat];
+    planWrite(wk,bucket,c[bucket],true);
+    planWriteOrders(wk,c,true);
   }
-  // Update the total cell display
-  const totalCell=document.getElementById('plan-total-'+wk);
-  if(totalCell) totalCell.textContent = S.projections[wk] ? fm(total) : '—';
+  planTidy(wk);
+  syncPlanRow(wk);
+  renderPlanTotals();
   // Persist (debounced) and refresh dependent views
   debouncedSave();
   // Year View depends on projections — refresh if visible
   if(document.getElementById('page-yearview')?.classList.contains('active')) refreshYearView();
+}
+// Push recalculated values back into a row's inputs without re-rendering the
+// table (that would steal the cursor mid-keystroke).
+function syncPlanRow(wk){
+  const p=S.projections[wk];
+  document.querySelectorAll('#plan-tbody input[data-wk="'+wk+'"]').forEach(el=>{
+    const c=el.dataset.cat;
+    const isAuto=!!(p&&p._auto&&p._auto[c]);
+    el.classList.toggle('auto', isAuto && PLAN_ACT.indexOf(c)<0);
+    if(el===document.activeElement) return;
+    el.value = (p&&p[c]!==undefined) ? p[c] : '';
+  });
+  const tc=document.getElementById('plan-total-'+wk);
+  if(tc) tc.textContent = S.projections[wk] ? fm(projTotal(S.projections[wk])) : '—';
 }
 
 function recalcAllEvents() {
@@ -3438,6 +3766,14 @@ function calcShifts(){
   document.getElementById('sc-os').textContent=sh>0&&evO>0?d1(evO/sh):'—';
   document.getElementById('sc-ao').textContent=evO>0&&ev>0?fm(Math.round(ev/evO)):'—';
 }
+function calcSE(){
+  const se=parseFloat(document.getElementById('i-se').value)||0;
+  const seO=parseInt(document.getElementById('i-se-ord').value)||0;
+  const sd=parseInt(document.getElementById('i-se-days')?.value)||0;
+  document.getElementById('se-pd').textContent=sd>0&&se>0?fm(Math.round(se/sd)):'—';
+  document.getElementById('se-od').textContent=sd>0&&seO>0?d1(seO/sd):'—';
+  document.getElementById('se-ao').textContent=seO>0&&se>0?fm(Math.round(se/seO)):'—';
+}
 function calcFederal(){
   const fed=parseFloat(document.getElementById('i-fed').value)||0;
   const fedO=parseInt(document.getElementById('i-fed-ord').value)||0;
@@ -3459,7 +3795,7 @@ function calcDemos(){
 // ==================== EDIT WEEK ====================
 function editWeek(idx){
   const w=S.weeks[idx];editIdx=idx;
-  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-ror',w.ror||''],['i-ror-ord',w.rorOrd||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||''],['i-workdays', w.workDays !== undefined ? w.workDays : '']];
+  const map=[['i-wk',w.wk],['i-dt',w.dt],['i-cpo',w.cpo||''],['i-ord',w.ord||''],['i-ev',w.ev||''],['i-ev-ord',w.evOrd||''],['i-ev-sh',w.evSh||''],['i-scp',w.scp||''],['i-sco',w.sco||''],['i-scb',w.scb||''],['i-scc',w.scc||''],['i-se',w.se||''],['i-se-ord',w.seOrd||''],['i-se-days',w.seDays||''],['i-mkt',w.mkt||''],['i-mkt-ord',w.mktOrd||''],['i-biz',w.biz||''],['i-biz-ord',w.bizOrd||''],['i-fed',w.fed||''],['i-fed-ord',w.fedOrd||''],['i-fed-sh',w.fedSh||''],['i-ror',w.ror||''],['i-ror-ord',w.rorOrd||''],['i-demo',w.demo||''],['i-demo-ord',w.demoOrd||''],['i-demo-booked',w.demoBooked||''],['i-demo-comp',w.demoComp||''],['i-target',w.target||''],['i-tnote',w.tnote||''],['i-daysoff',w.daysOff||''],['i-workdays', w.workDays !== undefined ? w.workDays : '']];
   map.forEach(([id,val])=>{const el=document.getElementById(id);if(el) el.value=val;});
   document.getElementById('i-camp').value=w.camp;
   // Restore vacation toggle state (with backward-compat: infer from daysOff if missing)
@@ -3469,7 +3805,7 @@ function editWeek(idx){
     vacChk.checked = inferred;
     toggleVac();
   }
-  calcAll();calcShifts();
+  calcAll();calcShifts();calcSE();
   document.getElementById('edbanner').style.display='flex';document.getElementById('ed-wk-lbl').textContent=w.wk;
   document.getElementById('save-btn').textContent='Update Week →';document.getElementById('save-btn').style.background='var(--blue2)';
   window.scrollTo(0,0);
@@ -3494,7 +3830,7 @@ function submitStats(){
     cpo:parseFloat(g('i-cpo').value)||0,ord:parseInt(g('i-ord').value)||0,
     ev:parseFloat(g('i-ev').value)||0,evOrd:parseInt(g('i-ev-ord').value)||0,evSh:parseInt(g('i-ev-sh').value)||0,
     scp:parseFloat(g('i-scp').value)||0,sco:parseInt(g('i-sco').value)||0,scb:parseInt(g('i-scb').value)||0,scc:parseInt(g('i-scc').value)||0,
-    se:parseFloat(g('i-se').value)||0,seOrd:parseInt(g('i-se-ord').value)||0,
+    se:parseFloat(g('i-se').value)||0,seOrd:parseInt(g('i-se-ord').value)||0,seDays:parseInt(g('i-se-days')?.value)||0,
     mkt:parseFloat(g('i-mkt').value)||0,mktOrd:parseInt(g('i-mkt-ord').value)||0,
     biz:parseFloat(g('i-biz').value)||0,bizOrd:parseInt(g('i-biz-ord').value)||0,
     fed:parseFloat(g('i-fed').value)||0,fedOrd:parseInt(g('i-fed-ord').value)||0,fedSh:parseInt(g('i-fed-sh').value)||0,
@@ -3529,12 +3865,12 @@ function submitStats(){
 }
 
 function clearForm(){
-  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-ror','i-ror-ord','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff','i-workdays'].forEach(id=>{
+  ['i-cpo','i-ord','i-avg','i-ev','i-ev-ord','i-ev-sh','i-scp','i-sco','i-scb','i-scc','i-se','i-se-ord','i-se-days','i-mkt','i-mkt-ord','i-biz','i-biz-ord','i-fed','i-fed-ord','i-fed-sh','i-ror','i-ror-ord','i-demo','i-demo-ord','i-demo-booked','i-demo-comp','i-wk','i-target','i-tnote','i-daysoff','i-workdays'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
   const vacChk=document.getElementById('i-vac');
   if(vacChk){ vacChk.checked=false; toggleVac(); }
-  calcShifts();
+  calcShifts();calcSE();
 }
 
 // ==================== VACATION TOGGLE ====================
@@ -3595,6 +3931,20 @@ function saveGoalsToLocal(){
   }catch(e){}
 }
 
+// Planning assumptions persist through the Sheets snapshot like everything else;
+// localStorage is the offline fallback for a device that hasn't synced them down.
+function savePlanSettingsLocal(){
+  try{ localStorage.setItem('cc_plan_settings', JSON.stringify(planSettings())); }catch(e){}
+}
+function loadPlanSettingsLocal(){
+  try{
+    var raw=localStorage.getItem('cc_plan_settings');
+    if(!raw) return;
+    var ps=JSON.parse(raw)||{};
+    var cur=planSettings();
+    if(ps.rate && !Object.keys(cur.rate).length) cur.rate=ps.rate;
+  }catch(e){}
+}
 function loadGoalsFromLocal(){
   try{
     var saved=localStorage.getItem('cc_goals');
@@ -3808,6 +4158,7 @@ async function saveToSheets(){
       weeks: S.weeks,
       yearNotes: S.yearNotes,
       projections: S.projections,
+      planSettings: S.planSettings,
       cats: S.cats,
       events: S.events,
       g: S.g
@@ -3991,6 +4342,7 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
     return;
   }
   loadGoalsFromLocal();
+  loadPlanSettingsLocal();
   rolloverStreaks();
   refreshAll();
   // Mobile keyboards: numeric pad for number fields (static ones; dynamic inputs
