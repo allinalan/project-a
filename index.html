@@ -2951,8 +2951,10 @@ function showPlanCampaign(camp,btn){
 // planned CPO for Events / Service Calls / Service Events. Marketing, Biz Gift,
 // Federal and Demo stay hand-typed — there is no activity metric behind them.
 //
-// Activity lives on the projection ('sh', 'appt', 'seDays'); a blank week falls
-// back to the per-week defaults in S.planSettings.def. Rates default to the YTD
+// Activity lives on the projection ('sh', 'appt', 'seDays') and nowhere else:
+// there is no standing weekly figure for any of the three, because no two of
+// Alan's weeks look alike — most carry no service event at all, some carry
+// three. A week plans only what he types into it. Rates default to the YTD
 // averages off the logged weeks and can be overridden in S.planSettings.rate.
 const PLAN_ACT=['sh','appt','seDays'];
 const PLAN_ACT_BUCKET={sh:'ev',appt:'sc',seDays:'se'};
@@ -2965,11 +2967,6 @@ const PLAN_RATE_DEFS=[
   {k:'seDay',   l:'SE $ / day',           u:'$'},
   {k:'seOrdDay',l:'SE orders / day',      u:''}
 ];
-// Event shifts and SC appointments have no standing weekly figure — they're
-// typed week by week in the table, because no two of Alan's weeks look alike.
-const PLAN_DEF_DEFS=[
-  {k:'seDays', l:'SE days / week', sub:'leave blank and type SE days per week instead'}
-];
 // Starting figures for a rate with no history behind it yet. SE $/day is Alan's
 // own number (Aug 2026) and stands in until SE Days have been logged for a few
 // weeks — the moment a YTD average exists it takes over on its own.
@@ -2978,13 +2975,10 @@ const numOrNull=v=>(v===undefined||v===null||v==='')?null:(isNaN(parseFloat(v))?
 
 function planSettings(){
   if(!S.planSettings||typeof S.planSettings!=='object') S.planSettings={};
-  if(!S.planSettings.def)  S.planSettings.def={};
   if(!S.planSettings.rate) S.planSettings.rate={};
-  // A default for an activity that no longer has one would keep auto-filling
-  // invisibly — clear it out.
-  Object.keys(S.planSettings.def).forEach(k=>{
-    if(!PLAN_DEF_DEFS.some(d=>d.k===k)) delete S.planSettings.def[k];
-  });
+  // Weekly defaults were dropped; a leftover one would keep auto-filling weeks
+  // invisibly, so it goes on load.
+  delete S.planSettings.def;
   return S.planSettings;
 }
 
@@ -3030,11 +3024,10 @@ function planRates(){
   }
   return {eff,auto,src};
 }
-// A week's planned activity: its own cell if set, otherwise the weekly default.
+// A week's planned activity — whatever is in that week's cell, nothing implied.
 function planAct(wk,k){
   const p=S.projections[wk];
-  const own=p?numOrNull(p[k]):null;
-  return own!==null ? own : numOrNull(planSettings().def[k]);
+  return p?numOrNull(p[k]):null;
 }
 // Activity -> planned CPO and orders. Service Calls run the full funnel:
 // appointments booked x completion % x closing % x SC average order.
@@ -3123,12 +3116,6 @@ function renderPlanAssumptions(){
   const st=planSettings();
   const wkNow=weeksElapsed();
 
-  const defs=PLAN_DEF_DEFS.map(d=>`<div class="pa-fld">
-      <label>${d.l}</label>
-      <input type="number" inputmode="decimal" class="pa-in" id="pa-def-${d.k}" value="${st.def[d.k]!==undefined&&st.def[d.k]!==''?st.def[d.k]:''}" placeholder="—" oninput="onPlanDefEdit('${d.k}',this)">
-      <div class="pa-note">${d.sub}</div>
-    </div>`).join('');
-
   const rates=PLAN_RATE_DEFS.map(r=>{
     const ovRaw=numOrNull(st.rate[r.k]);
     const over=src[r.k]==='own';
@@ -3179,27 +3166,15 @@ function renderPlanAssumptions(){
     <div class="pa-sec">Your averages — override any of them</div>
     <div class="pa-rates">${rates}</div>
     ${warn}
-    <div class="pa-sec" style="margin-top:16px;">Standing weekly default (optional)</div>
-    <div class="pa-grid">${defs}</div>
     <div class="pa-sum">${summary}</div>
     <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.55;">
-      Event shifts and SC appointments are typed week by week in the table — every week is different, so nothing is assumed for them.
-      A week's bucket recalculates the moment you change its shifts, appts or SE days. Auto-fill only writes into <b>blank</b>
-      weeks from <b>Wk ${wkNow}</b> forward — closed weeks and anything you typed yourself are left alone.
+      Shifts, appointments and SE days are typed week by week in the table — every week is different, so nothing is assumed for you.
+      A week's CPO recalculates the moment you change any of the three, and only that week. Closed weeks and anything you typed
+      yourself are never overwritten.
       Marketing, Biz Gift, Federal and Demo are always yours to type. Clear a cell to hand it back to the calculator.
     </div>`;
 }
 
-function onPlanDefEdit(k,input){
-  const st=planSettings();
-  const v=numOrNull(input.value);
-  if(v===null) delete st.def[k]; else st.def[k]=v;
-  planAutoFill();
-  renderPlanTable();
-  refreshPlanSummary();
-  savePlanSettingsLocal();
-  debouncedSave();
-}
 function onPlanRateEdit(k,input){
   const st=planSettings();
   const v=numOrNull(input.value);
@@ -3253,21 +3228,16 @@ function renderPlanTable(){
   if(!tbody) return;
   const range=planRange();
   const yearWeeks=buildYearWeeks();
-  const st=planSettings();
-  const wkNow=weeksElapsed();
   const rows=[];
   for(let wk=range[0]; wk<=range[1]; wk++){
     const yw=yearWeeks[wk-1];
     if(!yw) continue;
     const proj=S.projections[wk]||{};
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
-    const past=wk<wkNow;
-    // Activity cells. A blank cell inherits the weekly default (shown greyed as
-    // the placeholder) — except on closed weeks, which auto-fill never touches.
+    // Activity cells — blank until Alan types that week's own numbers.
     const actCells=PLAN_ACT.map(k=>{
       const val=proj[k]!==undefined?proj[k]:'';
-      const ph=(!past && st.def[k]!==undefined && st.def[k]!=='')?st.def[k]:'—';
-      return `<td class="plan-act-cell"><input type="number" inputmode="decimal" class="plan-input act" value="${val}" placeholder="${ph}" data-wk="${wk}" data-cat="${k}" oninput="onProjEdit(this)"></td>`;
+      return `<td class="plan-act-cell"><input type="number" inputmode="decimal" class="plan-input act" value="${val}" placeholder="—" data-wk="${wk}" data-cat="${k}" oninput="onProjEdit(this)"></td>`;
     }).join('');
     const cells=PROJ_CATS.map(c=>{
       const val=proj[c]!==undefined?proj[c]:'';
@@ -3297,18 +3267,7 @@ function renderPlanTotals(){
   // A week counts as "planned" if its projection object exists (even if 0 — that's an explicit plan)
   const filledWeeks=projWks.length;
   const range_size = range[1]-range[0]+1;
-  // Activity totals count what each week will actually run on: its own cell when
-  // set, the weekly default for an upcoming week that's still inheriting it.
-  // Closed weeks only count what's typed — the default doesn't reach back.
-  const wkNow=weeksElapsed();
-  const actSum=k=>{
-    let n=0;
-    for(let wk=range[0]; wk<=range[1]; wk++){
-      const own=S.projections[wk]?numOrNull(S.projections[wk][k]):null;
-      n += own!==null ? own : (wk>=wkNow ? (numOrNull(planSettings().def[k])||0) : 0);
-    }
-    return n;
-  };
+  const actSum=k=>projWks.reduce((n,p)=>n+(parseFloat(p[k])||0),0);
   const shifts=actSum('sh'), appts=actSum('appt'), seDays=actSum('seDays');
   el.innerHTML=`<div class="panel" style="padding:14px 18px;">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">${planCamp} Campaign Plan Totals</div>
@@ -3319,7 +3278,7 @@ function renderPlanTotals(){
     </div>
     <div style="font-size:11.5px;color:var(--text2);margin-top:11px;border-top:1px solid var(--line);padding-top:9px;">
       Planned activity in this campaign: <b>${d1(shifts)}</b> event shifts · <b>${d1(appts)}</b> SC appointments · <b>${d1(seDays)}</b> SE days
-      <span style="color:var(--text3);">(what's typed in the table, plus any standing weekly default on upcoming weeks)</span>
+      <span style="color:var(--text3);">(what's typed into the weeks above)</span>
     </div>
   </div>`;
 }
@@ -3999,7 +3958,6 @@ function loadPlanSettingsLocal(){
     if(!raw) return;
     var ps=JSON.parse(raw)||{};
     var cur=planSettings();
-    if(ps.def  && !Object.keys(cur.def).length)  cur.def=ps.def;
     if(ps.rate && !Object.keys(cur.rate).length) cur.rate=ps.rate;
   }catch(e){}
 }
