@@ -2235,6 +2235,7 @@
     },
     {
       "name": "Lake Havasu City Fair",
+      "notWorked": true,
       "loc": "Lake Havasu City, AZ",
       "camp": "CI",
       "eventType": "Traditional",
