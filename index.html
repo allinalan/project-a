@@ -886,6 +886,14 @@
               </select>
               <div class="anote">Service &amp; sales events are marketing events &mdash; logged for SE stats and shifts, kept out of the Event P&amp;L.</div>
             </div>
+            <div class="fgrp">
+              <label class="flbl">Charged, Not Worked</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-bottom:6px;cursor:pointer;user-select:none;">
+                <input type="checkbox" id="p-not-worked" onchange="calcProfit()" style="width:13px;height:13px;cursor:pointer;flex:0 0 auto;margin:0;">
+                Billed for it, never worked it
+              </label>
+              <div class="anote">The cost still counts against Est. Profit (YTD), but the event stays out of the P&amp;L and the ROI ranking.</div>
+            </div>
           </div>
         </div>
 
@@ -3382,7 +3390,13 @@ function calcProfit(){
   const net=comm + cashRev - totalExp;
   // Show preview if there's ANY meaningful input (cpo, service cpo, cash, or expenses)
   const hasInput = cpo>0 || svcCPO>0 || cashRev>0 || totalExp>0;
-  if(hasInput){
+  const notWorked = !!document.getElementById('p-not-worked')?.checked;
+  if(hasInput && notWorked){
+    // No shift behind it, so there is no threshold to judge — it is purely a cost.
+    document.getElementById('p-net-preview').textContent='-'+fm(totalExp);
+    document.getElementById('p-net-preview').style.color='var(--red)';
+    document.getElementById('p-net-note').textContent='Charged, not worked — cost only. Counts against Est. Profit (YTD), stays out of the P&L and ROI ranking.';
+  } else if(hasInput){
     const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
     const ok=net>=threshold;
     document.getElementById('p-net-preview').textContent=fm(net);
@@ -3449,6 +3463,9 @@ function readEventFromForm(){
     // orders and shifts feed the SE stats, but never part of the Event P&L.
     eventType: document.getElementById('p-event-type')?.value === 'Service Event' ? 'Service Event' : 'Traditional',
     eventTypeSet: true,  // the selector was filled in by hand — don't second-guess it by name
+    // Charged but never worked (billed booth, turned away, cancelled on-site): a real
+    // cost with no shift behind it, so it is not an event to judge on ROI.
+    notWorked: !!document.getElementById('p-not-worked')?.checked,
     cpo,
     shifts: parseInt(document.getElementById('p-shifts').value)||0,
     ord: parseInt(document.getElementById('p-ord').value)||0,
@@ -3504,6 +3521,7 @@ function editEvent(idx){
   set('p-dt-end', e.dtEnd || '');
   set('p-camp', e.camp);
   set('p-event-type', isServiceEvent(e) ? 'Service Event' : 'Traditional');
+  const nwEl=document.getElementById('p-not-worked'); if(nwEl) nwEl.checked=!!e.notWorked;
   set('p-cpo', e.cpo);
   set('p-shifts', e.shifts);
   set('p-ord', e.ord);
@@ -3554,6 +3572,7 @@ function clearEventForm(){
     const el=document.getElementById(id); if(el) el.value='';
   });
   const etEl=document.getElementById('p-event-type'); if(etEl) etEl.value='Traditional';
+  const nwEl=document.getElementById('p-not-worked'); if(nwEl) nwEl.checked=false;
   document.getElementById('p-comm').value='';
   document.getElementById('p-total-exp').value='';
   document.getElementById('p-net-preview').textContent='—';
@@ -3590,9 +3609,16 @@ function isServiceEvent(e){
 function isSeByNameOnly(e){ return isServiceEvent(e) && !e.eventTypeSet && e.eventType!=='Service Event'; }
 function tradEvents(){ return S.events.filter(e=>!isServiceEvent(e)); }
 
+// Charged but never worked — a booth Alan paid for and was turned away from, or that
+// cancelled on him. The money left his pocket (so it still nets out of Est. Profit YTD
+// and is listed on the P&L page under its own heading), but there is no shift and no
+// sales behind it, so judging it on ROI next to shows he actually worked is noise.
+function isNotWorked(e){ return !!e && e.notWorked===true; }
+function plEvents(){ return S.events.filter(e=>!isServiceEvent(e) && !isNotWorked(e)); }
+
 function refreshProfit(){
   const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
-  const evs=tradEvents();  // P&L covers traditional events only
+  const evs=plEvents();  // P&L covers traditional events that were actually worked
   const totalComm=evs.reduce((s,e)=>s+(e.comm||0),0);
   const totalExp=evs.reduce((s,e)=>s+(e.totalExp||0),0);
   const totalNet=evs.reduce((s,e)=>s+(e.net||0),0);
@@ -3605,10 +3631,12 @@ function refreshProfit(){
     <div class="mc ${totalNet>0?'pos':'neg'}"><div class="mlbl">Total Net Profit</div><div class="mval" style="color:${totalNet>=0?'var(--green)':'var(--red)'}">${evs.length>0?fm(totalNet):'—'}</div><div class="msub tm">after all expenses</div></div>
     <div class="mc neu"><div class="mlbl">Total Out of Pocket</div><div class="mval">${evs.length>0?fm(totalExp):'—'}</div><div class="msub tm">travel &amp; expenses</div></div>
     <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${evs.length>0?fm(Math.round(totalNet/evs.length)):'—'}</div><div class="msub tm" style="color:${evs.length>0&&Math.round(totalNet/evs.length)>=threshold?'var(--green)':'var(--text2)'};">${evs.length>0?(Math.round(totalNet/evs.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`
+    +nwSummaryLine()
     +(svcTotal>0||svcOrdTotal>0?`<div style="grid-column:1/-1;background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;color:var(--gold);font-weight:600;">Event Service YTD: ${fm(svcTotal)} from ${plural(svcOrdTotal,'order')} across ${plural(svcEventCount,'event')} — bucketed under Service Calls in weekly stats; commission credited to the events below.</div>`:'');
 
   if(evs.length===0){
-    document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No traditional events logged yet. Add your first event →</div>';
+    document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No traditional events logged yet. Add your first event →</div>'
+      +renderNotWorkedList();
     renderRoiTable(threshold);
     renderReconciliation();
     renderSeEventLog();
@@ -3620,7 +3648,7 @@ function refreshProfit(){
   const dateTo = document.getElementById('prof-date-to')?.value;
   // Map before filtering so _idx stays the index into S.events (edit/delete rely on it)
   const filtered = S.events.map((e,i)=>({...e,_idx:i})).filter(e=>{
-    if(isServiceEvent(e)) return false;
+    if(isServiceEvent(e) || isNotWorked(e)) return false;
     if(dateFrom && e.dt && e.dt < dateFrom) return false;
     if(dateTo && e.dt && e.dt > dateTo) return false;
     return true;
@@ -3683,16 +3711,56 @@ function refreshProfit(){
     </div>`;
   }).join('');
 
+  document.getElementById('prof-events-list').innerHTML+=renderNotWorkedList();
+
   renderRoiTable(threshold);
   renderReconciliation();
   renderSeEventLog();
+}
+
+// One line in the summary grid: what the charged-but-not-worked entries cost, stated
+// plainly so the money is never invisible just because it is out of the P&L numbers.
+function nwSummaryLine(){
+  const nw=S.events.filter(e=>!isServiceEvent(e) && isNotWorked(e));
+  if(nw.length===0) return '';
+  const cost=nw.reduce((s,e)=>s+(e.totalExp||0),0);
+  return `<div style="grid-column:1/-1;background:var(--red-light);border-left:3px solid var(--red);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;color:var(--red);font-weight:600;">Charged, not worked: ${fm(cost)} across ${plural(nw.length,'booking')} — excluded from the numbers above (no shift, no sales to judge), still subtracted from Est. Profit (YTD).</div>`;
+}
+
+// Listed under the P&L cards so these bookings stay visible and editable without
+// sitting in the ROI ranking next to shows that were actually worked.
+function renderNotWorkedList(){
+  const rows=S.events.map((e,i)=>({e,i})).filter(r=>!isServiceEvent(r.e) && isNotWorked(r.e))
+    .sort((a,b)=>String(b.e.dt||'').localeCompare(String(a.e.dt||'')));
+  if(rows.length===0) return '';
+  const cost=rows.reduce((s,r)=>s+(r.e.totalExp||0),0);
+  return `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);">
+    <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Charged, Not Worked · ${plural(rows.length,'booking')} · ${fm(cost)} out of pocket</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Billed but never worked — cost only, no shift and no sales, so these stay out of the P&amp;L totals and the ROI ranking above.</div>
+    ${rows.map(r=>`<div class="erow">
+      <div>
+        <div style="font-size:12px;font-weight:700;">${r.e.name||'Untitled'}</div>
+        <div style="font-size:11px;color:var(--text2);">${r.e.loc?r.e.loc+' · ':''}${r.e.dtDisplay||r.e.dt||''}${r.e.camp?' · '+r.e.camp:''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="text-align:right;">
+          <div style="font-size:13px;font-weight:700;color:var(--red);">-${fm(r.e.totalExp||0)}</div>
+          <div style="font-size:11px;color:var(--text2);">out of pocket</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <button class="bedit" onclick="editEvent(${r.i})">edit</button>
+          <button class="bdel" onclick="deleteEvent(${r.i})">del</button>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
 }
 
 // ==================== EVENT ROI RANKING ====================
 function renderRoiTable(threshold){
   const wrap=document.getElementById('roi-table-wrap');
   if(!wrap) return;
-  const evs=tradEvents();  // service & sales events carry no P&L, so no ROI row
+  const evs=plEvents();  // service & sales events and unworked bookings carry no ROI
   if(evs.length===0){ wrap.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:14px 0;">Log traditional events to build your ROI ranking.</div>'; return; }
   const rows=evs.map(e=>{
     const perShift=e.shifts>0?Math.round((e.net||0)/e.shifts):null;
@@ -3776,7 +3844,7 @@ function renderSeEventLog(){
 function renderReconciliation(){
   const body=document.getElementById('recon-body');
   if(!body) return;
-  const trad=tradEvents();
+  const trad=tradEvents();  // includes charged-not-worked: any CPO on them still has to reconcile
   if(trad.length===0 && S.weeks.length===0){ body.innerHTML='<div style="font-size:12px;color:var(--text3);">No data yet.</div>'; return; }
   const wkEv=S.weeks.reduce((s,w)=>s+(w.ev||0),0);
   const logTrad=trad.reduce((s,e)=>s+(e.cpo||0),0);
