@@ -879,6 +879,13 @@
                 <option value="CIII">Campaign III</option>
               </select>
             </div>
+            <div class="fgrp"><label class="flbl">Event Type</label>
+              <select class="fin" id="p-event-type">
+                <option value="Traditional">Traditional Event</option>
+                <option value="Service Event">Service &amp; Sales Event</option>
+              </select>
+              <div class="anote">Service &amp; sales events are marketing events &mdash; logged for SE stats and shifts, kept out of the Event P&amp;L.</div>
+            </div>
           </div>
         </div>
 
@@ -1132,6 +1139,7 @@
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">Avg SE Order</div><div style="font-size:17px;font-weight:700;" id="se-stat-avg">—</div></div>
         <div style="background:var(--surface2);border-radius:7px;padding:10px 12px;"><div class="mlbl">CPO / Event</div><div style="font-size:17px;font-weight:700;" id="se-stat-cpe">—</div></div>
       </div>
+      <div id="se-event-log" style="margin-top:13px;"></div>
     </div>
     <div class="panel" id="panel-ror">
       <div class="phead"><div class="ptit2">RoR Received (YTD)</div><div class="badge bgy">Passive — excluded from $/shift &amp; per-day stats</div></div>
@@ -1277,6 +1285,7 @@
 <div class="page" id="page-profit">
   <div class="eyebrow">Event Portfolio</div>
   <div class="ptitle">Event P&amp;L<span>.</span></div>
+  <div style="font-size:12px;color:var(--text2);margin:-6px 0 12px;">Traditional events only. Service &amp; sales events are marketing events — their CPO, orders and shifts live under <strong>Service Event Stats</strong> on the Scorecard tab.</div>
 
   <div class="settings-row">
     <label>Commission Rate:</label>
@@ -2196,7 +2205,7 @@ function refreshCampaign(){
     // (Step 3), so that's the source — unlogged SEs show as — until logged.
     const evPer=['CI','CII','CIII'].map(cp=>({cpo:cc[cp].ev,ord:cc[cp].evOrd,sh:cc[cp].evSh}));
     const seAgg={CI:{cpo:0,ord:0,sh:0},CII:{cpo:0,ord:0,sh:0},CIII:{cpo:0,ord:0,sh:0}};
-    S.events.filter(e=>e.eventType==='Service Event').forEach(e=>{
+    S.events.filter(isServiceEvent).forEach(e=>{
       const a=seAgg[e.camp]; if(!a) return;
       a.cpo+=e.cpo||0; a.ord+=e.ord||0; a.sh+=e.shifts||0;
     });
@@ -2642,6 +2651,7 @@ function refreshRatios(){
   document.getElementById('se-stat-ord').textContent = seOrd||'—';
   document.getElementById('se-stat-avg').textContent = seAvgOrd?fm(seAvgOrd):'—';
   document.getElementById('se-stat-cpe').textContent = seCPE?fm(seCPE):'—';
+  renderSeEventLog();
   document.getElementById('mkt-stat-cpo').textContent = mktCPO>0?fm(mktCPO):'—';
   document.getElementById('mkt-stat-ord').textContent = mktOrd||'—';
   document.getElementById('mkt-stat-avg').textContent = mktAvg?fm(mktAvg):'—';
@@ -3435,6 +3445,10 @@ function readEventFromForm(){
     name: document.getElementById('p-name').value,
     loc: document.getElementById('p-loc').value,
     camp: document.getElementById('p-camp').value,
+    // Service & Sales events are sharpening/marketing events: logged so their CPO,
+    // orders and shifts feed the SE stats, but never part of the Event P&L.
+    eventType: document.getElementById('p-event-type')?.value === 'Service Event' ? 'Service Event' : 'Traditional',
+    eventTypeSet: true,  // the selector was filled in by hand — don't second-guess it by name
     cpo,
     shifts: parseInt(document.getElementById('p-shifts').value)||0,
     ord: parseInt(document.getElementById('p-ord').value)||0,
@@ -3489,6 +3503,7 @@ function editEvent(idx){
   set('p-dt-start', e.dt);
   set('p-dt-end', e.dtEnd || '');
   set('p-camp', e.camp);
+  set('p-event-type', isServiceEvent(e) ? 'Service Event' : 'Traditional');
   set('p-cpo', e.cpo);
   set('p-shifts', e.shifts);
   set('p-ord', e.ord);
@@ -3538,6 +3553,7 @@ function clearEventForm(){
   ['p-name','p-loc','p-dt-start','p-dt-end','p-cpo','p-shifts','p-ord','p-cost-total','p-hotel','p-gas','p-food','p-tolls','p-other','p-cash-count','p-cash-rev','p-svc-cpo','p-svc-ord'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
+  const etEl=document.getElementById('p-event-type'); if(etEl) etEl.value='Traditional';
   document.getElementById('p-comm').value='';
   document.getElementById('p-total-exp').value='';
   document.getElementById('p-net-preview').textContent='—';
@@ -3555,52 +3571,77 @@ function deleteEvent(idx){
   refreshProfit();
 }
 
+// Service & Sales events are sharpening events Alan markets to bring customers in —
+// a different animal from booth events, so they carry no P&L. They stay in the log
+// (their CPO, orders and shifts feed the Service Event stats and the per-shift table)
+// and are listed under Service Event Stats, but never appear on the Event P&L page.
+//
+// Classification: events saved through Step 3 since the Event Type selector exists
+// carry eventTypeSet — that choice is authoritative. Older rows predate the selector
+// and several service events were stored as "Traditional" by default, so for those we
+// fall back to the receipt-name rule (CLAUDE.md: an Event named "… Service & Sales
+// Event" is a service event). Re-saving a legacy event locks its type for good.
+const SE_NAME_RE=/service\s*(?:&|and)\s*sales/i;
+function isServiceEvent(e){
+  if(!e) return false;
+  if(e.eventTypeSet) return e.eventType==='Service Event';
+  return e.eventType==='Service Event' || SE_NAME_RE.test(e.name||'');
+}
+function isSeByNameOnly(e){ return isServiceEvent(e) && !e.eventTypeSet && e.eventType!=='Service Event'; }
+function tradEvents(){ return S.events.filter(e=>!isServiceEvent(e)); }
+
 function refreshProfit(){
   const threshold=parseFloat(document.getElementById('prof-threshold').value)||1000;
-  const totalComm=S.events.reduce((s,e)=>s+(e.comm||0),0);
-  const totalExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
-  const totalNet=S.events.reduce((s,e)=>s+(e.net||0),0);
-  const hitCount=S.events.filter(e=>e.net>=threshold).length;
-  const svcTotal=S.events.reduce((s,e)=>s+(e.svcCPO||0),0);
-  const svcOrdTotal=S.events.reduce((s,e)=>s+(e.svcOrd||0),0);
-  const svcEventCount=S.events.filter(e=>(e.svcCPO||0)>0||(e.svcOrd||0)>0).length;
+  const evs=tradEvents();  // P&L covers traditional events only
+  const totalComm=evs.reduce((s,e)=>s+(e.comm||0),0);
+  const totalExp=evs.reduce((s,e)=>s+(e.totalExp||0),0);
+  const totalNet=evs.reduce((s,e)=>s+(e.net||0),0);
+  const hitCount=evs.filter(e=>e.net>=threshold).length;
+  const svcTotal=evs.reduce((s,e)=>s+(e.svcCPO||0),0);
+  const svcOrdTotal=evs.reduce((s,e)=>s+(e.svcOrd||0),0);
+  const svcEventCount=evs.filter(e=>(e.svcCPO||0)>0||(e.svcOrd||0)>0).length;
   document.getElementById('prof-summary').innerHTML=`
-    <div class="mc neu"><div class="mlbl">Total Commission</div><div class="mval">${S.events.length>0?fm(totalComm):'—'}</div><div class="msub tm">${S.events.length} events</div></div>
-    <div class="mc ${totalNet>0?'pos':'neg'}"><div class="mlbl">Total Net Profit</div><div class="mval" style="color:${totalNet>=0?'var(--green)':'var(--red)'}">${S.events.length>0?fm(totalNet):'—'}</div><div class="msub tm">after all expenses</div></div>
-    <div class="mc neu"><div class="mlbl">Total Out of Pocket</div><div class="mval">${S.events.length>0?fm(totalExp):'—'}</div><div class="msub tm">travel &amp; expenses</div></div>
-    <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${S.events.length>0?fm(Math.round(totalNet/S.events.length)):'—'}</div><div class="msub tm" style="color:${S.events.length>0&&Math.round(totalNet/S.events.length)>=threshold?'var(--green)':'var(--text2)'};">${S.events.length>0?(Math.round(totalNet/S.events.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`
+    <div class="mc neu"><div class="mlbl">Total Commission</div><div class="mval">${evs.length>0?fm(totalComm):'—'}</div><div class="msub tm">${plural(evs.length,'traditional event')}</div></div>
+    <div class="mc ${totalNet>0?'pos':'neg'}"><div class="mlbl">Total Net Profit</div><div class="mval" style="color:${totalNet>=0?'var(--green)':'var(--red)'}">${evs.length>0?fm(totalNet):'—'}</div><div class="msub tm">after all expenses</div></div>
+    <div class="mc neu"><div class="mlbl">Total Out of Pocket</div><div class="mval">${evs.length>0?fm(totalExp):'—'}</div><div class="msub tm">travel &amp; expenses</div></div>
+    <div class="mc accent"><div class="mlbl">Avg Net Profit / Event</div><div class="mval" style="color:var(--accent-dark);">${evs.length>0?fm(Math.round(totalNet/evs.length)):'—'}</div><div class="msub tm" style="color:${evs.length>0&&Math.round(totalNet/evs.length)>=threshold?'var(--green)':'var(--text2)'};">${evs.length>0?(Math.round(totalNet/evs.length)>=threshold?'↑ Above $'+threshold.toLocaleString()+' threshold':'↓ Below $'+threshold.toLocaleString()+' threshold'):'Goal: $'+threshold.toLocaleString()}</div></div>`
     +(svcTotal>0||svcOrdTotal>0?`<div style="grid-column:1/-1;background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;color:var(--gold);font-weight:600;">Event Service YTD: ${fm(svcTotal)} from ${plural(svcOrdTotal,'order')} across ${plural(svcEventCount,'event')} — bucketed under Service Calls in weekly stats; commission credited to the events below.</div>`:'');
 
-  if(S.events.length===0){
-    document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No events logged yet. Add your first event →</div>';
+  if(evs.length===0){
+    document.getElementById('prof-events-list').innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;">No traditional events logged yet. Add your first event →</div>';
+    renderRoiTable(threshold);
+    renderReconciliation();
+    renderSeEventLog();
     return;
   }
 
   // Sort by date desc
   const dateFrom = document.getElementById('prof-date-from')?.value;
   const dateTo = document.getElementById('prof-date-to')?.value;
+  // Map before filtering so _idx stays the index into S.events (edit/delete rely on it)
   const filtered = S.events.map((e,i)=>({...e,_idx:i})).filter(e=>{
+    if(isServiceEvent(e)) return false;
     if(dateFrom && e.dt && e.dt < dateFrom) return false;
     if(dateTo && e.dt && e.dt > dateTo) return false;
     return true;
   });
   const countEl = document.getElementById('prof-range-count');
-  if(countEl) countEl.textContent = (dateFrom||dateTo) ? `${filtered.length} of ${S.events.length} events` : '';
+  if(countEl) countEl.textContent = (dateFrom||dateTo) ? `${filtered.length} of ${evs.length} events` : '';
 
   const sorted=[...filtered].sort((a,b)=>{
     let av=profSort.key==='dt'?new Date(a.dt):a[profSort.key]||0;
     let bv=profSort.key==='dt'?new Date(b.dt):b[profSort.key]||0;
     return profSort.dir==='desc'?bv-av:av-bv;
   });
-  const best=S.events.reduce((b,e,i)=>e.net>b.net?{...e,_idx:i}:b,{...S.events[0],_idx:0});
-  const worst=S.events.reduce((b,e,i)=>e.net<b.net?{...e,_idx:i}:b,{...S.events[0],_idx:0});
+  const best=evs.reduce((b,e)=>e.net>b.net?e:b,evs[0]);
+  const worst=evs.reduce((b,e)=>e.net<b.net?e:b,evs[0]);
 
   document.getElementById('prof-events-list').innerHTML=sorted.map(e=>{
     const hit=e.net>=threshold;const close=e.net>=threshold*0.7&&e.net<threshold;
     const pillClass=hit?'pill-hit':close?'pill-close':'pill-miss';
     const pillText=hit?'↑ Above threshold':close?'↗ Close':'↓ Below threshold';
-    const isBest=S.events.length>1&&e.name===best.name&&e.dt===best.dt;
-    const isWorst=S.events.length>1&&e.name===worst.name&&e.dt===worst.dt;
+    const isBest=evs.length>1&&e.name===best.name&&e.dt===best.dt;
+    const isWorst=evs.length>1&&e.name===worst.name&&e.dt===worst.dt;
     const cashOrdersN = e.cashOrders || 0;
     const cashRev = e.cashRevenue || 0;
     const manual = e.manualCharges || [];
@@ -3617,7 +3658,7 @@ function refreshProfit(){
     return`<div class="prof-event ${hit?'hit':'miss'}">
       <div class="prof-event-header">
         <div>
-          <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&S.events.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''}</div>
+          <div class="prof-event-name">${e.name} ${isBest?'<span style="font-size:11px;background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:600;">Best</span>':isWorst&&evs.length>1?'<span style="font-size:11px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:600;">Lowest</span>':''}</div>
           <div class="prof-event-meta">${e.loc?e.loc+' · ':''}${e.dtDisplay||e.dt||''}${e.shifts?' · '+plural(e.shifts,'shift'):''} · ${e.camp}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -3644,14 +3685,16 @@ function refreshProfit(){
 
   renderRoiTable(threshold);
   renderReconciliation();
+  renderSeEventLog();
 }
 
 // ==================== EVENT ROI RANKING ====================
 function renderRoiTable(threshold){
   const wrap=document.getElementById('roi-table-wrap');
   if(!wrap) return;
-  if(S.events.length===0){ wrap.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:14px 0;">Log events to build your ROI ranking.</div>'; return; }
-  const rows=S.events.map(e=>{
+  const evs=tradEvents();  // service & sales events carry no P&L, so no ROI row
+  if(evs.length===0){ wrap.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:14px 0;">Log traditional events to build your ROI ranking.</div>'; return; }
+  const rows=evs.map(e=>{
     const perShift=e.shifts>0?Math.round((e.net||0)/e.shifts):null;
     const expRatio=e.comm>0?Math.round((e.totalExp||0)/e.comm*100):null;
     let verdict, vStyle;
@@ -3661,10 +3704,10 @@ function renderRoiTable(threshold){
     return {e,perShift,expRatio,verdict,vStyle};
   }).sort((a,b)=>(b.perShift??-1e9)-(a.perShift??-1e9));
   // Portfolio totals footer — blended figures over the same rows shown above
-  const ftNet=S.events.reduce((s,e)=>s+(e.net||0),0);
-  const ftShifts=S.events.reduce((s,e)=>s+(e.shifts||0),0);
-  const ftComm=S.events.reduce((s,e)=>s+(e.comm||0),0);
-  const ftExp=S.events.reduce((s,e)=>s+(e.totalExp||0),0);
+  const ftNet=evs.reduce((s,e)=>s+(e.net||0),0);
+  const ftShifts=evs.reduce((s,e)=>s+(e.shifts||0),0);
+  const ftComm=evs.reduce((s,e)=>s+(e.comm||0),0);
+  const ftExp=evs.reduce((s,e)=>s+(e.totalExp||0),0);
   const ftPerShift=ftShifts>0?Math.round(ftNet/ftShifts):null;
   const ftExpRatio=ftComm>0?Math.round(ftExp/ftComm*100):null;
   wrap.innerHTML=`<table class="roi-table">
@@ -3678,7 +3721,7 @@ function renderRoiTable(threshold){
       <td><span class="roi-verdict" style="${r.vStyle}">${r.verdict}</span></td>
     </tr>`).join('')}</tbody>
     <tfoot><tr style="border-top:2px solid var(--line-strong);">
-      <td style="font-weight:800;padding-top:9px;">Portfolio · ${plural(S.events.length,'event')}</td>
+      <td style="font-weight:800;padding-top:9px;">Portfolio · ${plural(evs.length,'event')}</td>
       <td style="text-align:right;font-weight:800;padding-top:9px;color:${ftNet>=0?'var(--green)':'var(--red)'};">${fm(ftNet)}</td>
       <td style="text-align:right;font-weight:700;padding-top:9px;">${ftShifts||'—'}</td>
       <td style="text-align:right;font-weight:800;padding-top:9px;">${ftPerShift!==null?fm(ftPerShift):'—'}</td>
@@ -3689,15 +3732,54 @@ function renderRoiTable(threshold){
   <div style="font-size:11px;color:var(--text2);margin-top:9px;">Ranked by net profit per shift. "Book again" = net ≥ $${threshold.toLocaleString()} and expenses ≤ 40% of commission · "Skip / renegotiate" = net under half threshold or expenses over 60%.</div>`;
 }
 
+// ==================== SERVICE & SALES EVENT LOG ====================
+// SEs are marketing/sharpening events, not booth economics — they carry no P&L and
+// are excluded from the Event P&L page. They still get logged in Step 3 (that's the
+// only source for SE shifts), so this is where they're reviewed, edited, and
+// reconciled against the weekly `se` bucket.
+function renderSeEventLog(){
+  const wrap=document.getElementById('se-event-log');
+  if(!wrap) return;
+  const rows=S.events.map((e,i)=>({e,i})).filter(r=>isServiceEvent(r.e))
+    .sort((a,b)=>String(b.e.dt||'').localeCompare(String(a.e.dt||'')));
+  if(rows.length===0){
+    wrap.innerHTML='<div style="font-size:11px;color:var(--text3);">No service &amp; sales events logged yet — add one in Enter Stats → Step 3 so its shifts count here.</div>';
+    return;
+  }
+  const byName=rows.filter(r=>isSeByNameOnly(r.e)).length;
+  const totSh=rows.reduce((s,r)=>s+(r.e.shifts||0),0);
+  const logSe=rows.reduce((s,r)=>s+(r.e.cpo||0),0);
+  const wkSe=S.weeks.reduce((s,w)=>s+(w.se||0),0);
+  const diff=wkSe-logSe;
+  const ok=Math.abs(diff)<1;
+  wrap.innerHTML=`<div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Logged Service &amp; Sales Events · ${plural(rows.length,'event')} · ${plural(totSh,'shift')}</div>`
+    +rows.map(r=>`<div class="erow">
+      <div>
+        <div style="font-size:12px;font-weight:700;">${r.e.name||'Untitled'}${isSeByNameOnly(r.e)?' <span style="font-size:10px;font-weight:600;color:var(--gold);background:var(--gold-light);padding:1px 6px;border-radius:9px;" title="Matched by event name — no event type saved on this entry yet">by name</span>':''}</div>
+        <div style="font-size:11px;color:var(--text2);">${r.e.loc?r.e.loc+' · ':''}${r.e.dtDisplay||r.e.dt||''}${r.e.shifts?' · '+plural(r.e.shifts,'shift'):''}${r.e.camp?' · '+r.e.camp:''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="text-align:right;">
+          <div style="font-size:13px;font-weight:700;color:var(--blue);">${fm(r.e.cpo||0)}</div>
+          <div style="font-size:11px;color:var(--text2);">${plural(r.e.ord||0,'order')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <button class="bedit" onclick="editEvent(${r.i})">edit</button>
+          <button class="bdel" onclick="deleteEvent(${r.i})">del</button>
+        </div>
+      </div>
+    </div>`).join('')
+    +`<div style="font-size:11px;color:${ok?'var(--text2)':'var(--gold)'};margin-top:9px;line-height:1.5;">${ok?'✓ Reconciled with weekly stats':'→ '+fm(Math.abs(diff))+(diff>0?' in weekly SE stats not itemized here':' logged here beyond weekly SE stats')} — weekly ${fm(wkSe)} · logged ${fm(logSe)}. Logged for SE stats and shifts only; no P&L is run on these.${byName>0?` ${byName} ${byName===1?'entry was':'entries were'} matched by name — open in Step 3 and save to lock the type.`:''}</div>`;
+}
+
 // ==================== WEEKLY STATS vs EVENT LOG RECONCILIATION ====================
 function renderReconciliation(){
   const body=document.getElementById('recon-body');
   if(!body) return;
-  if(S.events.length===0 && S.weeks.length===0){ body.innerHTML='<div style="font-size:12px;color:var(--text3);">No data yet.</div>'; return; }
+  const trad=tradEvents();
+  if(trad.length===0 && S.weeks.length===0){ body.innerHTML='<div style="font-size:12px;color:var(--text3);">No data yet.</div>'; return; }
   const wkEv=S.weeks.reduce((s,w)=>s+(w.ev||0),0);
-  const wkSe=S.weeks.reduce((s,w)=>s+(w.se||0),0);
-  const logTrad=S.events.filter(e=>(e.eventType||'Traditional')!=='Service Event').reduce((s,e)=>s+(e.cpo||0),0);
-  const logSe=S.events.filter(e=>e.eventType==='Service Event').reduce((s,e)=>s+(e.cpo||0),0);
+  const logTrad=trad.reduce((s,e)=>s+(e.cpo||0),0);
   const line=(label,weekly,logged)=>{
     const diff=weekly-logged;
     const ok=Math.abs(diff)<1;
@@ -3707,8 +3789,8 @@ function renderReconciliation(){
       <div class="ins-desc">Weekly stats: ${fm(weekly)} · Event log: ${fm(logged)}${ok?'':diff>0?' — likely events not logged in Step 3, or an entry typo.':' — an event may be double-logged or a weekly entry is missing.'}</div></div>
     </div>`;
   };
-  body.innerHTML=line('Traditional events',wkEv,logTrad)+line('Service events',wkSe,logSe)
-    +`<div style="font-size:11px;color:var(--text2);margin-top:4px;">Catch entry slips the week they happen: these two sources are entered separately and should agree. Event Service orders are excluded from both sides by design — they live in the Service Call bucket and are tracked per-event above.</div>`;
+  body.innerHTML=line('Traditional events',wkEv,logTrad)
+    +`<div style="font-size:11px;color:var(--text2);margin-top:4px;">Catch entry slips the week they happen: these two sources are entered separately and should agree. Event Service orders are excluded from both sides by design — they live in the Service Call bucket and are tracked per-event above. Service &amp; sales events reconcile under <strong>Service Event Stats</strong> on the Scorecard tab.</div>`;
 }
 
 // ==================== ENTRIES ====================
