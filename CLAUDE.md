@@ -57,9 +57,25 @@ When parsing an order export into weekly stats:
 ## Weekly stats reconcile (fallback for missed weeks)
 
 Weeks run Tuesday → Monday. If a completed week is missing from `weeks[]`, rebuild it
-from primary sources — never from a Slack post:
+from primary sources — never from a Slack post.
 
-- **Source of truth:** VectorConnect order receipt emails in Gmail
+**Preferred path — the VectorConnect order export.** Alan has tooling on his Mac that
+logs into VectorConnect and exports the order list; that export is the authoritative
+record (it is what the "Order classification when analyzing exports" rules above are
+written for) and it is the only source that shows RoR-received orders, which generate
+no rep receipt email. Use it whenever the session can reach it.
+
+**When the export is not reachable, say so — do not substitute silently.** Cloud
+(claude.ai/code) sessions cannot run it: `vectorconnect.com` is blocked by the
+environment's network policy (the agent proxy returns 403), there is no browser
+profile carrying Alan's login, and the export tooling is local to his Mac. A session
+in that position uses the receipt fallback below and must state plainly, in its PR
+and its summary, that the numbers are receipt-derived and unvalidated against an
+export.
+
+**Fallback — Gmail receipts (works from any session):**
+
+- **Source:** VectorConnect order receipt emails in Gmail
   (`service@mail.vectormarketing.com`, subject "Order Receipt for …"). The attached
   `order_<num>_rep.pdf` carries Order Date, the Customer Type flag, the Event name,
   and the true CPO (second amount column on the "Order Total" row). Cross-check
