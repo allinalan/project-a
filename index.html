@@ -383,6 +383,10 @@
   .motit{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:14px;color:var(--ink);}
   .toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:12.5px;font-weight:700;padding:10px 18px;border-radius:9px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
+  /* Year tab: one combined cancels/returns total per week; tap for the orders */
+  .ret-btn{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--red);background:var(--red-light);border:1px solid transparent;border-radius:20px;padding:3px 10px;cursor:pointer;white-space:nowrap;}
+  .ret-btn:hover{border-color:var(--red);}
+  .ret-btn .ret-more{font-size:10px;font-weight:600;opacity:.75;margin-left:4px;}
   .toast.blue{background:var(--ink);}
 
   /* ============ SC2 PUSH ============ */
@@ -1516,6 +1520,17 @@
   </div>
 </div>
 
+<!-- CANCELS / RETURNS DETAIL (Year tab) -->
+<div class="mb" id="returnsModal" onclick="if(event.target===this)closeReturnsDetail()">
+  <div class="mo">
+    <div class="motit" id="returns-modal-title">Cancels / Returns</div>
+    <div id="returns-modal-body"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px;">
+      <button class="bs" onclick="closeReturnsDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM APP NAV (phones) -->
 <div class="msheet-back" id="msheetBack" onclick="toggleMoreSheet(false)"></div>
 <div class="msheet" id="msheet">
@@ -1546,6 +1561,7 @@ let S = {};
 let RETURNS = null, RETURNS_STATE = 'loading', RETURNS_ERR = '';
 const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
+const escH = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let editIdx=-1;
 let yearFilter='all';
 let profSort={key:'net',dir:'desc'};
@@ -2850,7 +2866,7 @@ function refreshYearView(){
     const retCell = RETURNS_STATE==='error' && w
       ? `<td style="font-size:12px;color:var(--gold);" title="returns.json failed to load (${RETURNS_ERR}) — cancels/returns unknown">?</td>`
       : rets.length
-        ? `<td style="font-size:12px;color:var(--red);font-weight:600;white-space:nowrap;" title="${rets.map(e=>`${e.ref} ${e.kind}: ${fm(e.entered)} entered → ${fm(e.now)} now`).join('&#10;')}">${rets.map(e=>'−'+fm(e.amount)).join(' · ')}</td>`
+        ? `<td><button class="ret-btn" onclick="showReturnsDetail(${yw.wk})" title="See the orders behind this">−${fm(rets.reduce((t,e)=>t+(e.amount||0),0))}<span class="ret-more">details ›</span></button></td>`
         : `<td style="font-size:12px;color:var(--text3);">—</td>`;
 
     return campDivider+monthRow+`<tr class="${status}">
@@ -2932,6 +2948,35 @@ function refreshYearView(){
     + renderTotalsBlock('Campaign III (Sep–Dec · Wks 36–52)', [36,52])
     + renderTotalsBlock('YTD Total', [1,52]);
 }
+
+// The orders behind a week's combined cancels/returns total (Year tab "details").
+function showReturnsDetail(wk){
+  const yw = buildYearWeeks().find(y => y.wk === wk);
+  if(!yw) return;
+  const rets = returnsFor(yw.startDate);
+  const w = S.weeks.find(x => x.wk === wk);
+  const total = rets.reduce((t,e) => t + (e.amount||0), 0);
+  const md = d => `${d.getMonth()+1}/${d.getDate()}`;
+  const odOf = s => { const p = String(s||'').split('-'); return p.length===3 ? `${+p[1]}/${+p[2]}` : escH(s); };
+  document.getElementById('returns-modal-title').textContent = `Wk ${wk} (${md(yw.startDate)}–${md(yw.endDate)}) · Cancels / Returns`;
+  document.getElementById('returns-modal-body').innerHTML = rets.map(e => `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);">
+      <div style="min-width:0;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);">Order ${escH(e.ref)}</div>
+        <div style="font-size:11.5px;color:var(--text2);">${escH(e.kind)} · ordered ${odOf(e.orderDate)} · ${fm(e.entered)} sold → ${fm(e.now)} now</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--red);white-space:nowrap;">−${fm(e.amount)}</div>
+    </div>`).join('') + `
+    <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin-top:12px;font-size:12.5px;">
+      <div style="color:var(--text2);">Week as sold</div><div style="text-align:right;font-weight:600;">${w ? fm(w.cpo) : '—'}</div>
+      <div style="color:var(--text2);">Cancels / Returns</div><div style="text-align:right;font-weight:700;color:var(--red);">−${fm(total)}</div>
+      <div style="color:var(--text2);">Net after returns</div><div style="text-align:right;font-weight:700;">${w ? fm((w.cpo||0) - total) : '—'}</div>
+      <div style="color:var(--text2);">≈ Commission lost</div><div style="text-align:right;">−${fm(total*commRate())}</div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px;">Found after the week was published, so the week's CPO stays as sold. Customer names are in the monthly returns Slack.</div>`;
+  document.getElementById('returnsModal').classList.add('open');
+}
+function closeReturnsDetail(){ document.getElementById('returnsModal').classList.remove('open'); }
 
 function saveYearNote(wk,val){
   S.yearNotes[wk]=val;

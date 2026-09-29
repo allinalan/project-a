@@ -58,7 +58,8 @@ When parsing an order export into weekly stats:
 
 Alan's rule (2026-09-29): a week keeps the CPO it was published with, because the sale
 really happened that week. Money that leaves later (a cancel, a full or partial return)
-is shown BESIDE the week on the Year tab as "−$X · −$Y", with campaign and YTD totals
+is shown BESIDE the week on the Year tab as ONE combined total per week (a "details ›"
+button opens the orders behind it), with campaign and YTD totals
 ("Cancels / Returns", "Net after returns", ≈ commission at `commRate()`). It is never
 subtracted from `data.json`.
 
