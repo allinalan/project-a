@@ -1238,6 +1238,7 @@
           <th style="width:70px;">Week</th>
           <th style="width:100px;">Total CPO</th>
           <th style="width:80px;">Orders</th>
+          <th style="width:130px;color:var(--red);" title="Cancelled or returned after the week was published. Weekly CPO is never changed; this is the addendum.">Cancels / Returns</th>
           <th style="width:100px;color:var(--blue);">Proj. CPO</th>
           <th style="width:80px;color:var(--blue);">Proj. Orders</th>
           <th style="width:70px;">Days Off</th>
@@ -1538,6 +1539,13 @@
 <script>
 // ==================== STATE ====================
 let S = {};
+// Cancels / returns addendum: returns.json, written by csp-autopilot's monthly review.
+// A week keeps the CPO it was published with (the sale happened that week); money
+// that left later is shown BESIDE the week, never subtracted from S.weeks. Kept out
+// of S on purpose, so Save / Load can never carry it into data.json or the Sheet.
+let RETURNS = null, RETURNS_STATE = 'loading', RETURNS_ERR = '';
+const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
 let editIdx=-1;
 let yearFilter='all';
 let profSort={key:'net',dir:'desc'};
@@ -2829,21 +2837,28 @@ function refreshYearView(){
     const camp=campOf(yw.wk);
     let campDivider='';
     if(lastCamp && lastCamp!==camp){
-      campDivider=`<tr class="camp-divider"><td colspan="9">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
+      campDivider=`<tr class="camp-divider"><td colspan="10">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
     }
     lastCamp=camp;
 
     let monthRow='';
-    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="10">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
+    const rets=returnsFor(yw.startDate);
+    const retCell = RETURNS_STATE==='error' && w
+      ? `<td style="font-size:12px;color:var(--gold);" title="returns.json failed to load (${RETURNS_ERR}) — cancels/returns unknown">?</td>`
+      : rets.length
+        ? `<td style="font-size:12px;color:var(--red);font-weight:600;white-space:nowrap;" title="${rets.map(e=>`${e.ref} ${e.kind}: ${fm(e.entered)} entered → ${fm(e.now)} now`).join('&#10;')}">${rets.map(e=>'−'+fm(e.amount)).join(' · ')}</td>`
+        : `<td style="font-size:12px;color:var(--text3);">—</td>`;
 
     return campDivider+monthRow+`<tr class="${status}">
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}${w&&(w.cpo||0)>0?`<span class="cpo-bar" style="width:${Math.max(4,Math.round((w.cpo/maxWkCPO)*76))}px;"></span>`:''}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
+      ${retCell}
       <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td><input type="number" class="inline-num" inputmode="numeric" min="0" max="7" placeholder="—" value="${w&&w.daysOff>0?w.daysOff:''}" ${w?'':'disabled title="Log this week in Enter Stats first"'} style="color:${w&&w.daysOff>0?'var(--gold)':'var(--text)'};" onchange="saveYearDaysOff(${yw.wk},this.value)"></td>
@@ -2852,7 +2867,7 @@ function refreshYearView(){
     </tr>`;
   }).join('');
 
-  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
 
   // Bottom totals — per-campaign + YTD
   // Variance compares actuals against the plan for ELAPSED weeks only — holding a
@@ -2877,6 +2892,13 @@ function refreshYearView(){
     const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
     const cpoSign = varCPO >= 0 ? '+' : '';
     const ordSign = varOrd >= 0 ? '+' : '';
+    const rets = yearWeeks.filter(yw => yw.wk >= range[0] && yw.wk <= range[1]).flatMap(yw => returnsFor(yw.startDate));
+    const retCPO = rets.reduce((s,e) => s + (e.amount||0), 0);
+    const retVal = RETURNS_STATE==='error' ? `<span style="color:var(--gold);">unavailable</span>`
+      : RETURNS_STATE==='none' ? `<span style="color:var(--text2);">not reviewed yet</span>`
+      : retCPO>0 ? `<span style="color:var(--red);">−${fm(retCPO)}</span>` : '$0';
+    const retNote = RETURNS_STATE==='ok' && rets.length
+      ? `${rets.length} order${rets.length===1?'':'s'} · ≈ −${fm(retCPO*commRate())} commission` : '';
     const planNote = projWksAll.length>projWks.length
       ? `<span style="font-size:11px;color:var(--text2);font-weight:400;"> · vs plan through Wk ${Math.min(wkNow,range[1])} — full-campaign plan: ${fm(fullCPO)} / ${fullOrd} ord</span>` : '';
     return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
@@ -2894,6 +2916,12 @@ function refreshYearView(){
         <div style="text-align:right;font-weight:600;">${actOrd}</div>
         <div style="text-align:right;color:var(--blue);">${projWks.length>0?projOrd:'—'}</div>
         <div style="text-align:right;color:${ordColor};font-weight:600;">${projWks.length>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
+        <div style="color:var(--text);font-weight:600;">Cancels / Returns</div>
+        <div style="text-align:right;font-weight:600;">${retVal}</div>
+        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">${retNote}</div>
+        <div style="color:var(--text);font-weight:600;">Net after returns</div>
+        <div style="text-align:right;font-weight:600;">${RETURNS_STATE==='ok'?fm(actCPO-retCPO):'—'}</div>
+        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">weekly CPO above stays as sold</div>
       </div>
     </div>`;
   };
@@ -4491,6 +4519,14 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
       'Could not load data.json — your stats are NOT shown. Open this page from GitHub Pages or a local web server, then reload.</div>');
     return;
   }
+  // The returns addendum is optional: missing (no review published yet) or broken,
+  // the HUB still renders, and the Year tab says which instead of showing $0.
+  try {
+    const r = await fetch('returns.json', { cache: 'no-store' });
+    if (r.ok) { RETURNS = await r.json(); RETURNS_STATE = 'ok'; }
+    else if (r.status === 404) RETURNS_STATE = 'none';
+    else { RETURNS_STATE = 'error'; RETURNS_ERR = 'HTTP ' + r.status; }
+  } catch (err) { RETURNS_STATE = 'error'; RETURNS_ERR = (err && err.message) || 'unreadable'; }
   loadGoalsFromLocal();
   loadPlanSettingsLocal();
   rolloverStreaks();
