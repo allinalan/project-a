@@ -4,6 +4,11 @@ Single-file dashboard (`index.html`) + data store (`data.json`). GitHub Pages se
 from `main`. Weekly stats and the event profitability log are entered separately and
 reconciled on the Event Profitability tab.
 
+## Handoffs from Claude chat
+
+Prototypes and briefs that come from Claude chat are starting points. Review the UI, design, layout, and
+automation, and suggest improvements to Alan before building. Only the decisions a brief marks as fixed are locked.
+
 ## Golden rules
 
 1. **Never modify historical values in `data.json`** unless Alan explicitly asks.
@@ -93,3 +98,26 @@ service calls (CPO/orders/booked/completed) · `se`/`seOrd` service events ·
 `workDays`, `isVacation` (7 days off = vacation) · `target`, `tnote` planning.
 
 Projections (`projections[wk]`) store Service Calls under the key **`sc`** (not `scp`).
+
+## Marketing page (Marketing Advisor, 2026-09-29)
+
+Planning only: it never sends email or texts and never touches the Vast Action CRM.
+
+- **Where the plan lives:** the *Command Center Marketing* store, an Apps Script bound to its own Sheet
+  (`apps-script/README.md`). NOT `data.json`, NOT the HUB's Sheets snapshot, never `saveToSheets()`.
+  The HUB boots from `data.json` and never auto-loads the snapshot, so a key in that payload would be
+  erased by the next Save from any device that hadn't loaded it. `window.MA_STORE_URL` in index.html.
+- **Code:** `marketing/engine.js` = every rule (send dates, flags, checklists, reviews, next year);
+  `marketing/calcore.js` = calendar matching; `marketing/ui.js` = the page; `marketing/marketing.css`
+  (all classes `ma-`). The Apps Script file `apps-script/Marketing.gs` is BUILT from calcore + engine +
+  `Marketing.src.gs` by `node tools/build-gs.js`, so the page and the store run identical rules.
+- **Saves:** each edit is a re-runnable function; the page saves with the revision it loaded and, on a
+  conflict, takes the newer plan and replays its edits. The store writes History first, reads back, and
+  refuses damaged plans or a save that drops more than half the items.
+- **Automation:** Monday 6am calendar check in the store (fails closed). ALMA on the mini reads
+  `digest` for a morning Slack note and drafts next-year changes with Claude (`pending` / `propose`);
+  Claude's fields are whitelisted (`RO_FIELDS`: never dates, booths, prices or venues).
+- **Public repo:** no plan data, phone numbers or emails in these files (a test checks). The real plan
+  is only in the store. Tests: `node --test tests/*.test.js`. Local preview with a simulated store:
+  `node tools/dev-server.js --seed <plan.json>` then `http://localhost:4190/?store=http://localhost:4190/exec` (key `dev-key`).
+
