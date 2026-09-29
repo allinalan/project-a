@@ -59,7 +59,8 @@ When parsing an order export into weekly stats:
 Alan's rule (2026-09-29): a week keeps the CPO it was published with, because the sale
 really happened that week. Money that leaves later (a cancel, a full or partial return)
 is shown BESIDE the week on the Year tab as ONE combined total per week (a "details ›"
-button opens the orders behind it), with campaign and YTD totals
+button opens each order: customer, order #, Original CPO, Returned, New CPO), with
+campaign and YTD totals
 ("Cancels / Returns", "Net after returns", ≈ commission at `commRate()`). It is never
 subtracted from `data.json`.
 
@@ -67,8 +68,13 @@ subtracted from `data.json`.
   entered, now, orderDate, kind } ] } }`. Written by csp-autopilot's monthly returns
   review (`review_returns.js`), which reconciles each week against its published CPO
   before listing anything.
-- No customer names and no full order numbers: this repo is public. `ref` is the last
-  4 digits of the order number.
+- This repo is public, so customer names and full order numbers are never committed in
+  plain text. Each entry carries `ref` (last 4 digits) in the clear and `secret`
+  (`{order, name}` sealed with AES-256-GCM); `lock` holds the PBKDF2-SHA256 salt,
+  iterations and a `check` value. The key comes from Alan's passphrase (Keychain
+  `csp-returns-passphrase` on the Mini). The details card asks for it once per device,
+  keeps it in localStorage (`hubReturnsPass`) and opens names in memory only
+  (`RETURNS_OPEN`). A file published without `lock` shows the last 4 digits only.
 - The engine loads it into `RETURNS`, deliberately outside `S`, so Save / Load can never
   carry it into `data.json` or the Sheet. Missing file = "not reviewed yet"; unreadable =
   "?" / "unavailable". Never render a failed load as $0.

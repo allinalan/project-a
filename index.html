@@ -2950,31 +2950,88 @@ function refreshYearView(){
 }
 
 // The orders behind a week's combined cancels/returns total (Year tab "details").
-function showReturnsDetail(wk){
+// Names and full order numbers are sealed in returns.json (this repo is public): the
+// card asks for Alan's passphrase once per device, keeps it in localStorage, and opens
+// them in memory only (RETURNS_OPEN), never into S.
+let RETURNS_OPEN = null;
+const b64u8 = v => Uint8Array.from(atob(v), c => c.charCodeAt(0));
+async function unlockReturns(pass){
+  const L = RETURNS && RETURNS.lock;
+  if(!L || !pass || !(window.crypto && crypto.subtle)) return false;
+  try {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({name:'PBKDF2', hash:'SHA-256', salt:b64u8(L.salt), iterations:L.iterations},
+      base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+    const open = async sec => JSON.parse(new TextDecoder().decode(
+      await crypto.subtle.decrypt({name:'AES-GCM', iv:b64u8(sec.iv)}, key, b64u8(sec.ct))));
+    if(await open(L.check) !== 'returns-ok') return false;
+    const m = new Map();
+    for(const es of Object.values(RETURNS.weeks||{})) for(const e of es) if(e.secret) m.set(e, await open(e.secret));
+    RETURNS_OPEN = m;
+    return true;
+  } catch(e){ return false; }   // wrong passphrase: AES-GCM refuses to open
+}
+function returnsSavedPass(){ try { return localStorage.getItem('hubReturnsPass') || ''; } catch(e){ return ''; } }
+
+function renderReturnsCard(wk){
   const yw = buildYearWeeks().find(y => y.wk === wk);
   if(!yw) return;
   const rets = returnsFor(yw.startDate);
   const w = S.weeks.find(x => x.wk === wk);
   const total = rets.reduce((t,e) => t + (e.amount||0), 0);
   const md = d => `${d.getMonth()+1}/${d.getDate()}`;
-  const odOf = s => { const p = String(s||'').split('-'); return p.length===3 ? `${+p[1]}/${+p[2]}` : escH(s); };
-  document.getElementById('returns-modal-title').textContent = `Wk ${wk} (${md(yw.startDate)}–${md(yw.endDate)}) · Cancels / Returns`;
-  document.getElementById('returns-modal-body').innerHTML = rets.map(e => `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);">
-      <div style="min-width:0;">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Order ${escH(e.ref)}</div>
-        <div style="font-size:11.5px;color:var(--text2);">${escH(e.kind)} · ordered ${odOf(e.orderDate)} · ${fm(e.entered)} sold → ${fm(e.now)} now</div>
+  const odOf = v => { const p = String(v||'').split('-'); return p.length===3 ? `${+p[1]}/${+p[2]}` : escH(v); };
+  const trio = (a, b, c) => `
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+      ${[a,b,c].map(([lbl,val,color]) => `<div><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);">${lbl}</div>
+        <div style="font-size:15px;font-weight:700;color:${color||'var(--ink)'};">${val}</div></div>`).join('')}
+    </div>`;
+  const locked = RETURNS && RETURNS.lock && !RETURNS_OPEN;
+  const canUnlock = !!(window.crypto && crypto.subtle);
+  const lockBar = !locked ? '' : `
+    <div style="background:var(--inset);border-radius:9px;padding:10px 12px;margin-bottom:4px;">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:${canUnlock?'7px':'0'};">${canUnlock
+        ? 'Names and order numbers are locked. Enter your returns passphrase once on this device.'
+        : 'Names and order numbers are locked; unlocking needs the HUB opened over https.'}</div>
+      ${canUnlock ? `<div style="display:flex;gap:6px;">
+        <input type="password" class="fin" id="returns-pass" placeholder="Passphrase" autocomplete="current-password" style="flex:1;min-width:0;" onkeydown="if(event.key==='Enter')submitReturnsPass(${wk})">
+        <button class="bp" id="returns-pass-btn" onclick="submitReturnsPass(${wk})">Unlock</button>
       </div>
-      <div style="font-size:13px;font-weight:700;color:var(--red);white-space:nowrap;">−${fm(e.amount)}</div>
-    </div>`).join('') + `
-    <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin-top:12px;font-size:12.5px;">
-      <div style="color:var(--text2);">Week as sold</div><div style="text-align:right;font-weight:600;">${w ? fm(w.cpo) : '—'}</div>
-      <div style="color:var(--text2);">Cancels / Returns</div><div style="text-align:right;font-weight:700;color:var(--red);">−${fm(total)}</div>
-      <div style="color:var(--text2);">Net after returns</div><div style="text-align:right;font-weight:700;">${w ? fm((w.cpo||0) - total) : '—'}</div>
-      <div style="color:var(--text2);">≈ Commission lost</div><div style="text-align:right;">−${fm(total*commRate())}</div>
-    </div>
-    <div style="font-size:11px;color:var(--text3);margin-top:10px;">Found after the week was published, so the week's CPO stays as sold. Customer names are in the monthly returns Slack.</div>`;
+      <div id="returns-pass-err" style="font-size:11.5px;color:var(--red);margin-top:6px;"></div>` : ''}
+    </div>`;
+  document.getElementById('returns-modal-title').textContent = `Wk ${wk} (${md(yw.startDate)}–${md(yw.endDate)}) · Cancels / Returns`;
+  document.getElementById('returns-modal-body').innerHTML = lockBar + rets.map(e => {
+    const who = RETURNS_OPEN && RETURNS_OPEN.get(e);
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);min-width:0;">${who ? escH(who.name) : 'Order ' + escH(e.ref)}</div>
+        <div style="font-size:11.5px;color:var(--text2);white-space:nowrap;">ordered ${odOf(e.orderDate)}</div>
+      </div>
+      ${who ? `<div style="font-size:12px;color:var(--text2);">Order #${escH(who.order)}</div>` : ''}
+      <div style="margin-top:8px;">${trio(['Original CPO', fm(e.entered)], ['Returned', '−'+fm(e.amount), 'var(--red)'], ['New CPO', fm(e.now)])}</div>
+    </div>`;
+  }).join('') + `
+    <div style="padding-top:12px;">${trio(['Week as sold', w ? fm(w.cpo) : '—'], ['Returned', '−'+fm(total), 'var(--red)'], ['Net', w ? fm((w.cpo||0) - total) : '—'])}</div>`;
+}
+async function showReturnsDetail(wk){
+  renderReturnsCard(wk);
   document.getElementById('returnsModal').classList.add('open');
+  const saved = returnsSavedPass();
+  if(RETURNS && RETURNS.lock && !RETURNS_OPEN && saved && await unlockReturns(saved)) renderReturnsCard(wk);
+}
+async function submitReturnsPass(wk){
+  const inp = document.getElementById('returns-pass'), btn = document.getElementById('returns-pass-btn');
+  const pass = inp ? inp.value : '';
+  if(!pass) return;
+  if(btn){ btn.disabled = true; btn.textContent = 'Checking…'; }
+  if(await unlockReturns(pass)){
+    try { localStorage.setItem('hubReturnsPass', pass); } catch(e){}
+    renderReturnsCard(wk);
+  } else {
+    if(btn){ btn.disabled = false; btn.textContent = 'Unlock'; }
+    const err = document.getElementById('returns-pass-err');
+    if(err) err.textContent = "That passphrase didn't open it.";
+  }
 }
 function closeReturnsDetail(){ document.getElementById('returnsModal').classList.remove('open'); }
 
