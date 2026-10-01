@@ -56,18 +56,22 @@ When parsing an order export into weekly stats:
 
 ## Cancels / returns addendum (`returns.json`)
 
-Alan's rule (2026-09-29): a week keeps the CPO it was published with, because the sale
-really happened that week. Money that leaves later (a cancel, a full or partial return)
-is shown BESIDE the week on the Year tab as ONE combined total per week (a "details ›"
-button opens each order: customer, order #, Original CPO, Returned, New CPO), with
-campaign and YTD totals
-("Cancels / Returns", "Net after returns", ≈ commission at `commRate()`). It is never
-subtracted from `data.json`.
+Alan's rule (2026-09-29): a week keeps the CPO it was recorded with, because the sale
+really happened that week. Money that came back from the week's orders (a cancel, a
+full or partial return) is shown BESIDE the week on the Year tab as ONE combined total
+per week (a "details ›" button opens each order: customer, order #, Original CPO,
+Returned, New CPO, then Week as recorded · Returned · Net now), with campaign and YTD
+totals ("Cancels / Returns", "Net after returns", ≈ commission at `commRate()`). It is
+never subtracted from `data.json`.
 
-- `returns.json` (repo root): `{ weeks: { "<week start YYYY-MM-DD>": [ { ref, amount,
-  entered, now, orderDate, kind } ] } }`. Written by csp-autopilot's monthly returns
-  review (`review_returns.js`), which reconciles each week against its published CPO
-  before listing anything.
+- `returns.json` (repo root, `version: 2`): `weeks: { "<week start YYYY-MM-DD>": [ {
+  ref, amount, entered, now, orderDate, kind } ] }` lists every order that lost money
+  since it was entered; `weekNotes: { "<week start>": { alreadyOut, unmatched } }`.
+  `alreadyOut` is the part that came out BEFORE the week was recorded (the Jan–May
+  backfill was taken from an export that already had those returns out), so it was
+  never in the week's `cpo`; `unmatched` is money that left the week with no matching
+  order. Week total = Σ amount + unmatched, and `cpo + alreadyOut − total` = net now,
+  exactly. Written by csp-autopilot's monthly returns review (`review_returns.js`).
 - This repo is public, so customer names and full order numbers are never committed in
   plain text. Each entry carries `ref` (last 4 digits) in the clear and `secret`
   (`{order, name}` sealed with AES-256-GCM); `lock` holds the PBKDF2-SHA256 salt,
