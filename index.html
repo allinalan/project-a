@@ -1242,7 +1242,7 @@
           <th style="width:70px;">Week</th>
           <th style="width:100px;">Total CPO</th>
           <th style="width:80px;">Orders</th>
-          <th style="width:130px;color:var(--red);" title="Cancelled or returned after the week was published. Weekly CPO is never changed; this is the addendum.">Cancels / Returns</th>
+          <th style="width:130px;color:var(--red);" title="Money that came back from orders sold this week (cancels and returns). Weekly CPO is never changed; this is the addendum.">Cancels / Returns</th>
           <th style="width:100px;color:var(--blue);">Proj. CPO</th>
           <th style="width:80px;color:var(--blue);">Proj. Orders</th>
           <th style="width:70px;">Days Off</th>
@@ -1522,7 +1522,7 @@
 
 <!-- CANCELS / RETURNS DETAIL (Year tab) -->
 <div class="mb" id="returnsModal" onclick="if(event.target===this)closeReturnsDetail()">
-  <div class="mo">
+  <div class="mo" style="max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;">
     <div class="motit" id="returns-modal-title">Cancels / Returns</div>
     <div id="returns-modal-body"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:14px;">
@@ -1561,6 +1561,16 @@ let S = {};
 let RETURNS = null, RETURNS_STATE = 'loading', RETURNS_ERR = '';
 const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
+// One week of the addendum: the orders that lost money plus the week's notes.
+// alreadyOut = came out before the week was recorded, so it was never in the week's
+// CPO; unmatched = left the week with no matching order. total is what the Year tab
+// shows, and recorded CPO + alreadyOut − total = what's left of the week now.
+function returnsWeek(startDate){
+  const orders = returnsFor(startDate);
+  const n = (RETURNS && RETURNS.weekNotes && RETURNS.weekNotes[ymdOf(startDate)]) || {};
+  const alreadyOut = n.alreadyOut || 0, unmatched = n.unmatched || 0;
+  return { orders, alreadyOut, unmatched, total: orders.reduce((t,e) => t + (e.amount||0), 0) + unmatched };
+}
 const escH = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let editIdx=-1;
 let yearFilter='all';
@@ -2862,11 +2872,11 @@ function refreshYearView(){
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
-    const rets=returnsFor(yw.startDate);
+    const rw=returnsWeek(yw.startDate);
     const retCell = RETURNS_STATE==='error' && w
       ? `<td style="font-size:12px;color:var(--gold);" title="returns.json failed to load (${RETURNS_ERR}) — cancels/returns unknown">?</td>`
-      : rets.length
-        ? `<td><button class="ret-btn" onclick="showReturnsDetail(${yw.wk})" title="See the orders behind this">−${fm(rets.reduce((t,e)=>t+(e.amount||0),0))}<span class="ret-more">details ›</span></button></td>`
+      : rw.total >= 1
+        ? `<td><button class="ret-btn" onclick="showReturnsDetail(${yw.wk})" title="See the orders behind this">−${fm(rw.total)}<span class="ret-more">details ›</span></button></td>`
         : `<td style="font-size:12px;color:var(--text3);">—</td>`;
 
     return campDivider+monthRow+`<tr class="${status}">
@@ -2908,13 +2918,18 @@ function refreshYearView(){
     const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
     const cpoSign = varCPO >= 0 ? '+' : '';
     const ordSign = varOrd >= 0 ? '+' : '';
-    const rets = yearWeeks.filter(yw => yw.wk >= range[0] && yw.wk <= range[1]).flatMap(yw => returnsFor(yw.startDate));
-    const retCPO = rets.reduce((s,e) => s + (e.amount||0), 0);
+    const rws = yearWeeks.filter(yw => yw.wk >= range[0] && yw.wk <= range[1]).map(yw => returnsWeek(yw.startDate));
+    const retCPO = rws.reduce((s,r) => s + r.total, 0);
+    const retOut = rws.reduce((s,r) => s + r.alreadyOut, 0);
+    const retOrders = rws.reduce((s,r) => s + r.orders.length, 0);
     const retVal = RETURNS_STATE==='error' ? `<span style="color:var(--gold);">unavailable</span>`
       : RETURNS_STATE==='none' ? `<span style="color:var(--text2);">not reviewed yet</span>`
       : retCPO>0 ? `<span style="color:var(--red);">−${fm(retCPO)}</span>` : '$0';
-    const retNote = RETURNS_STATE==='ok' && rets.length
-      ? `${rets.length} order${rets.length===1?'':'s'} · ≈ −${fm(retCPO*commRate())} commission` : '';
+    const retNote = RETURNS_STATE==='ok' && retCPO >= 1
+      ? `${retOrders} order${retOrders===1?'':'s'} · ≈ −${fm(retCPO*commRate())} commission` : '';
+    const netNote = RETURNS_STATE==='ok' && retOut >= 1
+      ? `${fm(retOut)} of the returns came out before those weeks were recorded, so it was never in Total CPO`
+      : 'weekly CPO above stays as recorded';
     const planNote = projWksAll.length>projWks.length
       ? `<span style="font-size:11px;color:var(--text2);font-weight:400;"> · vs plan through Wk ${Math.min(wkNow,range[1])} — full-campaign plan: ${fm(fullCPO)} / ${fullOrd} ord</span>` : '';
     return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
@@ -2936,8 +2951,8 @@ function refreshYearView(){
         <div style="text-align:right;font-weight:600;">${retVal}</div>
         <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">${retNote}</div>
         <div style="color:var(--text);font-weight:600;">Net after returns</div>
-        <div style="text-align:right;font-weight:600;">${RETURNS_STATE==='ok'?fm(actCPO-retCPO):'—'}</div>
-        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">weekly CPO above stays as sold</div>
+        <div style="text-align:right;font-weight:600;">${RETURNS_STATE==='ok'?fm(actCPO+retOut-retCPO):'—'}</div>
+        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">${netNote}</div>
       </div>
     </div>`;
   };
@@ -2976,9 +2991,10 @@ function returnsSavedPass(){ try { return localStorage.getItem('hubReturnsPass')
 function renderReturnsCard(wk){
   const yw = buildYearWeeks().find(y => y.wk === wk);
   if(!yw) return;
-  const rets = returnsFor(yw.startDate);
+  const rw = returnsWeek(yw.startDate);
+  const rets = rw.orders;
   const w = S.weeks.find(x => x.wk === wk);
-  const total = rets.reduce((t,e) => t + (e.amount||0), 0);
+  const total = rw.total;
   const md = d => `${d.getMonth()+1}/${d.getDate()}`;
   const odOf = v => { const p = String(v||'').split('-'); return p.length===3 ? `${+p[1]}/${+p[2]}` : escH(v); };
   const trio = (a, b, c) => `
@@ -3010,8 +3026,17 @@ function renderReturnsCard(wk){
       ${who ? `<div style="font-size:12px;color:var(--text2);">Order #${escH(who.order)}</div>` : ''}
       <div style="margin-top:8px;">${trio(['Original CPO', fm(e.entered)], ['Returned', '−'+fm(e.amount), 'var(--red)'], ['New CPO', fm(e.now)])}</div>
     </div>`;
-  }).join('') + `
-    <div style="padding-top:12px;">${trio(['Week as sold', w ? fm(w.cpo) : '—'], ['Returned', '−'+fm(total), 'var(--red)'], ['Net', w ? fm((w.cpo||0) - total) : '—'])}</div>`;
+  }).join('') + (rw.unmatched >= 1 ? `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);">
+      <div style="min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);">Not matched to an order</div>
+        <div style="font-size:11.5px;color:var(--text2);">Left this week with no matching order in VectorConnect. Worth checking.</div>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--red);white-space:nowrap;">−${fm(rw.unmatched)}</div>
+    </div>` : '') + `
+    <div style="padding-top:12px;">${trio(['Week as recorded', w ? fm(w.cpo) : '—'], ['Returned', '−'+fm(total), 'var(--red)'],
+      ['Net now', w ? fm((w.cpo||0) + rw.alreadyOut - total) : '—'])}</div>
+    ${rw.alreadyOut >= 1 && w ? `<div style="font-size:11.5px;color:var(--text2);margin-top:8px;">${fm(rw.alreadyOut)} of this came out before the week was recorded, so it was never in the ${fm(w.cpo)}.</div>` : ''}`;
 }
 async function showReturnsDetail(wk){
   renderReturnsCard(wk);
