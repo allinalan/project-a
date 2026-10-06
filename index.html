@@ -450,6 +450,15 @@
     .nav-r{margin-left:auto;}
     .hero-num{font-size:44px;}
   }
+  /* With the Marketing tab the nav needs ~1240px on one row; below that the tabs take their own scrolling row */
+  @media(max-width:1240px) and (min-width:1001px){
+    nav{flex-wrap:wrap;height:auto;padding:10px 26px;row-gap:8px;}
+    .tabs{order:3;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{white-space:nowrap;flex:0 0 auto;}
+    .tab-log{margin-left:auto;}
+    .nav-r{margin-left:auto;}
+  }
 
   @media(max-width:700px){
     body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
@@ -545,6 +554,7 @@
   .cat-empty{opacity:.55;}
 
 </style>
+<link rel="stylesheet" href="marketing/marketing.css?v=1">
 </head>
 <body>
 
@@ -558,6 +568,7 @@
     <div class="navsep"></div>
     <button class="tab" data-page="yearview" onclick="showPage('yearview',this)">Year</button>
     <button class="tab" data-page="plan" onclick="showPage('plan',this)">Plan</button>
+    <button class="tab" data-page="marketing" onclick="showPage('marketing',this)">Marketing</button>
     <div class="navsep"></div>
     <button class="tab" data-page="profit" onclick="showPage('profit',this)">Event P&amp;L</button>
     <button class="tab" data-page="sc2" onclick="showPage('sc2',this)">SC2 Push</button>
@@ -623,6 +634,9 @@
     <div class="mc neu" id="mc-avg"><div class="mlbl">Avg Order</div><div class="mval" id="h-avg">—</div><div class="msub tm" id="h-avg-s" onclick="startEditHomeGoal('avg')" style="cursor:pointer;" title="Click to edit goal">Goal: $659</div><input id="home-goal-avg" type="number" style="display:none;width:90px;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font-family:var(--sans);" onblur="saveHomeGoal('avg')" onkeydown="if(event.key==='Enter')saveHomeGoal('avg');if(event.key==='Escape')cancelHomeGoal('avg');"></div>
     <div class="mc neu"><div class="mlbl">Est. Profit (YTD)</div><div class="mval" id="h-profit">$0</div><div class="msub tm" id="h-profit-s">commission − event expenses</div></div>
   </div>
+
+  <!-- MARKETING: what needs you + the next send (marketing/ui.js fills it) -->
+  <div id="maHomeCard"></div>
 
   <div class="g2" style="align-items:start;">
     <!-- MOMENTUM — what is changing -->
@@ -1294,6 +1308,9 @@
   <div id="plan-totals" style="margin-top:18px;"></div>
 </div>
 
+<!-- MARKETING: the plan lives in the Command Center Marketing store (marketing/ui.js), not data.json -->
+<div class="page" id="page-marketing"><div id="maRoot"></div></div>
+
 <!-- PROFITABILITY -->
 <div class="page" id="page-profit">
   <div class="eyebrow">Event Portfolio</div>
@@ -1536,6 +1553,7 @@
 <div class="msheet" id="msheet">
   <button class="msheet-item" data-page="yearview" onclick="showPage('yearview',this)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>The Year<span class="mi-sub">52-week record</span></button>
   <button class="msheet-item" data-page="plan" onclick="showPage('plan',this)"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>The Plan<span class="mi-sub">targets &amp; forecast</span></button>
+  <button class="msheet-item" data-page="marketing" onclick="showPage('marketing',this)"><svg viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l6 4V5L7 9H4a1 1 0 0 0-1 1Z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>Marketing<span class="mi-sub">sends &amp; prep</span></button>
   <button class="msheet-item" data-page="profit" onclick="showPage('profit',this)"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 1.8 2.7 5 3.3 5 1.5 5 3.4-2.2 3.3-5 3.3-5-1.4-5-3.3"/></svg>Event P&amp;L<span class="mi-sub">true profit</span></button>
   <button class="msheet-item" data-page="sc2" onclick="showPage('sc2',this)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>SC2 Push<span class="mi-sub">retrospective</span></button>
 </div>
@@ -1551,6 +1569,14 @@
 <div class="toast blue" id="t2">Week updated!</div>
 <div class="toast" id="t3">Event added!</div>
 
+<script>
+// The Command Center Marketing store (Apps Script web app). Key-protected: each device connects once.
+window.MA_STORE_URL = 'https://script.google.com/macros/s/AKfycbyFs8lJ8RDk0Q9mYyKj5xFTTq0lgIu_8ywDNAcWQuLavEv4UVs-mlbsaQwX5riCUODw/exec';
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+<script src="marketing/calcore.js?v=1"></script>
+<script src="marketing/engine.js?v=1"></script>
+<script src="marketing/ui.js?v=1"></script>
 <script>
 // ==================== STATE ====================
 let S = {};
@@ -1609,7 +1635,7 @@ function showPage(id,btn){
   document.querySelectorAll('.tab[data-page="'+id+'"],.bnav-item[data-page="'+id+'"],.tab-log[data-page="'+id+'"],.bnav-log[data-page="'+id+'"]').forEach(b=>b.classList.add('active'));
   // On phones the secondary destinations live behind "More"
   const moreBtn=document.getElementById('bnavMore');
-  if(moreBtn) moreBtn.classList.toggle('active',['yearview','plan','profit','sc2'].includes(id));
+  if(moreBtn) moreBtn.classList.toggle('active',['yearview','plan','marketing','profit','sc2'].includes(id));
   toggleMoreSheet(false);
   if(btn && !btn.dataset.page)btn.classList.add('active');
   window.scrollTo(0,0);
@@ -1643,6 +1669,7 @@ function refreshPage(id){
     case 'ratios':   refreshRatios(); break;
     case 'yearview': refreshYearView(); break;
     case 'plan':     refreshPlan(); break;
+    case 'marketing': if(window.MA) MA.show(); break;
     case 'profit':   refreshProfit(); break;
     case 'sc2':      refreshSC2(); break;
     case 'enter':    refreshEntries(); break;
