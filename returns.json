@@ -1,0 +1,467 @@
+{
+ "about": "Cancels/returns by the week the orders were sold (week start). weeks: each order that lost money since it was entered. weekNotes: alreadyOut = the part that came out before the week was recorded, unmatched = money that left with no matching order, unmatchedLabel = the explanation Alan gave for that money (shown in place of \"not matched\"). data.json weekly CPO is never changed; the HUB Year tab shows these beside the week. Written by csp-autopilot review_returns.js.",
+ "version": 2,
+ "updatedAt": "2026-10-06T04:36:42.059Z",
+ "reviewedWindow": {
+  "start": "2025-12-30",
+  "end": "2026-10-04"
+ },
+ "lock": {
+  "cipher": "AES-256-GCM",
+  "kdf": "PBKDF2-SHA256",
+  "iterations": 210000,
+  "salt": "juYQEV270J26pi/6ID7QYA==",
+  "check": {
+   "iv": "eK28ZdoW8eMUAKYa",
+   "ct": "feFa2jNzc3xhCOAKvCSijden4SBS9t8MBcGRKg=="
+  }
+ },
+ "weeks": {
+  "2026-01-06": [
+   {
+    "ref": "…3319",
+    "amount": 1711,
+    "entered": 1711,
+    "now": 0,
+    "orderDate": "2026-01-11",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "LEt6ku69phnGTieS",
+     "ct": "72N4WWFT9FIgD7MRDFleRei5eewYEvfROc0sTDi33qp5t5W5u4CnvXYMucokeqCTx4Le6UWxDxQP4ZQWl2qZsw=="
+    }
+   },
+   {
+    "ref": "…2036",
+    "amount": 40,
+    "entered": 795,
+    "now": 755,
+    "orderDate": "2026-01-10",
+    "kind": "partial return",
+    "secret": {
+     "iv": "rOK4DAytcbo9vBIu",
+     "ct": "sFmMqn1qkdZ/5OG3cv9lskbXXzKli8CXpPq+5BRwKBnn6LDowStRL8eil/gquUInSFywFXvxcnVAQpA9DEEzilTp"
+    }
+   }
+  ],
+  "2026-01-27": [
+   {
+    "ref": "…8577",
+    "amount": 2013,
+    "entered": 2461,
+    "now": 448,
+    "orderDate": "2026-01-30",
+    "kind": "partial return",
+    "secret": {
+     "iv": "TUCLqTNdS3hFP905",
+     "ct": "HpT9BDmIwULlD8DbFjNtUXCHCAEUBy1SJN1uNXVcFHmQfFhV12WP0bF2rCRPxZlPTcaCUuRnRdH1XtQPVJbgm0Dzqw=="
+    }
+   },
+   {
+    "ref": "…1805",
+    "amount": 1735,
+    "entered": 2089,
+    "now": 354,
+    "orderDate": "2026-02-02",
+    "kind": "partial return",
+    "secret": {
+     "iv": "WPc8Y/hs+iE+Dm5w",
+     "ct": "/npItQ5kufiNpYBarviB+tAKog0s5hibZx8nXrMIkALrWDY+hAAUkLgXOT3p+YXCKfpaJMuheTIF9/uMTfAokV9KR5yfvA=="
+    }
+   },
+   {
+    "ref": "…8464",
+    "amount": 1012,
+    "entered": 1012,
+    "now": 0,
+    "orderDate": "2026-01-30",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "qaZVxkkiZTpZ6gnz",
+     "ct": "VuGCYyHoZauta9O4HJw0iYjcM8arQh/ZUs/PVBnYGpMg349VipW2SR1D3t7tdh8r4e3wn9TP70wZnbV63Q/Tjyo="
+    }
+   }
+  ],
+  "2026-02-17": [
+   {
+    "ref": "…5305",
+    "amount": 569,
+    "entered": 569,
+    "now": 0,
+    "orderDate": "2026-02-21",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "PF5q1okOF5l9TqDm",
+     "ct": "k5hWI7Gb7E7KRvBnZiyJPyv25ThmijRqRP9ZdSlH5cKDDUYk7geJR4evYho45vbOFtkED/tQht4K"
+    }
+   },
+   {
+    "ref": "…4341",
+    "amount": 20,
+    "entered": 132,
+    "now": 112,
+    "orderDate": "2026-02-20",
+    "kind": "partial return",
+    "secret": {
+     "iv": "ihcP+cSIVrtePpWk",
+     "ct": "o2gBwSxu3lM7IX8s4QT7Yw/MLCZCIgj90In33pBNpaOuxxnc01qTqqbAXBvedElAGOUcb7mo15GyGouXuD2x6MYfNm7m"
+    }
+   }
+  ],
+  "2026-02-24": [
+   {
+    "ref": "…3370",
+    "amount": 330,
+    "entered": 2165,
+    "now": 1835,
+    "orderDate": "2026-03-02",
+    "kind": "partial return",
+    "secret": {
+     "iv": "hqZbefXLyo7Sqcs4",
+     "ct": "ptKMjn9cTqPA+Q9/YvX4QgnKRYYXfXdxvBy97jUxEdgobSfdi9O7b4uLBJIcFIt5erXlD00jZ+tlKcazF+Dz6+0jZ0GZ"
+    }
+   }
+  ],
+  "2026-03-03": [
+   {
+    "ref": "…9913",
+    "amount": 147,
+    "entered": 252,
+    "now": 105,
+    "orderDate": "2026-03-09",
+    "kind": "partial return",
+    "secret": {
+     "iv": "gJlEdP1qR6AQFdE7",
+     "ct": "VrjiEQM2KEDUPdySu1hLk0TUbApMkOTMv6TO0NEEc0BTDe1eEgMlRiwB0JVYPMRc6yLGBGPzebJ2"
+    }
+   }
+  ],
+  "2026-04-21": [
+   {
+    "ref": "…0370",
+    "amount": 111,
+    "entered": 455,
+    "now": 344,
+    "orderDate": "2026-04-25",
+    "kind": "partial return",
+    "secret": {
+     "iv": "Kwu0LuX8R33aUJFh",
+     "ct": "41h3wd/WLwKM4BQIOcEprDRWvGc8+W8bUOhzLlQT+LV9mt7FkYxlPj3ZGU6hoy+YugAq0sT65GGdkel+GVnb"
+    }
+   },
+   {
+    "ref": "…9737",
+    "amount": 28,
+    "entered": 811,
+    "now": 783,
+    "orderDate": "2026-04-25",
+    "kind": "partial return",
+    "secret": {
+     "iv": "zB5aZw4SVb7IZtN0",
+     "ct": "fLgeLD3UxDV6guGKLi34ecWC1ksDN71Dc/u4AWj4Aw4Fcpi6txXw9x6n4ceI8m0DO1WVCpt8MOhYaIc18CfvdH3x5g=="
+    }
+   },
+   {
+    "ref": "…1722",
+    "amount": 6,
+    "entered": 185,
+    "now": 179,
+    "orderDate": "2026-04-27",
+    "kind": "partial return",
+    "secret": {
+     "iv": "A8y5D0C2xIDm2lz3",
+     "ct": "BAkjeZqTTc3clHvtUK8RkI485Z0mr13SqpKoWdit5GKVVFWeIePfN0D3wv+SgortnyS7IYzR64ybigyyh/Zv"
+    }
+   }
+  ],
+  "2026-05-26": [
+   {
+    "ref": "…7472",
+    "amount": 32,
+    "entered": 691,
+    "now": 659,
+    "orderDate": "2026-05-27",
+    "kind": "partial return",
+    "secret": {
+     "iv": "sUxNd3WDr5GbZKSm",
+     "ct": "hVjMUJBruao7ywKY7dgCbRhwJw5NiJz4nsXeUZ/GC7/C5Gb6dA+nBPCbb9PZUPbkXeWz61iO/Tmo3A=="
+    }
+   }
+  ],
+  "2026-06-02": [
+   {
+    "ref": "…2464",
+    "amount": 835,
+    "entered": 835,
+    "now": 0,
+    "orderDate": "2026-06-06",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "jZHY4APJLqL4xxui",
+     "ct": "CXJgN7Kk7KdOVjOL1/AN9GzhzNk3yk1IvnXWDcxshh2ZT2bt0AVu3yVdgcv07yswRMYyxEu5CONvv01axYOepHrNsnrv"
+    }
+   }
+  ],
+  "2026-06-16": [
+   {
+    "ref": "…6787",
+    "amount": 397,
+    "entered": 397,
+    "now": 0,
+    "orderDate": "2026-06-20",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "CpOh39W2X1m6nqot",
+     "ct": "7OCBKNTWM2jInEiK6YKIxtBmqRH725PT5Q+RAEfEYKJDiOjaIh+056UQqGzFn68k3RXs1gqM/d/GRqN7U3b5PQE="
+    }
+   }
+  ],
+  "2026-07-14": [
+   {
+    "ref": "…3163",
+    "amount": 1333,
+    "entered": 1333,
+    "now": 0,
+    "orderDate": "2026-07-16",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "bTSwrfIeD0Im6GLm",
+     "ct": "l0WOzQ6+XQWGSZm2IrrtO4Hh1DjaTQI6e1CY3FKX1ackuUtiwmVOrO5TkfGPNzoawfdABNVbsuAJ/Hn+g6A2ujDLLQ=="
+    }
+   },
+   {
+    "ref": "…7149",
+    "amount": 1127,
+    "entered": 1127,
+    "now": 0,
+    "orderDate": "2026-07-18",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "348VzTqXROzq1iii",
+     "ct": "wgDB+PvQdZ0u4RsJSCma6Yo8XpBwJSetOxmyrMqsiTIkHjaqVxaZi4ErJmEkmUVwWJlMoChqkLOOjg=="
+    }
+   }
+  ],
+  "2026-07-21": [
+   {
+    "ref": "…2177",
+    "amount": 536,
+    "entered": 598,
+    "now": 62,
+    "orderDate": "2026-07-21",
+    "kind": "partial return",
+    "secret": {
+     "iv": "LSBExeY5BoAkad5h",
+     "ct": "clW+a0BIdHqbrAInHTfyvPU1o7xIrXbyCC/6ShfMgY1tZpV02xeHI5HwQGQJfxKlly6xDl4Yr/LBAemRL/6Yekm8wA=="
+    }
+   },
+   {
+    "ref": "…3511",
+    "amount": 375,
+    "entered": 1512,
+    "now": 1137,
+    "orderDate": "2026-07-22",
+    "kind": "partial return",
+    "secret": {
+     "iv": "5sLLkZ/uUbQM72iH",
+     "ct": "NtBUD/q2X73B3WTq6XW64OWT60OHTFOeQqp2zKBgAP32UE33PHVG91XdrdfujlGFj5UKSnYFrxglyNuaJXY="
+    }
+   },
+   {
+    "ref": "…5759",
+    "amount": 55,
+    "entered": 1438,
+    "now": 1383,
+    "orderDate": "2026-07-23",
+    "kind": "partial return",
+    "secret": {
+     "iv": "0LAcEpeE3UGACxuw",
+     "ct": "rH8xX38X9lgDCmncjO1FLj75tBFx+pRjRTbJSeI1p11dVeDR1TH9oK4cSnObrqoqOiaBO69oMX4="
+    }
+   },
+   {
+    "ref": "…3996",
+    "amount": 3,
+    "entered": 1513,
+    "now": 1510,
+    "orderDate": "2026-07-22",
+    "kind": "partial return",
+    "secret": {
+     "iv": "KrxHtNJOfsV9Dlwo",
+     "ct": "lZiWSbUQ/xKVVD4I1GSnEvHSRWIX801wKEVsJ5WG87uCnw3MtoKLgydO6hN0mldFpyDcYEx2tiFj/OELxIZxdjY="
+    }
+   }
+  ],
+  "2026-07-28": [
+   {
+    "ref": "…4893",
+    "amount": 1473,
+    "entered": 3245,
+    "now": 1772,
+    "orderDate": "2026-07-28",
+    "kind": "partial return",
+    "secret": {
+     "iv": "g7DN5c85F7C0R7ml",
+     "ct": "qmfgeKtPDDUUV6WwAUIUArbwcTUiiVLsFgMApWvv4WYbJqbubzGJO7095jNkuF1z3J/K76HBB2kKSSyxxHR+Hsj7"
+    }
+   },
+   {
+    "ref": "…3186",
+    "amount": 536,
+    "entered": 3104,
+    "now": 2568,
+    "orderDate": "2026-08-03",
+    "kind": "partial return",
+    "secret": {
+     "iv": "ee65UYOLJ8+ghK3q",
+     "ct": "wf7ojk72VkLNHxUAvLFcWJxGgTtJyBSbaiIJWOkvWmdrATmBrcO4UGBjY+wsXIycXq13GaI4MFne"
+    }
+   },
+   {
+    "ref": "…3073",
+    "amount": 365,
+    "entered": 2585,
+    "now": 2220,
+    "orderDate": "2026-08-03",
+    "kind": "partial return",
+    "secret": {
+     "iv": "Pvo5hY0WQQzXj3DX",
+     "ct": "6IsdmXHQ9dQ9B5QKPRCPPmZrgHYOqLxLlIsCJoy63JF/QEXWnJ+XuUOq/l4mE4d7PccKN8Bo6nMWouVWcQ=="
+    }
+   },
+   {
+    "ref": "…8331",
+    "amount": 280,
+    "entered": 1533,
+    "now": 1253,
+    "orderDate": "2026-07-30",
+    "kind": "partial return",
+    "secret": {
+     "iv": "et7/XMvLf14GJALp",
+     "ct": "nssaShTwqS41aJzvjIqoE7SeapInFn1WDZeht2kbDMxXcmYbWdTJcEYqlL82rJg4XBwDpSEQlMAQXzfx"
+    }
+   },
+   {
+    "ref": "…8418",
+    "amount": 238,
+    "entered": 238,
+    "now": 0,
+    "orderDate": "2026-07-30",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "stoV1qPCIdKezQ7z",
+     "ct": "IKNDA2ePHx2SmHdQh06S8rVNcPl6iwFpFo1xsnsvTkgo8O39pOOfbLTzUG6sSKxFFmvYJ8Kxs0dy"
+    }
+   },
+   {
+    "ref": "…2781",
+    "amount": 185,
+    "entered": 2052,
+    "now": 1867,
+    "orderDate": "2026-08-03",
+    "kind": "partial return",
+    "secret": {
+     "iv": "qk5yJ7UpUd1rt4u0",
+     "ct": "WoXitHKo5LvaMHrVqiRTgdQleWMLio6bQfYxjyPGiIQRz7xz6cI6VxfrD8NbuTZAQdGUqzJ5dhitIg=="
+    }
+   }
+  ],
+  "2026-08-18": [],
+  "2026-09-01": [
+   {
+    "ref": "…4942",
+    "amount": 494,
+    "entered": 494,
+    "now": 0,
+    "orderDate": "2026-09-05",
+    "kind": "cancelled or returned in full",
+    "secret": {
+     "iv": "2lJ6YIvt7oMDGBbV",
+     "ct": "I78Sb/Gz3DtK+GPuGvkAF3L7Ux6ZhVhyXjKr5o7WuGRvZbp3I2qRsZ1wxzyeCeN5hAnVGRh/DMfDVw=="
+    }
+   },
+   {
+    "ref": "…5986",
+    "amount": 40,
+    "entered": 1046,
+    "now": 1006,
+    "orderDate": "2026-09-06",
+    "kind": "partial return",
+    "secret": {
+     "iv": "gl7f6CMEcANygklm",
+     "ct": "lazGiMhCr1UNU6tRYgITRr3QZCIt+7mvhjxJaodsfwGZjkfpcl45KCMh2kmqt23yS6R9PlBH0wiObjDuW7PgOMnk+cU="
+    }
+   },
+   {
+    "ref": "…6576",
+    "amount": 3,
+    "entered": 734,
+    "now": 731,
+    "orderDate": "2026-09-06",
+    "kind": "partial return",
+    "secret": {
+     "iv": "gsBOuKonPIFIydcZ",
+     "ct": "S0MDiikPIJc1kqWeXmRJ2SCnmI7xBF/RUkCVKMAEpq8dZXsLchjiCBR7LtTY5H304+MXdbyK18N4"
+    }
+   }
+  ]
+ },
+ "weekNotes": {
+  "2026-01-06": {
+   "alreadyOut": 1751,
+   "unmatched": 0
+  },
+  "2026-01-27": {
+   "alreadyOut": 4760,
+   "unmatched": 0
+  },
+  "2026-02-17": {
+   "alreadyOut": 589,
+   "unmatched": 0
+  },
+  "2026-02-24": {
+   "alreadyOut": 330,
+   "unmatched": 0
+  },
+  "2026-03-03": {
+   "alreadyOut": 147,
+   "unmatched": 0
+  },
+  "2026-04-21": {
+   "alreadyOut": 28,
+   "unmatched": 0
+  },
+  "2026-05-26": {
+   "alreadyOut": 0,
+   "unmatched": 0
+  },
+  "2026-06-02": {
+   "alreadyOut": 0,
+   "unmatched": 0
+  },
+  "2026-06-16": {
+   "alreadyOut": 0,
+   "unmatched": 0
+  },
+  "2026-07-14": {
+   "alreadyOut": 1189,
+   "unmatched": 0
+  },
+  "2026-07-21": {
+   "alreadyOut": 0,
+   "unmatched": 2
+  },
+  "2026-07-28": {
+   "alreadyOut": 139,
+   "unmatched": 0
+  },
+  "2026-08-18": {
+   "alreadyOut": 0,
+   "unmatched": 1866,
+   "unmatchedLabel": "Transferred to another rep"
+  },
+  "2026-09-01": {
+   "alreadyOut": 0,
+   "unmatched": 0
+  }
+ }
+}

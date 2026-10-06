@@ -383,6 +383,10 @@
   .motit{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:14px;color:var(--ink);}
   .toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:12.5px;font-weight:700;padding:10px 18px;border-radius:9px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;}
   .toast.show{transform:translateY(0);opacity:1;}
+  /* Year tab: one combined cancels/returns total per week; tap for the orders */
+  .ret-btn{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--red);background:var(--red-light);border:1px solid transparent;border-radius:20px;padding:3px 10px;cursor:pointer;white-space:nowrap;}
+  .ret-btn:hover{border-color:var(--red);}
+  .ret-btn .ret-more{font-size:10px;font-weight:600;opacity:.75;margin-left:4px;}
   .toast.blue{background:var(--ink);}
 
   /* ============ SC2 PUSH ============ */
@@ -1252,6 +1256,7 @@
           <th style="width:70px;">Week</th>
           <th style="width:100px;">Total CPO</th>
           <th style="width:80px;">Orders</th>
+          <th style="width:130px;color:var(--red);" title="Money that came back from orders sold this week (cancels and returns). Weekly CPO is never changed; this is the addendum.">Cancels / Returns</th>
           <th style="width:100px;color:var(--blue);">Proj. CPO</th>
           <th style="width:80px;color:var(--blue);">Proj. Orders</th>
           <th style="width:70px;">Days Off</th>
@@ -1532,6 +1537,17 @@
   </div>
 </div>
 
+<!-- CANCELS / RETURNS DETAIL (Year tab) -->
+<div class="mb" id="returnsModal" onclick="if(event.target===this)closeReturnsDetail()">
+  <div class="mo" style="max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;">
+    <div class="motit" id="returns-modal-title">Cancels / Returns</div>
+    <div id="returns-modal-body"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px;">
+      <button class="bs" onclick="closeReturnsDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM APP NAV (phones) -->
 <div class="msheet-back" id="msheetBack" onclick="toggleMoreSheet(false)"></div>
 <div class="msheet" id="msheet">
@@ -1564,6 +1580,26 @@ window.MA_STORE_URL = 'https://script.google.com/macros/s/AKfycbyFs8lJ8RDk0Q9mYy
 <script>
 // ==================== STATE ====================
 let S = {};
+// Cancels / returns addendum: returns.json, written by csp-autopilot's monthly review.
+// A week keeps the CPO it was published with (the sale happened that week); money
+// that left later is shown BESIDE the week, never subtracted from S.weeks. Kept out
+// of S on purpose, so Save / Load can never carry it into data.json or the Sheet.
+let RETURNS = null, RETURNS_STATE = 'loading', RETURNS_ERR = '';
+const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
+// One week of the addendum: the orders that lost money plus the week's notes.
+// alreadyOut = came out before the week was recorded, so it was never in the week's
+// CPO; unmatched = left the week with no matching order (unmatchedLabel = what Alan
+// said it was, once he has explained it). total is what the Year tab
+// shows, and recorded CPO + alreadyOut − total = what's left of the week now.
+function returnsWeek(startDate){
+  const orders = returnsFor(startDate);
+  const n = (RETURNS && RETURNS.weekNotes && RETURNS.weekNotes[ymdOf(startDate)]) || {};
+  const alreadyOut = n.alreadyOut || 0, unmatched = n.unmatched || 0;
+  return { orders, alreadyOut, unmatched, unmatchedLabel: n.unmatchedLabel || '',
+    total: orders.reduce((t,e) => t + (e.amount||0), 0) + unmatched };
+}
+const escH = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let editIdx=-1;
 let yearFilter='all';
 let profSort={key:'net',dir:'desc'};
@@ -2856,21 +2892,28 @@ function refreshYearView(){
     const camp=campOf(yw.wk);
     let campDivider='';
     if(lastCamp && lastCamp!==camp){
-      campDivider=`<tr class="camp-divider"><td colspan="9">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
+      campDivider=`<tr class="camp-divider"><td colspan="10">↑ ${lastCamp} ends · ${camp} begins ↓</td></tr>`;
     }
     lastCamp=camp;
 
     let monthRow='';
-    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="9">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
+    if(yw.month!==lastMonth){monthRow=`<tr class="month-header"><td colspan="10">${yw.month} 2026</td></tr>`;lastMonth=yw.month;}
 
     const dateStr=`${yw.startDate.getMonth()+1}/${yw.startDate.getDate()}–${yw.endDate.getMonth()+1}/${yw.endDate.getDate()}`;
     const dot=`<span class="status-dot ${status==='worked'?'dot-worked':isVacation?'dot-vacation':'dot-empty'}"></span>`;
+    const rw=returnsWeek(yw.startDate);
+    const retCell = RETURNS_STATE==='error' && w
+      ? `<td style="font-size:12px;color:var(--gold);" title="returns.json failed to load (${RETURNS_ERR}) — cancels/returns unknown">?</td>`
+      : rw.total >= 1
+        ? `<td><button class="ret-btn" onclick="showReturnsDetail(${yw.wk})" title="See the orders behind this">−${fm(rw.total)}<span class="ret-more">details ›</span></button></td>`
+        : `<td style="font-size:12px;color:var(--text3);">—</td>`;
 
     return campDivider+monthRow+`<tr class="${status}">
       <td style="font-size:11px;color:var(--text2);">${dateStr}</td>
       <td>${dot}Wk ${yw.wk}</td>
       <td class="cpo-cell ${!w?'empty':''}">${w?fm(w.cpo):'—'}${w&&(w.cpo||0)>0?`<span class="cpo-bar" style="width:${Math.max(4,Math.round((w.cpo/maxWkCPO)*76))}px;"></span>`:''}</td>
       <td style="font-size:12px;">${w?w.ord:'—'}</td>
+      ${retCell}
       <td style="font-size:12px;color:var(--blue);">${proj ? fm((proj.ev||0)+(proj.sc||0)+(proj.se||0)+(proj.mkt||0)+(proj.biz||0)+(proj.fed||0)+(proj.demo||0)) : '—'}</td>
       <td style="font-size:12px;color:var(--blue);">${proj && proj.ord !== undefined ? proj.ord : '—'}</td>
       <td><input type="number" class="inline-num" inputmode="numeric" min="0" max="7" placeholder="—" value="${w&&w.daysOff>0?w.daysOff:''}" ${w?'':'disabled title="Log this week in Enter Stats first"'} style="color:${w&&w.daysOff>0?'var(--gold)':'var(--text)'};" onchange="saveYearDaysOff(${yw.wk},this.value)"></td>
@@ -2879,7 +2922,7 @@ function refreshYearView(){
     </tr>`;
   }).join('');
 
-  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
+  document.getElementById('year-tbody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">No weeks match this filter.</td></tr>';
 
   // Bottom totals — per-campaign + YTD
   // Variance compares actuals against the plan for ELAPSED weeks only — holding a
@@ -2904,6 +2947,18 @@ function refreshYearView(){
     const ordColor = varOrd >= 0 ? 'var(--green)' : 'var(--red)';
     const cpoSign = varCPO >= 0 ? '+' : '';
     const ordSign = varOrd >= 0 ? '+' : '';
+    const rws = yearWeeks.filter(yw => yw.wk >= range[0] && yw.wk <= range[1]).map(yw => returnsWeek(yw.startDate));
+    const retCPO = rws.reduce((s,r) => s + r.total, 0);
+    const retOut = rws.reduce((s,r) => s + r.alreadyOut, 0);
+    const retOrders = rws.reduce((s,r) => s + r.orders.length, 0);
+    const retVal = RETURNS_STATE==='error' ? `<span style="color:var(--gold);">unavailable</span>`
+      : RETURNS_STATE==='none' ? `<span style="color:var(--text2);">not reviewed yet</span>`
+      : retCPO>0 ? `<span style="color:var(--red);">−${fm(retCPO)}</span>` : '$0';
+    const retNote = RETURNS_STATE==='ok' && retCPO >= 1
+      ? `${retOrders} order${retOrders===1?'':'s'} · ≈ −${fm(retCPO*commRate())} commission` : '';
+    const netNote = RETURNS_STATE==='ok' && retOut >= 1
+      ? `${fm(retOut)} of the returns came out before those weeks were recorded, so it was never in Total CPO`
+      : 'weekly CPO above stays as recorded';
     const planNote = projWksAll.length>projWks.length
       ? `<span style="font-size:11px;color:var(--text2);font-weight:400;"> · vs plan through Wk ${Math.min(wkNow,range[1])} — full-campaign plan: ${fm(fullCPO)} / ${fullOrd} ord</span>` : '';
     return `<div class="panel" style="padding:14px 18px;margin-bottom:10px;">
@@ -2921,6 +2976,12 @@ function refreshYearView(){
         <div style="text-align:right;font-weight:600;">${actOrd}</div>
         <div style="text-align:right;color:var(--blue);">${projWks.length>0?projOrd:'—'}</div>
         <div style="text-align:right;color:${ordColor};font-weight:600;">${projWks.length>0?ordSign+varOrd+(ordVarPct!==null?' ('+ordSign+ordVarPct+'%)':''):'—'}</div>
+        <div style="color:var(--text);font-weight:600;">Cancels / Returns</div>
+        <div style="text-align:right;font-weight:600;">${retVal}</div>
+        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">${retNote}</div>
+        <div style="color:var(--text);font-weight:600;">Net after returns</div>
+        <div style="text-align:right;font-weight:600;">${RETURNS_STATE==='ok'?fm(actCPO+retOut-retCPO):'—'}</div>
+        <div style="grid-column:span 2;text-align:right;font-size:11px;color:var(--text2);">${netNote}</div>
       </div>
     </div>`;
   };
@@ -2931,6 +2992,104 @@ function refreshYearView(){
     + renderTotalsBlock('Campaign III (Sep–Dec · Wks 36–52)', [36,52])
     + renderTotalsBlock('YTD Total', [1,52]);
 }
+
+// The orders behind a week's combined cancels/returns total (Year tab "details").
+// Names and full order numbers are sealed in returns.json (this repo is public): the
+// card asks for Alan's passphrase once per device, keeps it in localStorage, and opens
+// them in memory only (RETURNS_OPEN), never into S.
+let RETURNS_OPEN = null;
+const b64u8 = v => Uint8Array.from(atob(v), c => c.charCodeAt(0));
+async function unlockReturns(pass){
+  const L = RETURNS && RETURNS.lock;
+  if(!L || !pass || !(window.crypto && crypto.subtle)) return false;
+  try {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({name:'PBKDF2', hash:'SHA-256', salt:b64u8(L.salt), iterations:L.iterations},
+      base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+    const open = async sec => JSON.parse(new TextDecoder().decode(
+      await crypto.subtle.decrypt({name:'AES-GCM', iv:b64u8(sec.iv)}, key, b64u8(sec.ct))));
+    if(await open(L.check) !== 'returns-ok') return false;
+    const m = new Map();
+    for(const es of Object.values(RETURNS.weeks||{})) for(const e of es) if(e.secret) m.set(e, await open(e.secret));
+    RETURNS_OPEN = m;
+    return true;
+  } catch(e){ return false; }   // wrong passphrase: AES-GCM refuses to open
+}
+function returnsSavedPass(){ try { return localStorage.getItem('hubReturnsPass') || ''; } catch(e){ return ''; } }
+
+function renderReturnsCard(wk){
+  const yw = buildYearWeeks().find(y => y.wk === wk);
+  if(!yw) return;
+  const rw = returnsWeek(yw.startDate);
+  const rets = rw.orders;
+  const w = S.weeks.find(x => x.wk === wk);
+  const total = rw.total;
+  const md = d => `${d.getMonth()+1}/${d.getDate()}`;
+  const odOf = v => { const p = String(v||'').split('-'); return p.length===3 ? `${+p[1]}/${+p[2]}` : escH(v); };
+  const trio = (a, b, c) => `
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+      ${[a,b,c].map(([lbl,val,color]) => `<div><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);">${lbl}</div>
+        <div style="font-size:15px;font-weight:700;color:${color||'var(--ink)'};">${val}</div></div>`).join('')}
+    </div>`;
+  const locked = RETURNS && RETURNS.lock && !RETURNS_OPEN;
+  const canUnlock = !!(window.crypto && crypto.subtle);
+  const lockBar = !locked ? '' : `
+    <div style="background:var(--inset);border-radius:9px;padding:10px 12px;margin-bottom:4px;">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:${canUnlock?'7px':'0'};">${canUnlock
+        ? 'Names and order numbers are locked. Enter your returns passphrase once on this device.'
+        : 'Names and order numbers are locked; unlocking needs the HUB opened over https.'}</div>
+      ${canUnlock ? `<div style="display:flex;gap:6px;">
+        <input type="password" class="fin" id="returns-pass" placeholder="Passphrase" autocomplete="current-password" style="flex:1;min-width:0;" onkeydown="if(event.key==='Enter')submitReturnsPass(${wk})">
+        <button class="bp" id="returns-pass-btn" onclick="submitReturnsPass(${wk})">Unlock</button>
+      </div>
+      <div id="returns-pass-err" style="font-size:11.5px;color:var(--red);margin-top:6px;"></div>` : ''}
+    </div>`;
+  document.getElementById('returns-modal-title').textContent = `Wk ${wk} (${md(yw.startDate)}–${md(yw.endDate)}) · Cancels / Returns`;
+  document.getElementById('returns-modal-body').innerHTML = lockBar + rets.map(e => {
+    const who = RETURNS_OPEN && RETURNS_OPEN.get(e);
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);min-width:0;">${who ? escH(who.name) : 'Order ' + escH(e.ref)}</div>
+        <div style="font-size:11.5px;color:var(--text2);white-space:nowrap;">ordered ${odOf(e.orderDate)}</div>
+      </div>
+      ${who ? `<div style="font-size:12px;color:var(--text2);">Order #${escH(who.order)}</div>` : ''}
+      <div style="margin-top:8px;">${trio(['Original CPO', fm(e.entered)], ['Returned', '−'+fm(e.amount), 'var(--red)'], ['New CPO', fm(e.now)])}</div>
+    </div>`;
+  }).join('') + (rw.unmatched >= 1 ? `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);">
+      <div style="min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--ink);">${rw.unmatchedLabel ? escH(rw.unmatchedLabel) : 'Not matched to an order'}</div>
+        <div style="font-size:11.5px;color:var(--text2);">${rw.unmatchedLabel
+          ? 'No matching order in VectorConnect. Explained, so nothing to check.'
+          : 'Left this week with no matching order in VectorConnect. Worth checking.'}</div>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--red);white-space:nowrap;">−${fm(rw.unmatched)}</div>
+    </div>` : '') + `
+    <div style="padding-top:12px;">${trio(['Week as recorded', w ? fm(w.cpo) : '—'], ['Returned', '−'+fm(total), 'var(--red)'],
+      ['Net now', w ? fm((w.cpo||0) + rw.alreadyOut - total) : '—'])}</div>
+    ${rw.alreadyOut >= 1 && w ? `<div style="font-size:11.5px;color:var(--text2);margin-top:8px;">${fm(rw.alreadyOut)} of this came out before the week was recorded, so it was never in the ${fm(w.cpo)}.</div>` : ''}`;
+}
+async function showReturnsDetail(wk){
+  renderReturnsCard(wk);
+  document.getElementById('returnsModal').classList.add('open');
+  const saved = returnsSavedPass();
+  if(RETURNS && RETURNS.lock && !RETURNS_OPEN && saved && await unlockReturns(saved)) renderReturnsCard(wk);
+}
+async function submitReturnsPass(wk){
+  const inp = document.getElementById('returns-pass'), btn = document.getElementById('returns-pass-btn');
+  const pass = inp ? inp.value : '';
+  if(!pass) return;
+  if(btn){ btn.disabled = true; btn.textContent = 'Checking…'; }
+  if(await unlockReturns(pass)){
+    try { localStorage.setItem('hubReturnsPass', pass); } catch(e){}
+    renderReturnsCard(wk);
+  } else {
+    if(btn){ btn.disabled = false; btn.textContent = 'Unlock'; }
+    const err = document.getElementById('returns-pass-err');
+    if(err) err.textContent = "That passphrase didn't open it.";
+  }
+}
+function closeReturnsDetail(){ document.getElementById('returnsModal').classList.remove('open'); }
 
 function saveYearNote(wk,val){
   S.yearNotes[wk]=val;
@@ -4518,6 +4677,14 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
       'Could not load data.json — your stats are NOT shown. Open this page from GitHub Pages or a local web server, then reload.</div>');
     return;
   }
+  // The returns addendum is optional: missing (no review published yet) or broken,
+  // the HUB still renders, and the Year tab says which instead of showing $0.
+  try {
+    const r = await fetch('returns.json', { cache: 'no-store' });
+    if (r.ok) { RETURNS = await r.json(); RETURNS_STATE = 'ok'; }
+    else if (r.status === 404) RETURNS_STATE = 'none';
+    else { RETURNS_STATE = 'error'; RETURNS_ERR = 'HTTP ' + r.status; }
+  } catch (err) { RETURNS_STATE = 'error'; RETURNS_ERR = (err && err.message) || 'unreadable'; }
   loadGoalsFromLocal();
   loadPlanSettingsLocal();
   rolloverStreaks();
