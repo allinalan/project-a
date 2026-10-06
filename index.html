@@ -1563,13 +1563,15 @@ const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}
 function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
 // One week of the addendum: the orders that lost money plus the week's notes.
 // alreadyOut = came out before the week was recorded, so it was never in the week's
-// CPO; unmatched = left the week with no matching order. total is what the Year tab
+// CPO; unmatched = left the week with no matching order (unmatchedLabel = what Alan
+// said it was, once he has explained it). total is what the Year tab
 // shows, and recorded CPO + alreadyOut − total = what's left of the week now.
 function returnsWeek(startDate){
   const orders = returnsFor(startDate);
   const n = (RETURNS && RETURNS.weekNotes && RETURNS.weekNotes[ymdOf(startDate)]) || {};
   const alreadyOut = n.alreadyOut || 0, unmatched = n.unmatched || 0;
-  return { orders, alreadyOut, unmatched, total: orders.reduce((t,e) => t + (e.amount||0), 0) + unmatched };
+  return { orders, alreadyOut, unmatched, unmatchedLabel: n.unmatchedLabel || '',
+    total: orders.reduce((t,e) => t + (e.amount||0), 0) + unmatched };
 }
 const escH = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let editIdx=-1;
@@ -3029,8 +3031,10 @@ function renderReturnsCard(wk){
   }).join('') + (rw.unmatched >= 1 ? `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);">
       <div style="min-width:0;">
-        <div style="font-size:14px;font-weight:700;color:var(--ink);">Not matched to an order</div>
-        <div style="font-size:11.5px;color:var(--text2);">Left this week with no matching order in VectorConnect. Worth checking.</div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);">${rw.unmatchedLabel ? escH(rw.unmatchedLabel) : 'Not matched to an order'}</div>
+        <div style="font-size:11.5px;color:var(--text2);">${rw.unmatchedLabel
+          ? 'No matching order in VectorConnect. Explained, so nothing to check.'
+          : 'Left this week with no matching order in VectorConnect. Worth checking.'}</div>
       </div>
       <div style="font-size:15px;font-weight:700;color:var(--red);white-space:nowrap;">−${fm(rw.unmatched)}</div>
     </div>` : '') + `

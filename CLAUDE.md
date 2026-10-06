@@ -66,7 +66,10 @@ never subtracted from `data.json`.
 
 - `returns.json` (repo root, `version: 2`): `weeks: { "<week start YYYY-MM-DD>": [ {
   ref, amount, entered, now, orderDate, kind } ] }` lists every order that lost money
-  since it was entered; `weekNotes: { "<week start>": { alreadyOut, unmatched } }`.
+  since it was entered; `weekNotes: { "<week start>": { alreadyOut, unmatched,
+  unmatchedLabel? } }`. `unmatchedLabel` is Alan's own explanation of a week's unmatched
+  money (csp-autopilot `returns_explained.json`, letters only): the details card shows it
+  in place of "Not matched to an order". The amount still counts either way.
   `alreadyOut` is the part that came out BEFORE the week was recorded (the Jan–May
   backfill was taken from an export that already had those returns out), so it was
   never in the week's `cpo`; `unmatched` is money that left the week with no matching
