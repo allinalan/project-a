@@ -1,7 +1,7 @@
 {
- "about": "Cancels/returns by the week the orders were sold (week start). weeks: each order that lost money since it was entered. weekNotes: alreadyOut = the part that came out before the week was recorded, unmatched = money that left with no matching order. data.json weekly CPO is never changed; the HUB Year tab shows these beside the week. Written by csp-autopilot review_returns.js.",
+ "about": "Cancels/returns by the week the orders were sold (week start). weeks: each order that lost money since it was entered. weekNotes: alreadyOut = the part that came out before the week was recorded, unmatched = money that left with no matching order, unmatchedLabel = the explanation Alan gave for that money (shown in place of \"not matched\"). data.json weekly CPO is never changed; the HUB Year tab shows these beside the week. Written by csp-autopilot review_returns.js.",
  "version": 2,
- "updatedAt": "2026-10-06T04:02:31.007Z",
+ "updatedAt": "2026-10-06T04:36:42.059Z",
  "reviewedWindow": {
   "start": "2025-12-30",
   "end": "2026-10-04"
@@ -10,10 +10,10 @@
   "cipher": "AES-256-GCM",
   "kdf": "PBKDF2-SHA256",
   "iterations": 210000,
-  "salt": "ODg2SrPSkTxvHQCXOPOMRg==",
+  "salt": "juYQEV270J26pi/6ID7QYA==",
   "check": {
-   "iv": "pE61WQN4+l460Oiw",
-   "ct": "8lqgAwthaTS1Qa8x+rdna1cwfbdiaTnIAO4P6g=="
+   "iv": "eK28ZdoW8eMUAKYa",
+   "ct": "feFa2jNzc3xhCOAKvCSijden4SBS9t8MBcGRKg=="
   }
  },
  "weeks": {
@@ -26,8 +26,8 @@
     "orderDate": "2026-01-11",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "7RVNeHzGJi3mw007",
-     "ct": "NqzCQ2wzKAOwfvVoAfYV+KNK7NtGgShl5gYP5F21HoGjjExIhRGO7bGfiOih6LPU+42ws6RCrLeLT7tiBxXozQ=="
+     "iv": "LEt6ku69phnGTieS",
+     "ct": "72N4WWFT9FIgD7MRDFleRei5eewYEvfROc0sTDi33qp5t5W5u4CnvXYMucokeqCTx4Le6UWxDxQP4ZQWl2qZsw=="
     }
    },
    {
@@ -38,8 +38,8 @@
     "orderDate": "2026-01-10",
     "kind": "partial return",
     "secret": {
-     "iv": "69tzOriRrUjyHmdF",
-     "ct": "GmPJNXDe7Mon49Em5/GOZrK5PADzR2gOjDKYev3a1UxDQRi1sSS7yXOqIuqa6PGjPA8kHt4vunx3LHOCXLJIb6Sc"
+     "iv": "rOK4DAytcbo9vBIu",
+     "ct": "sFmMqn1qkdZ/5OG3cv9lskbXXzKli8CXpPq+5BRwKBnn6LDowStRL8eil/gquUInSFywFXvxcnVAQpA9DEEzilTp"
     }
    }
   ],
@@ -52,8 +52,8 @@
     "orderDate": "2026-01-30",
     "kind": "partial return",
     "secret": {
-     "iv": "Mx2bPhWRiaeCCCrc",
-     "ct": "D+WV1F56yjRtgk+1VnkEfwJJ7dR319JvvNtCSWvbD22x6tiXPvpjIzcimBII0E5K0hW/SB3tlMG+yna1+L9wxVPabw=="
+     "iv": "TUCLqTNdS3hFP905",
+     "ct": "HpT9BDmIwULlD8DbFjNtUXCHCAEUBy1SJN1uNXVcFHmQfFhV12WP0bF2rCRPxZlPTcaCUuRnRdH1XtQPVJbgm0Dzqw=="
     }
    },
    {
@@ -64,8 +64,8 @@
     "orderDate": "2026-02-02",
     "kind": "partial return",
     "secret": {
-     "iv": "zL50ENkttenMoMgF",
-     "ct": "IXXtG7uK6xh9PmfkN31MqlsJRIetD8I9n6q9JDve+fvRcr9xFc0FSSuSD4xBGcTbMEF/PN1L/UCeUrJgDubdH2nGEkCQlw=="
+     "iv": "WPc8Y/hs+iE+Dm5w",
+     "ct": "/npItQ5kufiNpYBarviB+tAKog0s5hibZx8nXrMIkALrWDY+hAAUkLgXOT3p+YXCKfpaJMuheTIF9/uMTfAokV9KR5yfvA=="
     }
    },
    {
@@ -76,8 +76,8 @@
     "orderDate": "2026-01-30",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "zafTS1WtSHB7Zw85",
-     "ct": "BkskD/8ICm1y4atr78hdOqg6l+YA6WbvEbXl6xLoX+JApAY6Rp1+6oHoFwwChwwTVK94pR9sP2a/cNHkWV/sKOg="
+     "iv": "qaZVxkkiZTpZ6gnz",
+     "ct": "VuGCYyHoZauta9O4HJw0iYjcM8arQh/ZUs/PVBnYGpMg349VipW2SR1D3t7tdh8r4e3wn9TP70wZnbV63Q/Tjyo="
     }
    }
   ],
@@ -90,8 +90,8 @@
     "orderDate": "2026-02-21",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "0tOdHCW8Pmp7DRl5",
-     "ct": "ngyxT+Cp9F8gI0SSth91mJxPPkpfSVqtEIuICG1gHPY1DKbU0rMwcYjrOqdQRb12q5HnJzys2/6M"
+     "iv": "PF5q1okOF5l9TqDm",
+     "ct": "k5hWI7Gb7E7KRvBnZiyJPyv25ThmijRqRP9ZdSlH5cKDDUYk7geJR4evYho45vbOFtkED/tQht4K"
     }
    },
    {
@@ -102,8 +102,8 @@
     "orderDate": "2026-02-20",
     "kind": "partial return",
     "secret": {
-     "iv": "QU0SMVgbrAFsuA09",
-     "ct": "I83bS+qjHmfeKRurQV84Uveqqn/itM2Wl8UcnpBNkQ3fQzb8S65qhTRTNlcgOfGpwkikMcFFWnPunCN1gGJXg8szWeur"
+     "iv": "ihcP+cSIVrtePpWk",
+     "ct": "o2gBwSxu3lM7IX8s4QT7Yw/MLCZCIgj90In33pBNpaOuxxnc01qTqqbAXBvedElAGOUcb7mo15GyGouXuD2x6MYfNm7m"
     }
    }
   ],
@@ -116,8 +116,8 @@
     "orderDate": "2026-03-02",
     "kind": "partial return",
     "secret": {
-     "iv": "VckL6Acf3FEtvv82",
-     "ct": "ybPFElw/DQsRk01+SIqZJFnblci/X8hPmUmu2chiTu1+Xjje8cMx/ZNhJYCs4/UnRuwBkUiNlSnAsPYMS2lVCQT9uv6p"
+     "iv": "hqZbefXLyo7Sqcs4",
+     "ct": "ptKMjn9cTqPA+Q9/YvX4QgnKRYYXfXdxvBy97jUxEdgobSfdi9O7b4uLBJIcFIt5erXlD00jZ+tlKcazF+Dz6+0jZ0GZ"
     }
    }
   ],
@@ -130,8 +130,8 @@
     "orderDate": "2026-03-09",
     "kind": "partial return",
     "secret": {
-     "iv": "LoicwM4ymeeL5DCL",
-     "ct": "ysKUsrPRPmMhT9TNeteOdzjTu14Tck8+ZDlSei574X/fUYIeDqjlUD7N04NzYbCfnq/xV3v+HOkS"
+     "iv": "gJlEdP1qR6AQFdE7",
+     "ct": "VrjiEQM2KEDUPdySu1hLk0TUbApMkOTMv6TO0NEEc0BTDe1eEgMlRiwB0JVYPMRc6yLGBGPzebJ2"
     }
    }
   ],
@@ -144,8 +144,8 @@
     "orderDate": "2026-04-25",
     "kind": "partial return",
     "secret": {
-     "iv": "yIc6Icz+Tg1kawgN",
-     "ct": "/FCNQaUSqwrpeVMRrVDX7ImNZtEVuz/5Gs/vGvW8RgoQLOzskNcyJ5dC8zNjbCqxkdy9wENO4QpIerpJpdSd"
+     "iv": "Kwu0LuX8R33aUJFh",
+     "ct": "41h3wd/WLwKM4BQIOcEprDRWvGc8+W8bUOhzLlQT+LV9mt7FkYxlPj3ZGU6hoy+YugAq0sT65GGdkel+GVnb"
     }
    },
    {
@@ -156,8 +156,8 @@
     "orderDate": "2026-04-25",
     "kind": "partial return",
     "secret": {
-     "iv": "Xwi5qOOJ8hQ81+7E",
-     "ct": "OQu/DTpP7sE4h6NhhL+rg4O879aoYuv1xRubbaF8XbD+j/5Oah2LknlNlHqgFClwXJyNcITIkAHHdm+RrkCAaUFdvA=="
+     "iv": "zB5aZw4SVb7IZtN0",
+     "ct": "fLgeLD3UxDV6guGKLi34ecWC1ksDN71Dc/u4AWj4Aw4Fcpi6txXw9x6n4ceI8m0DO1WVCpt8MOhYaIc18CfvdH3x5g=="
     }
    },
    {
@@ -168,8 +168,8 @@
     "orderDate": "2026-04-27",
     "kind": "partial return",
     "secret": {
-     "iv": "WAvG2o+BugAwtgrH",
-     "ct": "L9fipapdBV3BPz3hJcT0TMm0E2KXwe/Iuvqy9ZqJcFAgrNcdb5bpIQkoYllJ9+KjMbTojNUXGU8m14h/P7fx"
+     "iv": "A8y5D0C2xIDm2lz3",
+     "ct": "BAkjeZqTTc3clHvtUK8RkI485Z0mr13SqpKoWdit5GKVVFWeIePfN0D3wv+SgortnyS7IYzR64ybigyyh/Zv"
     }
    }
   ],
@@ -182,8 +182,8 @@
     "orderDate": "2026-05-27",
     "kind": "partial return",
     "secret": {
-     "iv": "+xjW7i01BL4Q77CV",
-     "ct": "ttjeDu9XMoP8PmaQExR4K6RuyBqumz6y/8Ws/bQhfjsAs/OZWsjOuVz/Qa485GrJbCCLIBXEt7oKOw=="
+     "iv": "sUxNd3WDr5GbZKSm",
+     "ct": "hVjMUJBruao7ywKY7dgCbRhwJw5NiJz4nsXeUZ/GC7/C5Gb6dA+nBPCbb9PZUPbkXeWz61iO/Tmo3A=="
     }
    }
   ],
@@ -196,8 +196,8 @@
     "orderDate": "2026-06-06",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "1NMCO75we7VPwEgv",
-     "ct": "4UT30UX4bwv+OES1QfFGIsqCghl5sg4ek76824YpqUV0qJOlxEyTK2BmEfQuwZ8UqbkTgf17vHN7WRxTOOV2jLGd/Lr8"
+     "iv": "jZHY4APJLqL4xxui",
+     "ct": "CXJgN7Kk7KdOVjOL1/AN9GzhzNk3yk1IvnXWDcxshh2ZT2bt0AVu3yVdgcv07yswRMYyxEu5CONvv01axYOepHrNsnrv"
     }
    }
   ],
@@ -210,8 +210,8 @@
     "orderDate": "2026-06-20",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "KiU3RZ6MfckFlp0A",
-     "ct": "28paS4i37JeiA0h9ubUN/JYlKf1VsP7WJT9bymWY5Cvbu+BVyudqtHUgdW8thSVQrG7G4dQpSihTFh+TtQFIC4E="
+     "iv": "CpOh39W2X1m6nqot",
+     "ct": "7OCBKNTWM2jInEiK6YKIxtBmqRH725PT5Q+RAEfEYKJDiOjaIh+056UQqGzFn68k3RXs1gqM/d/GRqN7U3b5PQE="
     }
    }
   ],
@@ -224,8 +224,8 @@
     "orderDate": "2026-07-16",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "gPPnvgZJ8duLEKcy",
-     "ct": "PaE13gfC8lPWrpgGKHqJ7mJWftBl9It588XCtzmVFfocRgFxIyJHkKDb5usrh/gdBnTJ2S5Y1TmZLWbA0A0axJiTxw=="
+     "iv": "bTSwrfIeD0Im6GLm",
+     "ct": "l0WOzQ6+XQWGSZm2IrrtO4Hh1DjaTQI6e1CY3FKX1ackuUtiwmVOrO5TkfGPNzoawfdABNVbsuAJ/Hn+g6A2ujDLLQ=="
     }
    },
    {
@@ -236,8 +236,8 @@
     "orderDate": "2026-07-18",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "qxqdLTe9qUac0vS2",
-     "ct": "UbNt20ixe2yT1blA9qzcDTnOQo+F13hN7jEAGvvlhp3uLiRhlIErNSRfEzR3VyzmTJ1QPm0uM+1weg=="
+     "iv": "348VzTqXROzq1iii",
+     "ct": "wgDB+PvQdZ0u4RsJSCma6Yo8XpBwJSetOxmyrMqsiTIkHjaqVxaZi4ErJmEkmUVwWJlMoChqkLOOjg=="
     }
    }
   ],
@@ -250,8 +250,8 @@
     "orderDate": "2026-07-21",
     "kind": "partial return",
     "secret": {
-     "iv": "SppsCLrl4xysbVai",
-     "ct": "wwd5yt0ywSvNK9dP3Vj+OQkPK9oOVk4cmejsKsJrt3pbunoAbcHMr8cR1kyvlkO75YW218IHoCh5H4LwDmvCFgxvgw=="
+     "iv": "LSBExeY5BoAkad5h",
+     "ct": "clW+a0BIdHqbrAInHTfyvPU1o7xIrXbyCC/6ShfMgY1tZpV02xeHI5HwQGQJfxKlly6xDl4Yr/LBAemRL/6Yekm8wA=="
     }
    },
    {
@@ -262,8 +262,8 @@
     "orderDate": "2026-07-22",
     "kind": "partial return",
     "secret": {
-     "iv": "4972tF8x6a8FiAVR",
-     "ct": "J9G0tO/tpwjmiLMQHYH31gCMu1pnwYSTZre+Q0OcuT9XbW6Jn6QFqIL8CX6sG2hL08LUhPsJy1ckzh9YSZQ="
+     "iv": "5sLLkZ/uUbQM72iH",
+     "ct": "NtBUD/q2X73B3WTq6XW64OWT60OHTFOeQqp2zKBgAP32UE33PHVG91XdrdfujlGFj5UKSnYFrxglyNuaJXY="
     }
    },
    {
@@ -274,8 +274,8 @@
     "orderDate": "2026-07-23",
     "kind": "partial return",
     "secret": {
-     "iv": "6NAmPxj/5Bq/HfBj",
-     "ct": "wgDlTY70dZWQCdLSn+aDfPJ8GF4R8hqHjOymIwP/vUepyP7LLZ1nJhFvqRLX+c3jwCh2TP8x83g="
+     "iv": "0LAcEpeE3UGACxuw",
+     "ct": "rH8xX38X9lgDCmncjO1FLj75tBFx+pRjRTbJSeI1p11dVeDR1TH9oK4cSnObrqoqOiaBO69oMX4="
     }
    },
    {
@@ -286,8 +286,8 @@
     "orderDate": "2026-07-22",
     "kind": "partial return",
     "secret": {
-     "iv": "rSdiKtIQzhkFF2yd",
-     "ct": "MC13ZxCiRE1ZbJ/m2GiGYe6UlHcN/uBUE+ZD9GZph7SKhbri8k/D+pEgbq36MBTwaNCNh4/ishKbXAtmzcrBL+U="
+     "iv": "KrxHtNJOfsV9Dlwo",
+     "ct": "lZiWSbUQ/xKVVD4I1GSnEvHSRWIX801wKEVsJ5WG87uCnw3MtoKLgydO6hN0mldFpyDcYEx2tiFj/OELxIZxdjY="
     }
    }
   ],
@@ -300,8 +300,8 @@
     "orderDate": "2026-07-28",
     "kind": "partial return",
     "secret": {
-     "iv": "8vISdK2u8TPRH/20",
-     "ct": "MS30j7Lqtjgq6zJQcSo+dzMHUl05LgMMt4SVZIDo6j3OA/MgsBUk1p1c9+VqNJ066MZMyBNfdTIOLHDS7YYHH5bs"
+     "iv": "g7DN5c85F7C0R7ml",
+     "ct": "qmfgeKtPDDUUV6WwAUIUArbwcTUiiVLsFgMApWvv4WYbJqbubzGJO7095jNkuF1z3J/K76HBB2kKSSyxxHR+Hsj7"
     }
    },
    {
@@ -312,8 +312,8 @@
     "orderDate": "2026-08-03",
     "kind": "partial return",
     "secret": {
-     "iv": "RR8GP65GBESswtft",
-     "ct": "kuEQdF2kMv2avK+mM9mrDh/UabWowFFmr+HcxjzFVtUcZEL5GIo9f3TR/vJYxrtIXshOIv3vZ2BZ"
+     "iv": "ee65UYOLJ8+ghK3q",
+     "ct": "wf7ojk72VkLNHxUAvLFcWJxGgTtJyBSbaiIJWOkvWmdrATmBrcO4UGBjY+wsXIycXq13GaI4MFne"
     }
    },
    {
@@ -324,8 +324,8 @@
     "orderDate": "2026-08-03",
     "kind": "partial return",
     "secret": {
-     "iv": "O6qfxoWgCe+I3+Yb",
-     "ct": "CW85ucl/t0WMIu5RNo0D7h/7+v47ud5oyQCGT5kGNk+m5wOFBRLemcLdPOsU56Sc6qfLeJxdBiljZeCgFQ=="
+     "iv": "Pvo5hY0WQQzXj3DX",
+     "ct": "6IsdmXHQ9dQ9B5QKPRCPPmZrgHYOqLxLlIsCJoy63JF/QEXWnJ+XuUOq/l4mE4d7PccKN8Bo6nMWouVWcQ=="
     }
    },
    {
@@ -336,8 +336,8 @@
     "orderDate": "2026-07-30",
     "kind": "partial return",
     "secret": {
-     "iv": "0z0f8JpxWk17snvp",
-     "ct": "BJehKNtMfhLNTXtS8C/LbGF06cUhzOiAdVmAWUitYY6/2KnVhIL4yZccopB9izGJJTHcuEWxliiw1eYF"
+     "iv": "et7/XMvLf14GJALp",
+     "ct": "nssaShTwqS41aJzvjIqoE7SeapInFn1WDZeht2kbDMxXcmYbWdTJcEYqlL82rJg4XBwDpSEQlMAQXzfx"
     }
    },
    {
@@ -348,8 +348,8 @@
     "orderDate": "2026-07-30",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "rx1ee6qh0kPOK6oX",
-     "ct": "+0nRTenCFci2vaIQ2oNoM0SmtjJ/8GNxT+xoBdjWKHNCYkyEZZeUN9iWgwk6RjL4ar/yZA6opkWf"
+     "iv": "stoV1qPCIdKezQ7z",
+     "ct": "IKNDA2ePHx2SmHdQh06S8rVNcPl6iwFpFo1xsnsvTkgo8O39pOOfbLTzUG6sSKxFFmvYJ8Kxs0dy"
     }
    },
    {
@@ -360,8 +360,8 @@
     "orderDate": "2026-08-03",
     "kind": "partial return",
     "secret": {
-     "iv": "B4JrB3edf4i3rhev",
-     "ct": "p+CWZ6eiGczAY3uCD7Bd5dMwWayvluTLHaiuNdKnS5Msyi6/w5mzn/cF8fewFP7jOc9XtMq9TctDcg=="
+     "iv": "qk5yJ7UpUd1rt4u0",
+     "ct": "WoXitHKo5LvaMHrVqiRTgdQleWMLio6bQfYxjyPGiIQRz7xz6cI6VxfrD8NbuTZAQdGUqzJ5dhitIg=="
     }
    }
   ],
@@ -375,8 +375,8 @@
     "orderDate": "2026-09-05",
     "kind": "cancelled or returned in full",
     "secret": {
-     "iv": "36u8CcAvUs3Lvgt3",
-     "ct": "n9PfNhDzPrLvg9Gi+GhDubxY3FsEABRMu15ZgMWWnKyp2FXN+sZFa5KNcHRa8HevmVeT1VJcT6M2Sg=="
+     "iv": "2lJ6YIvt7oMDGBbV",
+     "ct": "I78Sb/Gz3DtK+GPuGvkAF3L7Ux6ZhVhyXjKr5o7WuGRvZbp3I2qRsZ1wxzyeCeN5hAnVGRh/DMfDVw=="
     }
    },
    {
@@ -387,8 +387,8 @@
     "orderDate": "2026-09-06",
     "kind": "partial return",
     "secret": {
-     "iv": "FDBY8NAcJotUg8TP",
-     "ct": "SVdrIs90SvbAnXX4QztsXfUitJ0V1Xmqg2gL6zUx7RTyfeaGT7ERtW6UFZNX/OUAQBzAv3BLkWFzS4iNa8gDMORCLRw="
+     "iv": "gl7f6CMEcANygklm",
+     "ct": "lazGiMhCr1UNU6tRYgITRr3QZCIt+7mvhjxJaodsfwGZjkfpcl45KCMh2kmqt23yS6R9PlBH0wiObjDuW7PgOMnk+cU="
     }
    },
    {
@@ -399,8 +399,8 @@
     "orderDate": "2026-09-06",
     "kind": "partial return",
     "secret": {
-     "iv": "kI0axk7jhb96flt5",
-     "ct": "YILexRtjLQWxldXQroZBAvr74WWWfsBcjhTu/t405ExfnWpkl906rfQz3u0LPT5WgpuxQ4P9t8k2"
+     "iv": "gsBOuKonPIFIydcZ",
+     "ct": "S0MDiikPIJc1kqWeXmRJ2SCnmI7xBF/RUkCVKMAEpq8dZXsLchjiCBR7LtTY5H304+MXdbyK18N4"
     }
    }
   ]
@@ -456,7 +456,8 @@
   },
   "2026-08-18": {
    "alreadyOut": 0,
-   "unmatched": 1866
+   "unmatched": 1866,
+   "unmatchedLabel": "Transferred to another rep"
   },
   "2026-09-01": {
    "alreadyOut": 0,
