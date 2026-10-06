@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The Marketing store from the command line (run on the Mac mini).
-//   node tools/store.js ping|status|history
+//   node tools/store.js ping|status|history|calcheck|digest [--today YYYY-MM-DD]
 //   node tools/store.js seed --file plan.json      (only into an empty store)
 //   node tools/store.js backup --out file.json     (writes the current plan, mode 600)
 //   node tools/store.js restore --rev N            (puts History revision N back as the newest)
@@ -58,6 +58,12 @@ function summary(o){
     fs.writeFileSync(arg('--out'), o.doc, {mode:0o600});
     return console.log('Wrote r'+o.rev+' to '+arg('--out'));
   }
+  if(cmd === 'calcheck'){ // the same check the Monday trigger and the page's button run
+    const r = await call('calcheck');
+    if(!r.ok) throw new Error('calendar check failed: '+(r.message || r.error));
+    return console.log('r'+r.rev, JSON.stringify(r.result, null, 1));
+  }
+  if(cmd === 'digest'){ const r = await call('digest', arg('--today') ? {today:arg('--today')} : {}); if(!r.ok) throw new Error(r.message); return console.log(JSON.stringify(r.digest, null, 1)); }
   if(cmd === 'restore'){ const r = await call('restore', {rev:+arg('--rev')}); if(!r.ok) throw new Error(r.message); return console.log('Restored r'+r.restored+' as r'+r.rev+'.'); }
-  console.log('usage: node tools/store.js ping|status|history|seed --file f|backup --out f|restore --rev N');
+  console.log('usage: node tools/store.js ping|status|history|calcheck|digest|seed --file f|backup --out f|restore --rev N');
 })().catch(e => { console.error('store:', e.message); process.exit(1); });
