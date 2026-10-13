@@ -2591,13 +2591,12 @@
       "svcCPO": 0,
       "svcOrd": 0,
       "rorOutCPO": [
-        1750,
-        25
+        1750
       ],
-      "rorOutOrd": 2,
-      "rorOutComm": 265,
+      "rorOutOrd": 1,
+      "rorOutComm": 437.5,
       "totalExp": 1243.56,
-      "net": 322.44,
+      "net": 494.94,
       "dt": "2026-08-01",
       "dtEnd": "2026-08-02",
       "dtDisplay": "Aug 1\u20132, 2026",
@@ -2606,7 +2605,10 @@
         "asOf": "2026-10-13",
         "charges": "posted",
         "need": []
-      }
+      },
+      "rorOutPct": [
+        25
+      ]
     },
     {
       "name": "Katy Home & Outdoor Living Show",
