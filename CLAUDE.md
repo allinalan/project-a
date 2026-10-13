@@ -17,6 +17,9 @@ automation, and suggest improvements to Alan before building. Only the decisions
 2. All engine changes go through a PR to `main`; `data.json` changes ride Alan's own
    save pipeline.
 
+Rule 1 has one standing exception, Alan's own (2026-10-13): **event rows that carry `vcId`**
+are kept by a scheduled job and do change. See "Event rows the automation keeps" below.
+
 ## Order classification when analyzing exports
 
 When parsing an order export into weekly stats:
@@ -58,6 +61,36 @@ When parsing an order export into weekly stats:
     appointment + one customer = one order in the stats. Never re-count the
     appointment either. (Practical test when parsing an export: same customer,
     add-on/amendment to an order already counted in a prior week → CPO only.)
+
+## Event rows the automation keeps (`vcId`, 2026-10-13)
+
+The tab reads `events[]` and nothing else; until this date nothing but a Claude session wrote it,
+so it stopped at the July Maricopa show while the monthly `event_profit/` files sat beside it.
+Now csp-autopilot's events tab job (`run_events.sh`, the mini; its `docs/events-tab.md` is the
+spec) adds a row for every event from 2026-08-01 on and keeps it current.
+
+- **A row with `vcId` is the job's; a row without is hand-kept** (everything through July 2026)
+  and is never touched by it. One writer per row.
+- On a `vcId` row: `name, loc, camp, eventType, dt, dtEnd, dtDisplay, shifts, notWorked, cpo, ord,
+  booth` are Vector's and the calendar's and are rebuilt every Tuesday. Travel (`hotel, gas, food,
+  tolls, other`, `manualCharges` Flight / Rental car), `rorOutCPO` and `cashOrders, cashRevenue`
+  are Alan's: only what he answered in the event's Slack thread in `#cutco-reports`.
+  `comm, rorOutOrd, rorOutComm, totalExp, net` are worked out. `auto: { asOf, charges, need }`
+  says how fresh Vector's numbers are and what he has not answered yet.
+- **RoR given** (`rorOutCPO`, one figure per order): an order he wrote that went to another rep,
+  who sends him a share: 10% under $1,000, 15% from $1,000, 20% from $2,000, per order; 25% at a
+  service event. Not in `cpo` or `comm`. `net = comm + cashRevenue + rorOutComm − totalExp`.
+  (The "RoR Received" rule above is the other direction and is unchanged.)
+- **The engine never edits these rows.** They are written to `data.json` only, so an edit or a
+  delete in the page would be gone at the next load: they show an "Auto" tag instead of edit /
+  del, and `editEvent` / `deleteEvent` refuse them. `bootHub` keeps them as loaded
+  (`BOOT_AUTO_EVENTS`) and `mergeSyncData` puts them back after a Load (`keepAutoEvents`), so a
+  Sheets snapshot can neither drop one nor roll one back. Save, not Load, is no longer needed for
+  them; it still is for hand-kept rows and goals.
+- To change one: Alan replies in its Slack thread (travel, RoR, cash, days worked). Anything else
+  is a hand edit to `data.json` in a PR, with his say, and the job's own checks must still pass
+  (`comm`, `totalExp` and `net` have to add up, or its next publish refuses).
+- `tests/events_auto.test.js` lifts the real functions out of `index.html` and runs them.
 
 ## Cancels / returns addendum (`returns.json`)
 

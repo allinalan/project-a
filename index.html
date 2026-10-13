@@ -1585,6 +1585,9 @@ let S = {};
 // that left later is shown BESIDE the week, never subtracted from S.weeks. Kept out
 // of S on purpose, so Save / Load can never carry it into data.json or the Sheet.
 let RETURNS = null, RETURNS_STATE = 'loading', RETURNS_ERR = '';
+// Event rows the events automation keeps (they carry vcId), exactly as data.json had them when
+// the page loaded. See keepAutoEvents().
+let BOOT_AUTO_EVENTS = [];
 const ymdOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function returnsFor(startDate){ return (RETURNS && RETURNS.weeks && RETURNS.weeks[ymdOf(startDate)]) || []; }
 // One week of the addendum: the orders that lost money plus the week's notes.
@@ -3696,6 +3699,7 @@ function addEvent(){ saveEvent(); }
 function editEvent(idx){
   const e = S.events[idx];
   if(!e) return;
+  if(isAutoEvent(e)){ alert(AUTO_HOW); return; }
   editEventIdx = idx;
   // Switch to the Enter Stats page — the event form lives there, not on the Profit page
   showPage('enter', document.querySelector('.tab-log'));
@@ -3770,6 +3774,7 @@ function clearEventForm(){
 function deleteEvent(idx){
   const e=S.events[idx];
   if(!e) return;
+  if(isAutoEvent(e)){ alert(AUTO_HOW); return; }
   if(!confirm('Delete event "'+(e.name||'Untitled')+'" ('+(e.dtDisplay||e.dt||'no date')+')?\n\nThis permanently removes it and its profit numbers.')) return;
   if(editEventIdx === idx) cancelEventEdit(); // can't edit deleted event
   S.events.splice(idx,1);
@@ -3877,8 +3882,7 @@ function refreshProfit(){
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="profit-pill ${pillClass}">${pillText}</span>
-          <button class="bedit" onclick="editEvent(${e._idx})">edit</button>
-          <button class="bdel" onclick="deleteEvent(${e._idx})">del</button>
+          ${eventButtons(e,e._idx)}
         </div>
       </div>
       <div class="prof-grid">
@@ -3889,7 +3893,9 @@ function refreshProfit(){
       </div>
       ${svcLine}
       ${cashLine}
+      ${rorOutLine(e)}
       ${manualLine}
+      ${autoNote(e)}
       <div style="font-size:11px;color:var(--text2);margin-top:8px;">
         ${e.shifts>0?`Profit per shift: <strong style="color:${e.net/e.shifts>=500?'var(--green)':'var(--text)'};">${fm(Math.round(e.net/e.shifts))}</strong>`:''}
         ${expRatio!==null?`${e.shifts>0?' · ':''}Expenses ate <strong style="color:${expRatio<=40?'var(--green)':expRatio<=60?'var(--gold)':'var(--red)'};">${expRatio}%</strong> of commission`:''}
@@ -3934,8 +3940,7 @@ function renderNotWorkedList(){
           <div style="font-size:11px;color:var(--text2);">out of pocket</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:3px;">
-          <button class="bedit" onclick="editEvent(${r.i})">edit</button>
-          <button class="bdel" onclick="deleteEvent(${r.i})">del</button>
+          ${eventButtons(r.e,r.i)}
         </div>
       </div>
     </div>`).join('')}
@@ -4011,6 +4016,7 @@ function renderSeEventLog(){
       <div>
         <div style="font-size:12px;font-weight:700;">${r.e.name||'Untitled'}${isSeByNameOnly(r.e)?' <span style="font-size:10px;font-weight:600;color:var(--gold);background:var(--gold-light);padding:1px 6px;border-radius:9px;" title="Matched by event name — no event type saved on this entry yet">by name</span>':''}</div>
         <div style="font-size:11px;color:var(--text2);">${r.e.loc?r.e.loc+' · ':''}${r.e.dtDisplay||r.e.dt||''}${r.e.shifts?' · '+plural(r.e.shifts,'shift'):''}${r.e.camp?' · '+r.e.camp:''}</div>
+        ${rorOutLine(r.e)}${autoNote(r.e)}
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
         <div style="text-align:right;">
@@ -4018,8 +4024,7 @@ function renderSeEventLog(){
           <div style="font-size:11px;color:var(--text2);">${plural(r.e.ord||0,'order')}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:3px;">
-          <button class="bedit" onclick="editEvent(${r.i})">edit</button>
-          <button class="bdel" onclick="deleteEvent(${r.i})">del</button>
+          ${eventButtons(r.e,r.i)}
         </div>
       </div>
     </div>`).join('')
@@ -4568,6 +4573,46 @@ function mergeSyncData(data){
   });
   S.weeks.sort((a,b)=>(a.wk||0)-(b.wk||0));
   Object.keys(data).forEach(k=>{ if(k!=='weeks') S[k]=data[k]; });
+  keepAutoEvents();
+}
+
+// An event row that carries vcId is kept by the events automation (csp-autopilot events_tab.js):
+// Vector's numbers, refreshed every Tuesday, plus what Alan answered in the event's Slack thread
+// (travel, the RoR orders he gave out, cash). It is written to data.json and nowhere else, so
+// data.json is the only copy that counts. A Sheets snapshot saved before a row was added, or
+// before it was refreshed or answered, would drop it or roll it back on Load: after a Load the
+// rows are put back exactly as data.json had them at page load. Hand-kept rows (no vcId) still
+// come from the snapshot, as they always have.
+function isAutoEvent(e){ return !!(e && e.vcId); }
+function keepAutoEvents(){
+  const hand=(Array.isArray(S.events)?S.events:[]).filter(e=>!isAutoEvent(e));
+  S.events=hand.concat(BOOT_AUTO_EVENTS.map(e=>JSON.parse(JSON.stringify(e))));
+}
+// An edit or a delete made here on such a row would be gone at the next page load (and a delete
+// would come straight back), so the buttons give way to a tag that says where it is kept.
+const AUTO_HOW="Kept by the automation. Vector's numbers refresh on their own; travel, RoR given and cash come from your replies in this event's thread in #cutco-reports.";
+function eventButtons(e,i){
+  if(!isAutoEvent(e)) return `<button class="bedit" onclick="editEvent(${i})">edit</button>
+          <button class="bdel" onclick="deleteEvent(${i})">del</button>`;
+  return `<span style="font-size:10px;font-weight:700;color:var(--blue);background:var(--blue-light);padding:2px 7px;border-radius:9px;cursor:help;" title="${AUTO_HOW}">Auto</span>`;
+}
+// What an automatic row is still waiting for, and how fresh Vector's numbers are.
+function autoNote(e){
+  if(!isAutoEvent(e)||!e.auto) return '';
+  const words={travel:'travel',ror:'RoR given',cash:'cash orders',shifts:'days worked'};
+  const need=(e.auto.need||[]).map(k=>words[k]||k);
+  const bits=[];
+  if(need.length) bits.push('Waiting on your Slack answer: '+need.join(', '));
+  if(e.auto.charges==='none yet') bits.push('Vector has not billed this show yet');
+  const asOf=e.auto.asOf?`<span style="color:var(--text3);">Vector as of ${formatDate(e.auto.asOf)}</span>`:'';
+  if(!bits.length) return asOf?`<div style="font-size:11px;margin-top:8px;">${asOf}</div>`:'';
+  return `<div style="font-size:11px;color:var(--gold);margin-top:8px;">${bits.join(' · ')}${asOf?' · '+asOf:''}</div>`;
+}
+// RoR given: an order Alan wrote that went to another rep, who sends him a share of it. Not in
+// CPO or commission; part of the event's net (data.json carries the share already worked out).
+function rorOutLine(e){
+  if(!((e.rorOutComm||0)>0||(e.rorOutOrd||0)>0)) return '';
+  return `<div style="font-size:11px;color:var(--text2);margin-top:8px;">RoR given: <strong style="color:var(--green);">+${fm(e.rorOutComm||0)}</strong> from ${plural(e.rorOutOrd||0,'order')} <span style="color:var(--text3);">(your share of orders that went to another rep — not in CPO)</span></div>`;
 }
 
 async function loadFromSheets(){
@@ -4662,6 +4707,7 @@ function cancelCatGoal(k,camp){var d=document.getElementById('cg-'+k+'-'+camp+'-
       const fetched = await resp.json();
       Object.keys(S).forEach(k => delete S[k]);
       Object.assign(S, fetched);
+      BOOT_AUTO_EVENTS = (S.events || []).filter(isAutoEvent).map(e => JSON.parse(JSON.stringify(e)));
       console.log('HUB: data loaded from data.json (' + (S.weeks ? S.weeks.length : 0) + ' weeks)');
     } else {
       console.warn('HUB: data.json fetch failed (HTTP ' + resp.status + ')');
