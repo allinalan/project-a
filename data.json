@@ -2811,8 +2811,8 @@
       "ord": 11,
       "comm": 4878,
       "booth": 200,
-      "hotel": 0,
-      "gas": 0,
+      "hotel": 381,
+      "gas": 25,
       "food": 0,
       "tolls": 0,
       "other": 0,
@@ -2821,11 +2821,14 @@
       "cashRevenue": 0,
       "svcCPO": 0,
       "svcOrd": 0,
-      "rorOutCPO": [],
-      "rorOutOrd": 0,
-      "rorOutComm": 0,
-      "totalExp": 200,
-      "net": 4678,
+      "rorOutCPO": [
+        180,
+        330
+      ],
+      "rorOutOrd": 2,
+      "rorOutComm": 100.5,
+      "totalExp": 606,
+      "net": 4372.5,
       "dt": "2026-09-25",
       "dtEnd": "2026-09-27",
       "dtDisplay": "Sep 25\u201327, 2026",
@@ -2833,12 +2836,12 @@
       "auto": {
         "asOf": "2026-10-13",
         "charges": "posted",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
-      }
+        "need": []
+      },
+      "rorOutPct": [
+        null,
+        25
+      ]
     },
     {
       "name": "Client Service & Sales Event - Alan Hernandez - Show Low, AZ",
