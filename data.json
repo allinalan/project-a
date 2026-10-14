@@ -2623,11 +2623,20 @@
       "comm": 2223,
       "booth": 921.32,
       "hotel": 0,
-      "gas": 0,
+      "gas": 55,
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "manualCharges": [],
+      "manualCharges": [
+        {
+          "label": "Flight",
+          "amount": 208.6
+        },
+        {
+          "label": "Rental car",
+          "amount": 218.66
+        }
+      ],
       "cashOrders": 0,
       "cashRevenue": 0,
       "svcCPO": 0,
@@ -2635,8 +2644,8 @@
       "rorOutCPO": [],
       "rorOutOrd": 0,
       "rorOutComm": 0,
-      "totalExp": 921.32,
-      "net": 1301.68,
+      "totalExp": 1403.58,
+      "net": 819.42,
       "dt": "2026-08-22",
       "dtEnd": "2026-08-23",
       "dtDisplay": "Aug 22\u201323, 2026",
@@ -2644,11 +2653,7 @@
       "auto": {
         "asOf": "2026-10-13",
         "charges": "posted",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     },
     {
