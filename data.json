@@ -2902,11 +2902,13 @@
       "cashRevenue": 0,
       "svcCPO": 0,
       "svcOrd": 0,
-      "rorOutCPO": [],
-      "rorOutOrd": 0,
-      "rorOutComm": 0,
+      "rorOutCPO": [
+        498
+      ],
+      "rorOutOrd": 1,
+      "rorOutComm": 49.8,
       "totalExp": 0,
-      "net": 2299,
+      "net": 2348.8,
       "dt": "2026-10-02",
       "dtEnd": "2026-10-04",
       "dtDisplay": "Oct 2\u20134, 2026",
@@ -2914,10 +2916,7 @@
       "auto": {
         "asOf": "2026-10-13",
         "charges": "none yet",
-        "need": [
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     },
     {
