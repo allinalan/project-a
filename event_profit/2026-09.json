@@ -1,8 +1,8 @@
 {
   "month": "2026-09",
-  "pulledAt": "2026-10-13T17:53:15.515Z",
+  "pulledAt": "2026-10-14T05:05:00.498Z",
   "salesAsOf": "2026-10-13",
-  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel",
+  "model": "event belongs to month of its first order; sales include all re-orders to date; all charges roll up to the event; worked-status verified against Google Calendar banners; NET = commission (sales x earnRate) - charges - travel; orders entered with no event number are kept per order day and listed in unassignedOrders (in no event, not RoR) until Alan places the day",
   "earnRate": {
     "commissionRate": 0.5,
     "mentorShare": 0.05,
@@ -11,7 +11,7 @@
   "orderLookbackSince": "2025-06-01",
   "chargeWindow": {
     "start": 202601,
-    "end": 202641
+    "end": 202642
   },
   "totals": {
     "sales": 28364,
@@ -22,6 +22,8 @@
   },
   "outsideSales": 435,
   "outsideCommission": 195.75,
+  "unassignedSales": 0,
+  "unassignedCommission": 0,
   "travelPendingCount": 5,
   "eventCount": 5,
   "events": [
@@ -212,5 +214,6 @@
       "lastOrderDate": "2026-09-18",
       "note": "RoR / cross-rep — order transferred in; no calendar banner and no charges"
     }
-  ]
+  ],
+  "unassignedOrders": []
 }
