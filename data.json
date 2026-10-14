@@ -2737,8 +2737,8 @@
       "ord": 11,
       "comm": 2250,
       "booth": 147,
-      "hotel": 0,
-      "gas": 0,
+      "hotel": 401,
+      "gas": 25,
       "food": 0,
       "tolls": 0,
       "other": 0,
@@ -2750,8 +2750,8 @@
       "rorOutCPO": [],
       "rorOutOrd": 0,
       "rorOutComm": 0,
-      "totalExp": 147,
-      "net": 2103,
+      "totalExp": 573,
+      "net": 1677,
       "dt": "2026-09-11",
       "dtEnd": "2026-09-12",
       "dtDisplay": "Sep 11\u201312, 2026",
@@ -2759,11 +2759,7 @@
       "auto": {
         "asOf": "2026-10-13",
         "charges": "posted",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     },
     {
