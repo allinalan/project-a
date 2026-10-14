@@ -2941,16 +2941,25 @@
       "food": 0,
       "tolls": 0,
       "other": 0,
-      "manualCharges": [],
-      "cashOrders": 0,
-      "cashRevenue": 0,
+      "manualCharges": [
+        {
+          "label": "Flight",
+          "amount": 331
+        },
+        {
+          "label": "Rental car",
+          "amount": 263.82
+        }
+      ],
+      "cashOrders": 1,
+      "cashRevenue": 306,
       "svcCPO": 0,
       "svcOrd": 0,
       "rorOutCPO": [],
       "rorOutOrd": 0,
       "rorOutComm": 0,
-      "totalExp": 0,
-      "net": 213,
+      "totalExp": 594.82,
+      "net": -75.82,
       "dt": "2026-10-10",
       "dtEnd": "",
       "dtDisplay": "Oct 10, 2026",
@@ -2958,11 +2967,7 @@
       "auto": {
         "asOf": "2026-10-13",
         "charges": "none yet",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     }
   ],
