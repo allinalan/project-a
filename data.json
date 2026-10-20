@@ -2641,7 +2641,7 @@
       "dtDisplay": "Aug 1\u20132, 2026",
       "vcId": "00090275",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       },
@@ -2690,7 +2690,7 @@
       "dtDisplay": "Aug 22\u201323, 2026",
       "vcId": "00091588",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       }
@@ -2727,7 +2727,7 @@
       "dtDisplay": "Aug 24, 2026",
       "vcId": "00099800",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       }
@@ -2764,7 +2764,7 @@
       "dtDisplay": "Sep 5\u20136, 2026",
       "vcId": "00095364",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       }
@@ -2801,7 +2801,7 @@
       "dtDisplay": "Sep 11\u201312, 2026",
       "vcId": "00101753",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       }
@@ -2838,7 +2838,7 @@
       "dtDisplay": "Sep 21, 2026",
       "vcId": "99999@2026-09-21",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "none yet",
         "need": []
       }
@@ -2878,7 +2878,7 @@
       "dtDisplay": "Sep 25\u201327, 2026",
       "vcId": "00099107",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       },
@@ -2919,7 +2919,7 @@
       "dtDisplay": "Sep 28, 2026",
       "vcId": "00103454",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "posted",
         "need": []
       }
@@ -2958,7 +2958,7 @@
       "dtDisplay": "Oct 2\u20134, 2026",
       "vcId": "00091019",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
         "charges": "none yet",
         "need": []
       }
@@ -2974,7 +2974,7 @@
       "shifts": 1,
       "ord": 2,
       "comm": 213,
-      "booth": 0,
+      "booth": 113.15,
       "hotel": 0,
       "gas": 0,
       "food": 0,
@@ -2997,14 +2997,92 @@
       "rorOutCPO": [],
       "rorOutOrd": 0,
       "rorOutComm": 0,
-      "totalExp": 594.82,
-      "net": -75.82,
+      "totalExp": 707.97,
+      "net": -188.97,
       "dt": "2026-10-10",
       "dtEnd": "",
       "dtDisplay": "Oct 10, 2026",
       "vcId": "00100836",
       "auto": {
-        "asOf": "2026-10-13",
+        "asOf": "2026-10-20",
+        "charges": "posted",
+        "need": []
+      }
+    },
+    {
+      "name": "Southern Arizona Home Show (Oct 16)",
+      "loc": "",
+      "camp": "CIII",
+      "eventType": "Traditional",
+      "eventTypeSet": true,
+      "notWorked": false,
+      "cpo": 8078,
+      "shifts": 3,
+      "ord": 9,
+      "comm": 3635,
+      "booth": 0,
+      "hotel": 0,
+      "gas": 0,
+      "food": 0,
+      "tolls": 0,
+      "other": 0,
+      "manualCharges": [],
+      "cashOrders": 0,
+      "cashRevenue": 0,
+      "svcCPO": 0,
+      "svcOrd": 0,
+      "rorOutCPO": [],
+      "rorOutOrd": 0,
+      "rorOutComm": 0,
+      "totalExp": 0,
+      "net": 3635,
+      "dt": "2026-10-16",
+      "dtEnd": "2026-10-18",
+      "dtDisplay": "Oct 16\u201318, 2026",
+      "vcId": "00092025",
+      "auto": {
+        "asOf": "2026-10-20",
+        "charges": "none yet",
+        "need": [
+          "travel",
+          "ror",
+          "cash"
+        ]
+      }
+    },
+    {
+      "name": "Tucson Service & Sales Event (Oct 19)",
+      "loc": "",
+      "camp": "CIII",
+      "eventType": "Service Event",
+      "eventTypeSet": true,
+      "notWorked": false,
+      "cpo": 860,
+      "shifts": 1,
+      "ord": 3,
+      "comm": 387,
+      "booth": 0,
+      "hotel": 0,
+      "gas": 0,
+      "food": 0,
+      "tolls": 0,
+      "other": 0,
+      "manualCharges": [],
+      "cashOrders": 0,
+      "cashRevenue": 0,
+      "svcCPO": 0,
+      "svcOrd": 0,
+      "rorOutCPO": [],
+      "rorOutOrd": 0,
+      "rorOutComm": 0,
+      "totalExp": 0,
+      "net": 387,
+      "dt": "2026-10-19",
+      "dtEnd": "",
+      "dtDisplay": "Oct 19, 2026",
+      "vcId": "00103798",
+      "auto": {
+        "asOf": "2026-10-20",
         "charges": "none yet",
         "need": []
       }
