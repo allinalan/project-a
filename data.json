@@ -3021,21 +3021,23 @@
       "ord": 9,
       "comm": 3635,
       "booth": 0,
-      "hotel": 0,
+      "hotel": 252,
       "gas": 0,
       "food": 0,
       "tolls": 0,
       "other": 0,
       "manualCharges": [],
-      "cashOrders": 0,
-      "cashRevenue": 0,
+      "cashOrders": 1,
+      "cashRevenue": 60,
       "svcCPO": 0,
       "svcOrd": 0,
-      "rorOutCPO": [],
-      "rorOutOrd": 0,
-      "rorOutComm": 0,
-      "totalExp": 0,
-      "net": 3635,
+      "rorOutCPO": [
+        490
+      ],
+      "rorOutOrd": 1,
+      "rorOutComm": 49,
+      "totalExp": 252,
+      "net": 3492,
       "dt": "2026-10-16",
       "dtEnd": "2026-10-18",
       "dtDisplay": "Oct 16\u201318, 2026",
@@ -3043,11 +3045,7 @@
       "auto": {
         "asOf": "2026-10-20",
         "charges": "none yet",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     },
     {
