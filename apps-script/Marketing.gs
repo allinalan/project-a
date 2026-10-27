@@ -843,6 +843,7 @@ function doPost(e){
     if(action === 'propose') return json_(propose_(body));
     if(action === 'drafterror') return json_(draftError_(body));
     if(action === 'markprep') return json_(markPrep_(body));
+    if(action === 'setaudience') return json_(setAudience_(body));
     if(action === 'history') return json_(history_());
     if(action === 'restore') return json_(restore_(body));
     return json_({ok:false, error:'bad_action', message:'Unknown action: '+action});
@@ -967,6 +968,28 @@ function markPrep_(body){
   if(problem) return {ok:false, error:'refused', message:problem};
   log_('save', 'alma r'+res.rev+': '+(on ? 'ticked ' : 'unticked ')+keys.join(', ')+' on '+id);
   return {ok:true, rev:res.rev, done:keys};
+}
+
+// ALMA's second write (2026-10-26): when a text send-out can't be built because the plan doesn't say
+// who it goes to, Alan answers in ALMA ("Who should get this text?") and, with "Save it to the plan
+// too" on, ALMA writes his answer here: only that item's Audience, ZIP and/or radius. Nothing else.
+function setAudience_(body){
+  var pk = String(body.pk || ''), id = String(body.id || ''), set = {}, problem = '';
+  if(body.audience != null){ var a = String(body.audience).replace(/\s+/g, ' ').trim(); if(!a || a.length > 300){ problem = 'The audience must be 1 to 300 characters.'; } else set.audience = a; }
+  if(body.zip != null){ var z = String(body.zip).split(/[,\s]+/).filter(Boolean); if(!z.length || z.some(function(x){ return !/^\d{5}$/.test(x); })) problem = 'A ZIP is five digits (several: separated by commas).'; else set.zip = z.join(', '); }
+  if(body.radius != null){ var r = Number(body.radius); if(!(r > 0 && r <= 500)) problem = 'The radius is a number of miles, 1 to 500.'; else set.radius = r; }
+  if(problem) return {ok:false, error:'refused', message:problem};
+  if(!Object.keys(set).length) return {ok:false, error:'bad_request', message:'Nothing to set.'};
+  var res = mutate_('alma', function(state){
+    var plan = state.plans[pk];
+    var x = plan && (plan.items || []).filter(function(i){ return i.id === id; })[0];
+    if(!x){ problem = 'That item is not in the plan.'; return false; }
+    Object.keys(set).forEach(function(k){ x[k] = set[k]; });
+    return {name:x.name};
+  });
+  if(problem) return {ok:false, error:'refused', message:problem};
+  log_('save', 'alma r'+res.rev+': audience of '+id+' set ('+Object.keys(set).join(', ')+')');
+  return {ok:true, rev:res.rev, set:set};
 }
 
 // Rollback: list the saves History keeps, and put one back as the newest revision.
