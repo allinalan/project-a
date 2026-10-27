@@ -842,6 +842,7 @@ function doPost(e){
     if(action === 'pending') return json_(pending_());
     if(action === 'propose') return json_(propose_(body));
     if(action === 'drafterror') return json_(draftError_(body));
+    if(action === 'markprep') return json_(markPrep_(body));
     if(action === 'history') return json_(history_());
     if(action === 'restore') return json_(restore_(body));
     return json_({ok:false, error:'bad_action', message:'Unknown action: '+action});
@@ -939,6 +940,33 @@ function draftError_(body){
   });
   log_('claude', (body.id || '?')+': error filed ('+String(body.message || '').slice(0, 120)+')');
   return {ok:true, status:status, rev:res.rev};
+}
+
+// ALMA's one write to the plan (2026-10-26): after Alan approves a text send-out in ALMA, she ticks
+// that item's "Text list created" and the texts she scheduled (and unticks the texts if he cancels).
+// Only an item's text steps can be ticked here, and a text whose date the plan has since moved is
+// refused, so ALMA can never mark a send the plan no longer has.
+function markPrep_(body){
+  var pk = String(body.pk || ''), id = String(body.id || ''), on = body.on !== false;
+  var keys = (Array.isArray(body.keys) ? body.keys : []).map(String), dates = body.dates || {};
+  if(!keys.length) return {ok:false, error:'bad_request', message:'No checklist steps were named.'};
+  var problem = '';
+  var res = mutate_('alma', function(state){
+    var plan = state.plans[pk];
+    var x = plan && (plan.items || []).filter(function(i){ return i.id === id; })[0];
+    if(!x){ problem = 'That item is not in the plan.'; return false; }
+    var list = MAEngine.prepList(x, plan.rules);
+    for(var i = 0; i < keys.length; i++){
+      var t = list.filter(function(y){ return y.key === keys[i]; })[0];
+      if(!t || t.scope !== 'text'){ problem = keys[i]+' is not one of '+x.name+'\u2019s text steps.'; return false; }
+      if(on && t.send && dates[keys[i]] && dates[keys[i]] !== t.date){ problem = 'The plan now sends '+t.label.replace(/ scheduled$/, '').toLowerCase()+' on '+t.date+', not '+dates[keys[i]]+'.'; return false; }
+    }
+    keys.forEach(function(k){ MAEngine.setPrep(x, plan.rules, k, on); });
+    return {name:x.name, keys:keys, on:on};
+  });
+  if(problem) return {ok:false, error:'refused', message:problem};
+  log_('save', 'alma r'+res.rev+': '+(on ? 'ticked ' : 'unticked ')+keys.join(', ')+' on '+id);
+  return {ok:true, rev:res.rev, done:keys};
 }
 
 // Rollback: list the saves History keeps, and put one back as the newest revision.
