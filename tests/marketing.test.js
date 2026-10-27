@@ -158,6 +158,24 @@ test('store: ALMA ticks only an item\u2019s text steps, never another step or a 
   assert.ok(!E.sendScheduled(item(), 'text1', t1.date));
   assert.strictEqual(item().prep.list_text, true, 'the list stays ticked: it is still in SimpleTexting');
 });
+test('store: ALMA sets only an item\u2019s audience, ZIP and radius, and refuses bad values', () => {
+  const s = seedStore();
+  const item = () => JSON.parse(s.call('load').doc).plans['2026–27'].items.find(y => y.id === 'sale26');
+  const before = item();
+  const r = s.call('setaudience', {pk:'2026–27', id:'sale26', audience:'WS_HotList_2026; TXT_2025_WS', name:'Hacked', start:'2030-01-01'});
+  assert.ok(r.ok, JSON.stringify(r));
+  const after = item();
+  assert.strictEqual(after.audience, 'WS_HotList_2026; TXT_2025_WS');
+  assert.strictEqual(after.name, before.name, 'nothing but the audience fields');
+  assert.strictEqual(after.start, before.start);
+  assert.ok(s.call('setaudience', {pk:'2026–27', id:'sale26', zip:'85226, 85224', radius:15}).ok);
+  assert.strictEqual(item().zip, '85226, 85224');
+  assert.strictEqual(item().radius, 15);
+  assert.strictEqual(s.call('setaudience', {pk:'2026–27', id:'sale26', zip:'8522'}).error, 'refused');
+  assert.strictEqual(s.call('setaudience', {pk:'2026–27', id:'sale26', radius:-3}).error, 'refused');
+  assert.strictEqual(s.call('setaudience', {pk:'2026–27', id:'nope', audience:'X'}).error, 'refused');
+  assert.strictEqual(s.call('setaudience', {pk:'2026–27', id:'sale26'}).error, 'bad_request');
+});
 test('store: refuses damaged text, non-plans, and a save that would drop half the plan', () => {
   const s = seedStore(), cur = s.call('load');
   assert.strictEqual(s.call('save', {baseRev:1, doc:cur.doc, hash:'0:deadbeef'}).error, 'bad_doc');
