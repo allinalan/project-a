@@ -142,6 +142,22 @@ test('store: needs the key, saves, reads back, and refuses a stale revision', ()
   assert.strictEqual(stale.rev, 2);
   assert.strictEqual(JSON.parse(stale.doc).plans['2026–27'].items[0].name, 'Renamed', 'a conflict hands back the newer plan');
 });
+test('store: ALMA ticks only an item\u2019s text steps, never another step or a moved date, and can untick them', () => {
+  const s = seedStore();
+  const item = () => JSON.parse(s.call('load').doc).plans['2026–27'].items.find(y => y.id === 'expo26');
+  const plan = () => JSON.parse(s.call('load').doc).plans['2026–27'];
+  const t1 = E.prepList(item(), plan().rules).find(t => t.key === 'text1');
+  const r = s.call('markprep', {pk:'2026–27', id:'expo26', keys:['list_text', 'text1'], dates:{text1:t1.date}});
+  assert.ok(r.ok, JSON.stringify(r));
+  assert.ok(E.sendScheduled(item(), 'text1', t1.date));
+  assert.strictEqual(item().prep.list_text, true);
+  assert.strictEqual(s.call('markprep', {pk:'2026–27', id:'expo26', keys:['list_email']}).error, 'refused', 'not a text step');
+  assert.strictEqual(s.call('markprep', {pk:'2026–27', id:'expo26', keys:['text1'], dates:{text1:'2026-01-01'}}).error, 'refused', 'a moved date');
+  assert.strictEqual(s.call('markprep', {pk:'2026–27', id:'nope', keys:['text1']}).error, 'refused');
+  assert.ok(s.call('markprep', {pk:'2026–27', id:'expo26', keys:['text1'], on:false}).ok);
+  assert.ok(!E.sendScheduled(item(), 'text1', t1.date));
+  assert.strictEqual(item().prep.list_text, true, 'the list stays ticked: it is still in SimpleTexting');
+});
 test('store: refuses damaged text, non-plans, and a save that would drop half the plan', () => {
   const s = seedStore(), cur = s.call('load');
   assert.strictEqual(s.call('save', {baseRev:1, doc:cur.doc, hash:'0:deadbeef'}).error, 'bad_doc');

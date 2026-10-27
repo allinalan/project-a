@@ -15,6 +15,7 @@ What it does:
 - **Answers ALMA** on the Mac mini: the morning digest, and the Claude drafts of next year's changes.
   Claude runs on the mini with the key from the Keychain; this script never holds an API key.
 - Never sends email or texts, never touches the Vast Action CRM. Read-only calendar access.
+- ALMA ticks a text send-out's steps on an item (`markprep`) after Alan approves it in ALMA; nothing else.
 
 ## Setup (once, about 10 minutes)
 
@@ -54,4 +55,5 @@ node tools/store.js backup --out f.json  # a copy of the plan (600 mode; never c
 
 `ping` (no key) · `load` · `save {baseRev, doc, hash}` · `calcheck` · `digest {today?}` ·
 `pending` · `propose {pk, id, requestedAt, raw, model}` · `drafterror {pk, id, requestedAt, message}` ·
+`markprep {pk, id, keys, dates?, on?}` (ALMA, after Alan approves a text send-out: ticks only that item's text steps; refuses any other step and a date the plan has moved) ·
 `history` · `restore {rev}`
