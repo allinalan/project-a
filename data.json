@@ -2719,7 +2719,7 @@
       "dtDisplay": "Aug 1\u20132, 2026",
       "vcId": "00090275",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       },
@@ -2768,7 +2768,7 @@
       "dtDisplay": "Aug 22\u201323, 2026",
       "vcId": "00091588",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -2805,7 +2805,7 @@
       "dtDisplay": "Aug 24, 2026",
       "vcId": "00099800",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -2842,7 +2842,7 @@
       "dtDisplay": "Sep 5\u20136, 2026",
       "vcId": "00095364",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -2879,7 +2879,7 @@
       "dtDisplay": "Sep 11\u201312, 2026",
       "vcId": "00101753",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -2956,7 +2956,7 @@
       "dtDisplay": "Sep 25\u201327, 2026",
       "vcId": "00099107",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       },
@@ -2997,7 +2997,7 @@
       "dtDisplay": "Sep 28, 2026",
       "vcId": "00103454",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -3036,7 +3036,7 @@
       "dtDisplay": "Oct 2\u20134, 2026",
       "vcId": "00091019",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -3082,7 +3082,7 @@
       "dtDisplay": "Oct 10, 2026",
       "vcId": "00100836",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -3121,7 +3121,7 @@
       "dtDisplay": "Oct 16\u201318, 2026",
       "vcId": "00092025",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "posted",
         "need": []
       }
@@ -3158,9 +3158,49 @@
       "dtDisplay": "Oct 19, 2026",
       "vcId": "00103798",
       "auto": {
-        "asOf": "2026-11-03",
+        "asOf": "2026-11-10",
         "charges": "none yet",
         "need": []
+      }
+    },
+    {
+      "name": "Litchfield Park Festival of Arts",
+      "loc": "",
+      "camp": "CIII",
+      "eventType": "Traditional",
+      "eventTypeSet": true,
+      "notWorked": false,
+      "cpo": 6019.75,
+      "shifts": 2,
+      "ord": 12,
+      "comm": 2709,
+      "booth": 0,
+      "hotel": 0,
+      "gas": 0,
+      "food": 0,
+      "tolls": 0,
+      "other": 0,
+      "manualCharges": [],
+      "cashOrders": 0,
+      "cashRevenue": 0,
+      "svcCPO": 0,
+      "svcOrd": 0,
+      "rorOutCPO": [],
+      "rorOutOrd": 0,
+      "rorOutComm": 0,
+      "totalExp": 0,
+      "net": 2709,
+      "dt": "2026-11-07",
+      "dtEnd": "2026-11-08",
+      "dtDisplay": "Nov 7\u20138, 2026",
+      "vcId": "00097558",
+      "auto": {
+        "asOf": "2026-11-10",
+        "charges": "none yet",
+        "need": [
+          "ror",
+          "cash"
+        ]
       }
     }
   ],
