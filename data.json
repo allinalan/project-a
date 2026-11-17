@@ -3264,11 +3264,15 @@
       "cashRevenue": 0,
       "svcCPO": 0,
       "svcOrd": 0,
-      "rorOutCPO": [],
-      "rorOutOrd": 0,
-      "rorOutComm": 0,
+      "rorOutCPO": [
+        266,
+        330,
+        575
+      ],
+      "rorOutOrd": 3,
+      "rorOutComm": 117.1,
       "totalExp": 0,
-      "net": 1291,
+      "net": 1408.1,
       "dt": "2026-11-13",
       "dtEnd": "2026-11-14",
       "dtDisplay": "Nov 13\u201314, 2026",
@@ -3276,11 +3280,7 @@
       "auto": {
         "asOf": "2026-11-17",
         "charges": "none yet",
-        "need": [
-          "travel",
-          "ror",
-          "cash"
-        ]
+        "need": []
       }
     }
   ],
