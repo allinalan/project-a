@@ -3224,11 +3224,13 @@
       "cashRevenue": 0,
       "svcCPO": 0,
       "svcOrd": 0,
-      "rorOutCPO": [],
-      "rorOutOrd": 0,
-      "rorOutComm": 0,
+      "rorOutCPO": [
+        164
+      ],
+      "rorOutOrd": 1,
+      "rorOutComm": 16.4,
       "totalExp": 534.5,
-      "net": 2174.5,
+      "net": 2190.9,
       "dt": "2026-11-07",
       "dtEnd": "2026-11-08",
       "dtDisplay": "Nov 7\u20138, 2026",
@@ -3237,7 +3239,6 @@
         "asOf": "2026-11-24",
         "charges": "posted",
         "need": [
-          "ror",
           "cash"
         ]
       }
